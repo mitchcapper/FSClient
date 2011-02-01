@@ -9,12 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JabraHeadset", "JabraHeadse
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Items", "External Items", "{E5A3FCB6-A888-4290-B076-864674F90508}"
 	ProjectSection(SolutionItems) = preProject
-		External Items\FreeSWITCH.Managed.dll = External Items\FreeSWITCH.Managed.dll
 		External Items\JabraTelephonyAPI.dll = External Items\JabraTelephonyAPI.dll
-		External Items\link.pl = External Items\link.pl
 		External Items\mod_portaudio.c = External Items\mod_portaudio.c
-		External Items\mod_PortAudio.dll = External Items\mod_PortAudio.dll
-		External Items\mod_PortAudio_x64.dll = External Items\mod_PortAudio_x64.dll
 		External Items\Plantronics.Device.Common.dll = External Items\Plantronics.Device.Common.dll
 		External Items\portaudio.2010.vcxproj = External Items\portaudio.2010.vcxproj
 	EndProjectSection

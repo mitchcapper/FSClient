@@ -1,6 +1,6 @@
 /* 
  * FreeSWITCH Modular Media Switching Software Library / Soft-Switch Application
- * Copyright (C) 2005-2011, Anthony Minessale II <anthm@freeswitch.org>
+ * Copyright (C) 2005-2010, Anthony Minessale II <anthm@freeswitch.org>
  *
  * Version: MPL 1.1
  *
@@ -364,19 +364,19 @@ static audio_stream_t* find_audio_stream(int indev, int outdev, int already_lock
 {
 	audio_stream_t *cur_stream;
 	
-	if (! globals.stream_list){
+	if (! globals.stream_list) {
 		return NULL;
 	}
 
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_lock(globals.streams_lock);
 	}
 	cur_stream = globals.stream_list;
 
-	while (cur_stream != NULL){
-		if (cur_stream->outdev == outdev){
-			if (indev == -1 || cur_stream->indev == indev){
-				if (! already_locked){
+	while (cur_stream != NULL) {
+		if (cur_stream->outdev == outdev) {
+			if (indev == -1 || cur_stream->indev == indev) {
+				if (! already_locked) {
 					switch_mutex_unlock(globals.streams_lock);
 				}
 				return cur_stream;
@@ -384,23 +384,23 @@ static audio_stream_t* find_audio_stream(int indev, int outdev, int already_lock
 		}
 		cur_stream = cur_stream->next;
 	}
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_unlock(globals.streams_lock);
 	}
 	return NULL;
 }
 static void destroy_audio_streams()
 {
-	int close_wait=4;
-	globals.destroying_streams=1;
+	int close_wait = 4;
+	globals.destroying_streams = 1;
 
-	while (globals.stream_in_use && close_wait--){
+	while (globals.stream_in_use && close_wait--) {
 		switch_yield(250000);
 	}
-	while (globals.stream_list != NULL){
-		destroy_audio_stream(globals.stream_list->indev,globals.stream_list->outdev);
+	while (globals.stream_list != NULL) {
+		destroy_audio_stream(globals.stream_list->indev, globals.stream_list->outdev);
 	}
-	globals.destroying_streams=0;
+	globals.destroying_streams = 0;
 }
 static switch_status_t validate_main_audio_stream()
 {
@@ -408,17 +408,17 @@ static switch_status_t validate_main_audio_stream()
 		switch_core_timer_sync(&globals.read_timer);
 	}
 
-	if (globals.main_stream){
+	if (globals.main_stream) {
 		if (globals.main_stream->write_timer.timer_interface) {
 			switch_core_timer_sync(&(globals.main_stream->write_timer));
+		}
+
+		return SWITCH_STATUS_SUCCESS;
 	}
 
-				return SWITCH_STATUS_SUCCESS;
-	}
-
-	globals.main_stream = get_audio_stream(globals.indev,globals.outdev);
+	globals.main_stream = get_audio_stream(globals.indev, globals.outdev);
 	
-	if (globals.main_stream){
+	if (globals.main_stream) {
 		return SWITCH_STATUS_SUCCESS;
 	}
 
@@ -427,17 +427,17 @@ static switch_status_t validate_main_audio_stream()
 
 static switch_status_t validate_ring_audio_stream()
 {
-	if (globals.ringdev == -1){
+	if (globals.ringdev == -1) {
 		return SWITCH_STATUS_SUCCESS;
 	}
-	if (globals.ring_stream){
+	if (globals.ring_stream) {
 		if (globals.ring_stream->write_timer.timer_interface) {
 			switch_core_timer_sync(&(globals.ring_stream->write_timer));
 		}
 		return SWITCH_STATUS_SUCCESS;
 	}
 	globals.ring_stream = get_audio_stream(-1, globals.ringdev);
-	if (globals.ring_stream){
+	if (globals.ring_stream) {
 		return SWITCH_STATUS_SUCCESS;
 	}
 
@@ -446,17 +446,17 @@ static switch_status_t validate_ring_audio_stream()
 
 static switch_status_t destroy_actual_stream(audio_stream_t *stream)
 {
-	if (stream == NULL){
+	if (stream == NULL) {
 		return SWITCH_STATUS_FALSE;
 	}
 
-		if (globals.main_stream == stream){
+	if (globals.main_stream == stream) {
 		globals.main_stream = NULL;
 	}
 
-	if (globals.ring_stream == stream){
-			globals.ring_stream = NULL;
-		}
+	if (globals.ring_stream == stream) {
+		globals.ring_stream = NULL;
+	}
 
 	CloseAudioStream(stream->stream);
 	stream->stream = NULL;
@@ -465,7 +465,7 @@ static switch_status_t destroy_actual_stream(audio_stream_t *stream)
 		switch_core_timer_destroy(&stream->write_timer);
 	}
 
-		switch_safe_free(stream);
+	switch_safe_free(stream);
 	return SWITCH_STATUS_SUCCESS;
 }
 static switch_status_t destroy_audio_stream(int indev, int outdev)
@@ -474,7 +474,7 @@ static switch_status_t destroy_audio_stream(int indev, int outdev)
 	
 	switch_mutex_lock(globals.streams_lock);
 	stream = find_audio_stream(indev, outdev,1);
-	if (stream == NULL){
+	if (stream == NULL) {
 		switch_mutex_unlock(globals.streams_lock);
 		return SWITCH_STATUS_FALSE;		
 	}
@@ -510,7 +510,7 @@ static void destroy_codecs(void)
 		switch_core_timer_destroy(&globals.hold_timer);
 	}
 
-	globals.codecs_inited=0;
+	globals.codecs_inited = 0;
 }
 
 static void create_hold_event(private_t *tech_pvt, int unhold)
@@ -527,41 +527,41 @@ static void create_hold_event(private_t *tech_pvt, int unhold)
 	if (switch_event_create_subclass(&event, SWITCH_EVENT_CUSTOM, event_id) == SWITCH_STATUS_SUCCESS) {
 		switch_channel_event_set_data(switch_core_session_get_channel(tech_pvt->session), event);
 		switch_event_fire(&event);
-}
+	}
 }
 
 static void add_stream(audio_stream_t * stream, int already_locked)
 {
 	audio_stream_t *last;
 
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_lock(globals.streams_lock);
 	}
 	for (last = globals.stream_list; last && last->next; last = last->next);
-	if (last == NULL){
+	if (last == NULL) {
 		globals.stream_list = stream;
 	} else {
 		last->next = stream;
 	}
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_unlock(globals.streams_lock);
 	}
 }
 static void remove_stream(audio_stream_t * stream, int already_locked)
 {
 	audio_stream_t *previous;
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_lock(globals.streams_lock);
 	}
-	if (globals.stream_list == stream){
+	if (globals.stream_list == stream) {
 		globals.stream_list = stream->next;
 	} else {
 		for (previous = globals.stream_list; previous && previous->next && previous->next != stream; previous = previous->next) {
 			;
-	}
+		}
 		previous->next = stream->next;
 	}
-	if (! already_locked){
+	if (! already_locked) {
 		switch_mutex_unlock(globals.streams_lock);
 	}
 }
@@ -622,9 +622,9 @@ static void remove_pvt(private_t *tech_pvt)
 	for (tp = globals.call_list; tp; tp = tp->next) {
 		
 		if (tp == tech_pvt) {
-			if (switch_test_flag(tp, TFLAG_MASTER)){
-		switch_clear_flag_locked(tp, TFLAG_MASTER);
-				was_master=1;
+			if (switch_test_flag(tp, TFLAG_MASTER)) {
+				switch_clear_flag_locked(tp, TFLAG_MASTER);
+				was_master = 1;
 			}
 			if (last) {
 				last->next = tp->next;
@@ -637,7 +637,7 @@ static void remove_pvt(private_t *tech_pvt)
 
 	if (globals.call_list) {
 		if (was_master && ! globals.no_auto_resume_call) {
-		switch_set_flag_locked(globals.call_list, TFLAG_MASTER);
+			switch_set_flag_locked(globals.call_list, TFLAG_MASTER);
 			create_hold_event(globals.call_list, 1);
 		}
 	} else {
@@ -823,7 +823,7 @@ normal_return:
   cng_wait:
 	switch_core_timer_next(&globals.hold_timer);
 	*frame = &globals.cng_frame;
-		return SWITCH_STATUS_SUCCESS;
+	return SWITCH_STATUS_SUCCESS;
 
 }
 
@@ -1346,7 +1346,7 @@ static switch_status_t play_dev(switch_stream_handle_t *stream, int outdev, char
 	if (!strcasecmp(file, "ringtest")) {
 		file = globals.ring_file;
 	}
-	if (outdev == -1){
+	if (outdev == -1) {
 		stream->write_function(stream, "Invalid output audio device\n");
 		return SWITCH_STATUS_FALSE;
 	}
@@ -1357,7 +1357,7 @@ static switch_status_t play_dev(switch_stream_handle_t *stream, int outdev, char
 	if (switch_core_file_open(&fh,	file,
 		globals.read_codec.implementation->number_of_channels,
 		globals.read_codec.implementation->actual_samples_per_second,
-		SWITCH_FILE_FLAG_READ | SWITCH_FILE_DATA_SHORT, NULL) != SWITCH_STATUS_SUCCESS){
+		SWITCH_FILE_FLAG_READ | SWITCH_FILE_DATA_SHORT, NULL) != SWITCH_STATUS_SUCCESS) {
 			stream->write_function(stream, "Cannot play requested file %s\n", file);
 			return SWITCH_STATUS_FALSE;
 	}
@@ -1385,7 +1385,7 @@ static switch_status_t play_dev(switch_stream_handle_t *stream, int outdev, char
 		switch_mutex_unlock(globals.pvt_lock);
 	}
 
-	if (! audio_stream){
+	if (! audio_stream) {
 		stream->write_function(stream, "Failed to engage audio device\n");
 		return SWITCH_STATUS_FALSE;
 	}
@@ -1409,10 +1409,10 @@ static switch_status_t play_dev(switch_stream_handle_t *stream, int outdev, char
 		}
 		olen = globals.read_codec.implementation->samples_per_packet;
 	}
-	globals.stream_in_use=0;
+	globals.stream_in_use = 0;
 
 	switch_core_file_close(&fh);
-	if (! globals.call_list && ( ! no_close || strcasecmp(no_close,  "no_close"))){
+	if (! globals.call_list && ( ! no_close || strcasecmp(no_close,  "no_close"))) {
 		destroy_audio_streams();
 	}
 
@@ -1722,7 +1722,7 @@ static audio_stream_t *create_audio_stream(int indev, int outdev)
 	audio_stream_t *stream;
 
 	stream = malloc(sizeof(audio_stream_t));
-	if (stream == NULL){
+	if (stream == NULL) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_CRIT, "Unable to alloc memory\n");
 		return NULL;
 	}
@@ -1741,11 +1741,11 @@ static audio_stream_t *create_audio_stream(int indev, int outdev)
 		}
 	}
 	inputParameters.device = indev;
-	if (indev != -1){
-	inputParameters.channelCount = 1;
-	inputParameters.sampleFormat = SAMPLE_TYPE;
-	inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
-	inputParameters.hostApiSpecificStreamInfo = NULL;
+	if (indev != -1) {
+		inputParameters.channelCount = 1;
+		inputParameters.sampleFormat = SAMPLE_TYPE;
+		inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
+		inputParameters.hostApiSpecificStreamInfo = NULL;
 	}
 	outputParameters.device = outdev;
 	outputParameters.channelCount = 1;
@@ -1776,19 +1776,19 @@ static audio_stream_t *create_audio_stream(int indev, int outdev)
 audio_stream_t *get_audio_stream(int indev, int outdev)
 {
 	audio_stream_t *stream;
-	if (outdev == -1){
+	if (outdev == -1) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_ERROR, "Error invalid output audio device\n");
 	}
-	if (create_codecs(0) != SWITCH_STATUS_SUCCESS){
+	if (create_codecs(0) != SWITCH_STATUS_SUCCESS) {
 		return NULL;
-		}
-	stream = find_audio_stream(indev, outdev,0);
-	if (stream != NULL){
+	}
+	stream = find_audio_stream(indev, outdev, 0);
+	if (stream != NULL) {
 		return stream;
-		}
-	stream = create_audio_stream(indev,outdev);
+	}
+	stream = create_audio_stream(indev, outdev);
 	if (stream) {
-		add_stream(stream,0);
+		add_stream(stream, 0);
 	}
 	return stream;
 }
@@ -1877,24 +1877,24 @@ static switch_status_t set_outdev(char **argv, int argc, switch_stream_handle_t 
 static switch_status_t prepare_stream(char **argv, int argc, switch_stream_handle_t *stream)
 {
 	int devval=-2,devval2=-1;
-	if (! strcmp(argv[0], "#-1")){
+	if (! strcmp(argv[0], "#-1")) {
 		devval = -1;
 	} else if (*argv[0] == '#') {
 		devval = get_dev_by_number(argv[0]+1, 1);
 	}
-	if (devval == -2){
+	if (devval == -2) {
 		stream->write_function(stream, "preparestream not prepared as indev has (invalid value)\n");
 		return SWITCH_STATUS_FALSE;
 	}
 	if (*argv[1] == '#') {
 		devval2 = get_dev_by_number(argv[1]+1, 0);
 	}
-	if (devval2 == -1){
+	if (devval2 == -1) {
 		stream->write_function(stream, "preparestream not prepared as outdev has (invalid value)\n");
 		return SWITCH_STATUS_FALSE;
 	}
 
-	if (! get_audio_stream(devval,devval2)){
+	if (! get_audio_stream(devval,devval2)) {
 		stream->write_function(stream, "preparestream not prepared received an invalid stream back\n");
 		return SWITCH_STATUS_FALSE;
 	}
@@ -1904,7 +1904,7 @@ static switch_status_t prepare_stream(char **argv, int argc, switch_stream_handl
 
 static switch_status_t switch_stream(char **argv, int argc, switch_stream_handle_t *stream)
 {
-	int devval=-1,devval2=-1;
+	int devval =-1, devval2 = -1;
 	if (globals.call_list && ! globals.live_stream_switch) {
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "ERROR: Cannot use this command this while a call is in progress\n");
 		return SWITCH_STATUS_FALSE;
@@ -1912,20 +1912,20 @@ static switch_status_t switch_stream(char **argv, int argc, switch_stream_handle
 	if (*argv[0] == '#') {
 		devval = get_dev_by_number(argv[0]+1, 1);
 	}
-	if (devval == -1){
+	if (devval == -1) {
 		stream->write_function(stream, "switchstream not prepared as indev has (invalid value)\n");
 		return SWITCH_STATUS_FALSE;
 	}
 	if (*argv[1] == '#') {
 		devval2 = get_dev_by_number(argv[1]+1, 0);
 	}
-	if (devval2 == -1){
+	if (devval2 == -1) {
 		stream->write_function(stream, "switchstream not prepared as outdev has (invalid value)\n");
 		return SWITCH_STATUS_FALSE;
 	}
 	globals.indev = devval;
 	globals.outdev = devval2;
-	if (switch_audio_stream() != SWITCH_STATUS_SUCCESS){
+	if (switch_audio_stream() != SWITCH_STATUS_SUCCESS) {
 		stream->write_function(stream, "switchstream was unable to switch\n");
 		return SWITCH_STATUS_FALSE;
 	}
@@ -1940,7 +1940,7 @@ static switch_status_t set_ringdev(char **argv, int argc, switch_stream_handle_t
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "ERROR: Cannot use this command this while a call is in progress\n");
 		return SWITCH_STATUS_FALSE;
 	}
-	if (! strcmp(argv[0], "#-1")){
+	if (! strcmp(argv[0], "#-1")) {
 		globals.ring_stream = NULL;
 		globals.ringdev = -1;
 		stream->write_function(stream, "ringdev set to %d\n", globals.ringdev);
@@ -1950,7 +1950,7 @@ static switch_status_t set_ringdev(char **argv, int argc, switch_stream_handle_t
 	} else {
 		devval = get_dev_by_name(argv[0], 0);
 	}
-	if (devval == -1){
+	if (devval == -1) {
 		stream->write_function(stream, "ringdev not set as dev has (invalid value)\n");
 		return SWITCH_STATUS_FALSE;
 	}
@@ -1970,13 +1970,13 @@ static switch_status_t looptest(char **argv, int argc, switch_stream_handle_t *s
 		switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_INFO, "ERROR: Cannot use this command this while a call is in progress\n");
 		return SWITCH_STATUS_FALSE;
 	}
-	if (validate_main_audio_stream() != SWITCH_STATUS_SUCCESS){
+	if (validate_main_audio_stream() != SWITCH_STATUS_SUCCESS) {
 		stream->write_function(stream, "looptest Failed to engage audio device\n");
 		return SWITCH_STATUS_FALSE;
 	}
-	globals.stream_in_use=1;
+	globals.stream_in_use = 1;
 	for (i = 0; i < 400; i++) {
-		if (globals.destroying_streams ||  ! globals.main_stream->stream){
+		if (globals.destroying_streams ||  ! globals.main_stream->stream) {
 			break;
 		}
 		if ((samples = ReadAudioStream(globals.main_stream->stream, globals.read_frame.data, globals.read_codec.implementation->samples_per_packet, &globals.read_timer))) {
@@ -1985,7 +1985,7 @@ static switch_status_t looptest(char **argv, int argc, switch_stream_handle_t *s
 		}
 		switch_yield(10000);
 	}
-	globals.stream_in_use=0;
+	globals.stream_in_use = 0;
 
 	if (!success) {
 		stream->write_function(stream, "Failed to read any bytes from indev\n");
