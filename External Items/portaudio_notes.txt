@@ -1,0 +1,25 @@
+Portaudio changes:
+The major change in portaudio is the way streams are handled.  Streams are only torn down at the end of all of the calls (rather than the end of any call). This increases the speed when switching between calls.  Timers were also tweaked to make sure there are no more shared timers (caused some audio issues otherwise with multiple calls).
+
+These changes have not been tested in linux, however 99% of the changes are off by default (and must be enabled using vairables in the portaudio config) so it should be fairly stable.  I also found the best results in windows using libportaudio compiled with DX support, however these changes are not DX specific.
+
+New Additions:
+	added call held and call resumed events
+	base support for an infinite number of streams
+	Ability to keep streams around until all calls are completed rather than re-initing them between any call swtiches.
+	Call ID variable standarized on "pa_call_id" for events (but left behind old for backwards compatability).
+	Added ability to prevent ringing if there is currently an active call (variable "no-ring-during-call")
+	Add option to not auto-unhold the next call once a call is ended (variable "no-auto-resume-call")
+	Added ability to play audio directly to a specific stream ("pa playdev #<num> [ringtest|<filename>] [seconds] [no_close]")
+	Add ability to switch between streams during a call ("pa indev or pa outdev" only if variable "live-stream-switch" is enabled)
+	Add ability to switch both streams at once for speed ("pa switchstream #<indev_num> #<outdev_num>")
+	Add ability to open a stream prior to using it for faster swtiching ("pa preparestream #<indev_num> #<outdev_num>")
+	Added the option to specify the number of seconds to play the audio for "pa play" and "pa playdev"
+	Added option of no_close to not close streams after play or playdev, useful if playing multiple things in rapid succession
+	Add closestreams command to allow for closing any currently open/prepared streams.
+
+Fixes:
+	independent timers for everything eneded (should fix some audio glitches)
+	No longer will ring the ring device during a call if the ring device is the same as the call device(will just screw up audio otherwise)
+	Muting is global and no longer reset at the start of each call (this is a change in behavior)
+	As you could have multiple play or playdevs running try to avoid destroying streams
