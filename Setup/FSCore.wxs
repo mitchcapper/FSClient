@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+      <ComponentGroup Id="FSCoreComp">
+        <ComponentRef Id="cmp3900B358BC2FB69DF2C42DDE35C5BBB2"/>
+        <ComponentRef Id="cmp3CD83BDDE0C679AC83F36ABCCC44B85F"/>
+        <ComponentRef Id="cmpF263F1878C834F02A7E802E1C3269A40"/>
+        <ComponentRef Id="cmp2ECFF05DB18FE9BCC4427E027F76DC45"/>
+        <ComponentRef Id="cmpBA21F1CA5EA4BF2C8D5989242A05DB67"/>
+        <ComponentRef Id="cmp4043A0766484000B8F560B72B6F632F6"/>
+        <ComponentRef Id="cmp26BA845179E20E560416A55E7CA8609F"/>
+        <ComponentRef Id="cmpBA8EF678CB8AB78297C10AF085BB7448"/>
+        <ComponentRef Id="cmpA55C2541EC04E8B75AD76101C9804EBB"/>
+        <ComponentRef Id="cmpE91707685ACB2C88135F5471F2366258"/>
+        <ComponentRef Id="cmp064A31C0D0158D484EBB856753AC6878"/>
+      </ComponentGroup>
+        <DirectoryRef Id="INSTALLLOCATION">
+          <Component Id="cmp3900B358BC2FB69DF2C42DDE35C5BBB2" Guid="*">
+            <File Id="fil322A57E96A97A8179B75065ABF94F809" KeyPath="yes" Source="$(var.FSClient.TargetDir)\FreeSwitch.dll" />
+            <CreateFolder Directory="INSTALLLOCATION">
+              <Permission User="Authenticated Users" GenericAll="yes" />
+            </CreateFolder>
+          </Component>
+          <Component Id="cmp3CD83BDDE0C679AC83F36ABCCC44B85F" Guid="*">
+            <File Id="fil48A9C4979800A1A57A6A9059191EC957" KeyPath="yes" Source="$(var.FSClient.TargetDir)\FreeSWITCH.Managed.dll" />
+          </Component>
+          <Component Id="cmpF263F1878C834F02A7E802E1C3269A40" Guid="*">
+            <File Id="fil7A8BB1BFEC5E85E547CE3AAFD1344C07" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libapr.dll" />
+          </Component>
+          <Component Id="cmp2ECFF05DB18FE9BCC4427E027F76DC45" Guid="*">
+            <File Id="fil0EC8E07D49937EAAB303CEFD6BBD516D" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libaprutil.dll" />
+          </Component>
+          <Component Id="cmpBA21F1CA5EA4BF2C8D5989242A05DB67" Guid="*">
+            <File Id="fil13218C9A5B7C4934FBA4078AB8B73C45" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libbroadvoice.dll" />
+          </Component>
+          <Component Id="cmp4043A0766484000B8F560B72B6F632F6" Guid="*">
+            <File Id="filC571357B9F6A6DB04970735D4BE21522" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libeay32.dll" />
+          </Component>
+          <Component Id="cmp26BA845179E20E560416A55E7CA8609F" Guid="*">
+            <File Id="fil7B3CF1278358876B357DF1BB9D977833" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libspandsp.dll" />
+          </Component>
+          <Component Id="cmpBA8EF678CB8AB78297C10AF085BB7448" Guid="*">
+            <File Id="fil60E424E0845C003522A4CBA705945A81" KeyPath="yes" Source="$(var.FSClient.TargetDir)\libteletone.dll" />
+          </Component>
+          <Component Id="cmpA55C2541EC04E8B75AD76101C9804EBB" Guid="*">
+            <File Id="fil1B8342A211537E339359D929C84C4A9C" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod_managed.dll" />
+          </Component>
+          <Component Id="cmpE91707685ACB2C88135F5471F2366258" Guid="*">
+            <File Id="fil0DE402DDC6BBE83414B16D13332CD9C9" KeyPath="yes" Source="$(var.FSClient.TargetDir)\pthread.dll" />
+          </Component>
+          <Component Id="cmp064A31C0D0158D484EBB856753AC6878" Guid="*">
+            <File Id="fil446D50CD91F7AAF5B4F0CCF070B2C140" KeyPath="yes" Source="$(var.FSClient.TargetDir)\ssleay32.dll" />
+          </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+      <ComponentGroup Id="FSCoreModComp">
+        <ComponentRef Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6"/>
+        <ComponentRef Id="cmp62D3CE444BA755B9A20CE51AFFBF220C"/>
+        <ComponentRef Id="cmp878AF2DB5CACA43FAB0F4D9127D2C9BC"/>
+        <ComponentRef Id="cmp859560B8766FA7BA6F697CB0C52AAAEA"/>
+        <ComponentRef Id="cmp7F1E9A4820D7ABC50BB56176F1C5C203"/>
+        <ComponentRef Id="cmpB1F423B56230E52C4F261BB0A2D31A50"/>
+        <ComponentRef Id="cmpED6FDBCCBE7E25A518A406A7EEBF19E7"/>
+        <ComponentRef Id="cmpC32E981DE1987696848505946E7E40C7"/>
+        <ComponentRef Id="cmpBEC9C50CA6BEA1BDAA538AC014270ACA"/>
+        <ComponentRef Id="cmp484B206DD9362CCE151AE281DC2B9653"/>
+        <ComponentRef Id="cmp57A16823D68C54AF4DD1BEF68206C2E6"/>
+        <ComponentRef Id="cmp8A196286B392FFFB3E2FEB4A028EF2BA"/>
+        <ComponentRef Id="cmp76CF06DCE8994BC9C09CA040251E2057"/>
+        <ComponentRef Id="cmpC1921D22B0CCC7E13D840929227841F5"/>
+        <ComponentRef Id="cmpD76E37D600D1283C905DBD388965D477"/>
+        <ComponentRef Id="cmp5190EA36FEC2468D9C2F42E88FD69418"/>
+        <ComponentRef Id="cmp2800471D874294B5AD88F7A6BFBBBD04"/>
+        <ComponentRef Id="cmp91B3DE0582A7BC591025241179545460"/>
+        <ComponentRef Id="cmpB896C4672ADB1C3BAA362811356CADAC"/>
+        <ComponentRef Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5"/>
+      </ComponentGroup>
+        <DirectoryRef Id="MODLOCATION">
+            <Component Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6" Guid="*">
+              <File Id="fil7C529E485AFB44229053672D51A187AA" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_spandsp.dll" />
+            </Component>
+            <Component Id="cmp62D3CE444BA755B9A20CE51AFFBF220C" Guid="*">
+                <File Id="filA9CCEA1A30D390B311A9C777F02B5BEE" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_celt.dll" />
+            </Component>
+            <Component Id="cmp878AF2DB5CACA43FAB0F4D9127D2C9BC" Guid="*">
+                <File Id="filC85EC4B61F3280D77463E7409331F783" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_commands.dll" />
+            </Component>
+            <Component Id="cmp859560B8766FA7BA6F697CB0C52AAAEA" Guid="*">
+                <File Id="fil26D6250A42EA1879842B84B5F7424453" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_console.dll" />
+            </Component>
+            <Component Id="cmp7F1E9A4820D7ABC50BB56176F1C5C203" Guid="*">
+                <File Id="fil00DED4079778FA40A7792D3DDBCD7108" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_dialplan_xml.dll" />
+            </Component>
+            <Component Id="cmpB1F423B56230E52C4F261BB0A2D31A50" Guid="*">
+                <File Id="filD406C405AB3FC7897E8909288EB71266" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_dptools.dll" />
+            </Component>
+            <Component Id="cmpED6FDBCCBE7E25A518A406A7EEBF19E7" Guid="*">
+                <File Id="fil2D28C6A5674AFCA7F9F1E06EEB33E823" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_event_socket.dll" />
+            </Component>
+            <Component Id="cmpC32E981DE1987696848505946E7E40C7" Guid="*">
+                <File Id="filD5487CAC6CE60107178EA7AD41CDDA31" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_h26x.dll" />
+            </Component>
+            <Component Id="cmpBEC9C50CA6BEA1BDAA538AC014270ACA" Guid="*">
+                <File Id="fil623B81F2BE4376CCA8C66EDB2EA2EBA8" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_ilbc.dll" />
+            </Component>
+            <Component Id="cmp484B206DD9362CCE151AE281DC2B9653" Guid="*">
+                <File Id="filF8CE328A278186F2CD5DC0F8D6265A76" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_local_stream.dll" />
+            </Component>
+            <Component Id="cmp57A16823D68C54AF4DD1BEF68206C2E6" Guid="*">
+                <File Id="filB5D6AF08CBD1EEF74325E713CA5DF770" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_logfile.dll" />
+            </Component>
+            <Component Id="cmp8A196286B392FFFB3E2FEB4A028EF2BA" Guid="*">
+                <File Id="fil97F9F00F6F21E6A94DD4B8B36CA1505C" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_loopback.dll" />
+            </Component>
+            <Component Id="cmp76CF06DCE8994BC9C09CA040251E2057" Guid="*">
+                <File Id="fil4B8870352A5414742572A7B2C5887ABC" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_PortAudio.dll" />
+            </Component>
+            <Component Id="cmpC1921D22B0CCC7E13D840929227841F5" Guid="*">
+                <File Id="fil63B858981D67AA893663C6B754072C39" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_silk.dll" />
+            </Component>
+            <Component Id="cmpD76E37D600D1283C905DBD388965D477" Guid="*">
+                <File Id="fil8A6254A741F3204D586A9BDB30D2DD65" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_siren.dll" />
+            </Component>
+            <Component Id="cmp5190EA36FEC2468D9C2F42E88FD69418" Guid="*">
+              <File Id="filE6C0BD48271B40E8BAB3E92AF48BE18A" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_bv.dll" />
+            </Component>
+            <Component Id="cmp2800471D874294B5AD88F7A6BFBBBD04" Guid="*">
+                <File Id="filF02462A0521BE87D2B40B4572D1F5ED7" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_sndfile.dll" />
+            </Component>
+            <Component Id="cmp91B3DE0582A7BC591025241179545460" Guid="*">
+                <File Id="fil8088426710A2AA65BC31323DDA6BF8F7" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_sofia.dll" />
+            </Component>
+            <Component Id="cmpB896C4672ADB1C3BAA362811356CADAC" Guid="*">
+                <File Id="fil73C98378C5F9DA18EE1999B19D808D6E" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_speex.dll" />
+            </Component>
+            <Component Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5" Guid="*">
+                <File Id="fil16EBD6FB1A5BBD319C4751C62500B2F0" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_tone_stream.dll" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="CONFLOCATION">
+            <Component Id="FSCoreConfComp" Guid="*">
+                <File Id="filACB9609073827DA46E0C3B0A8AF51393" KeyPath="yes" Source="$(var.FSClient.TargetDir)\conf\freeswitch.xml" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+</Wix>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+      <ComponentGroup Id="FSClientComp">
+        <ComponentRef Id="cmp98E16C7E23D449F3BC0ECF003543C3F9"/>
+        <ComponentRef Id="cmp32DB946E4669A895FAC4826678D1CE7A"/>
+      </ComponentGroup>
+        <DirectoryRef Id="INSTALLLOCATION">
+          <Component Id="cmp98E16C7E23D449F3BC0ECF003543C3F9" Guid="*">
+            <File Id="fil153655C03E434A08A348DD833C6CE40A" KeyPath="yes" Source="$(var.FSClient.ProjectDir)\ReadMe.txt" />
+          </Component>
+          <Component Id="cmp32DB946E4669A895FAC4826678D1CE7A" Guid="*">
+            <File Id="filE4CB78ABCF2AE91B89FB0446A607E70C" KeyPath="yes" Source="$(var.FSClient.TargetDir)\WPFToolkit.dll" />
+          </Component>
+        </DirectoryRef>
+    </Fragment>
+</Wix>
