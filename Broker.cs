@@ -229,7 +229,7 @@ namespace FSClient {
 		public void DialString(String str){
 			if (string.IsNullOrWhiteSpace(str))
 				return;
-			MainWindowRemoveFocus();
+			MainWindowRemoveFocus(true);
 
 			if (str.StartsWith("#") && str.Length > 2) {
 				String acct_num = str.Substring(1, 1);
@@ -572,8 +572,8 @@ namespace FSClient {
 		public OurAutoCompleteBox GetContactSearchBox() {
 			return MainWindow.get_instance().GetContactSearchBox();
 		}
-		public void MainWindowRemoveFocus(){
-			MainWindow.get_instance().RemoveFocus();
+		public void MainWindowRemoveFocus(bool ResetContactSearchText=false){
+			MainWindow.get_instance().RemoveFocus(ResetContactSearchText);
 		}
 		private delegate void BroadcastEventDel(FSEvent evt);
 		BroadcastEventDel BroadcastHandler;

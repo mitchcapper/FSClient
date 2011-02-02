@@ -150,7 +150,7 @@ namespace FSClient
 			if (e.Key == Key.Enter)
 				call_current_contact();
 			else if (e.Key == Key.Escape)
-				Broker.get_instance().MainWindowRemoveFocus();
+				Broker.get_instance().MainWindowRemoveFocus(true);
 		}
 
 		protected OurAutoCompleteBox search_box;

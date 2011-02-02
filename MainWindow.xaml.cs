@@ -268,8 +268,10 @@ namespace FSClient {
 
 		}
 
-		public void RemoveFocus(){
+		public void RemoveFocus(bool ResetContactSearchText=false){
 			btnMute.Focus(); //should really divert focus a better way
+			if (ResetContactSearchText)
+				ResetContactSearchStr();
 		}
 
 
@@ -424,10 +426,11 @@ namespace FSClient {
 			return txtSearchBox;
 		}
 
+		private const string contact_search_text = "Contact Search";
 		private void txtSearchBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
 			text_interception_enabled = false;
 			txtSearchBox.Opacity = 1;
-			if (txtSearchBox.Text == "Contact Search")
+			if (txtSearchBox.Text == contact_search_text)
 				txtSearchBox.Text = "";
 		}
 
@@ -436,7 +439,10 @@ namespace FSClient {
 			txtSearchBox.Opacity = 0.8;
 
 			if (String.IsNullOrWhiteSpace(txtSearchBox.Text))
-				txtSearchBox.Text = "Contact Search";
+				ResetContactSearchStr();
+		}
+		public void ResetContactSearchStr(){
+			txtSearchBox.Text = contact_search_text;
 		}
 
 		private bool ContactMenuOpen;
