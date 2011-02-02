@@ -62,7 +62,6 @@
         <ComponentRef Id="cmp7F1E9A4820D7ABC50BB56176F1C5C203"/>
         <ComponentRef Id="cmpB1F423B56230E52C4F261BB0A2D31A50"/>
         <ComponentRef Id="cmpED6FDBCCBE7E25A518A406A7EEBF19E7"/>
-        <ComponentRef Id="cmpC32E981DE1987696848505946E7E40C7"/>
         <ComponentRef Id="cmpBEC9C50CA6BEA1BDAA538AC014270ACA"/>
         <ComponentRef Id="cmp484B206DD9362CCE151AE281DC2B9653"/>
         <ComponentRef Id="cmp57A16823D68C54AF4DD1BEF68206C2E6"/>
@@ -97,9 +96,6 @@
             </Component>
             <Component Id="cmpED6FDBCCBE7E25A518A406A7EEBF19E7" Guid="*">
                 <File Id="fil2D28C6A5674AFCA7F9F1E06EEB33E823" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_event_socket.dll" />
-            </Component>
-            <Component Id="cmpC32E981DE1987696848505946E7E40C7" Guid="*">
-                <File Id="filD5487CAC6CE60107178EA7AD41CDDA31" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_h26x.dll" />
             </Component>
             <Component Id="cmpBEC9C50CA6BEA1BDAA538AC014270ACA" Guid="*">
                 <File Id="fil623B81F2BE4376CCA8C66EDB2EA2EBA8" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_ilbc.dll" />

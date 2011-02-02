@@ -240,7 +240,6 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_sofia.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_speex.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_tone_stream.dll .\mod
-if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_h26x.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_silk.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_bv.dll .\mod
 
