@@ -18,7 +18,7 @@
           <Component Id="cmp3900B358BC2FB69DF2C42DDE35C5BBB2" Guid="*">
             <File Id="fil322A57E96A97A8179B75065ABF94F809" KeyPath="yes" Source="$(var.FSClient.TargetDir)\FreeSwitch.dll" />
             <CreateFolder Directory="INSTALLLOCATION">
-              <Permission User="Authenticated Users" GenericAll="yes" />
+              <Permission User="Users" GenericAll="yes" />
             </CreateFolder>
           </Component>
           <Component Id="cmp3CD83BDDE0C679AC83F36ABCCC44B85F" Guid="*">
