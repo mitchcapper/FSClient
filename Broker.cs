@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Xml;
 
 using FreeSWITCH.Native;
+using FSClient.Controls;
 using Timer = System.Timers.Timer;
 
 namespace FSClient {
@@ -70,6 +71,8 @@ namespace FSClient {
 			try {//it would be better if this was in the init function but it seems some dll load errors won't be caught if it is.
 #if ! NO_FS
 				fs_core_init();
+#else
+				fs_inited = false;
 #endif
 				if (FreeswitchLoaded != null)
 					FreeswitchLoaded(this, null);
@@ -82,7 +85,9 @@ namespace FSClient {
 				Environment.Exit(-1);
 
 			}
+#if ! NO_FS
 			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia.sofia_profile_check, 100);
+#endif
 		}
 
 		private void initContactManager() {
@@ -118,8 +123,10 @@ namespace FSClient {
 			if (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered)
 				Call.active_call.send_dtmf(key.ToString());
 			else {
+#if ! NO_FS
 				PortAudio.PlayDTMF(key, null, true);
 				DelayedFunction.DelayedCall("PortAudioLastDigitHitStreamClose", close_streams, 5000);
+#endif
 			}
 		}
 		private void close_streams() {
@@ -219,6 +226,26 @@ namespace FSClient {
 			//OffHook = true;
 			//Utils.bgapi_exec("pa", "play tone_stream://%(10000,0,350,440);loops=20");
 		}
+		public void DialString(String str){
+			if (string.IsNullOrWhiteSpace(str))
+				return;
+			MainWindow.get_instance().RemoveFocus();
+
+			if (str.StartsWith("#") && str.Length > 2) {
+				String acct_num = str.Substring(1, 1);
+				str = str.Substring(2);
+				Account acct = (from a in Account.accounts where a.guid == acct_num select a).SingleOrDefault();
+				if (acct != null) {
+					acct.CreateCall(str);
+					return;
+				}
+			}
+			if (Account.default_account == null) {
+				MessageBox.Show("no default account, make sure you have added one or more accounts (right click in the account area to add) and they are enabled (checked)");
+				return;
+			}
+			Account.default_account.CreateCall(str);
+		}
 		public void TalkPressed() {
 			if (Call.active_call != null) {
 				if (Call.active_call.state == Call.CALL_STATE.Ringing && Call.active_call.is_outgoing == false)
@@ -228,22 +255,8 @@ namespace FSClient {
 			} else {
 				if (String.IsNullOrEmpty(cur_dial_str))
 					DialTone();
-				else {
-					if (cur_dial_str.StartsWith("#") && cur_dial_str.Length > 2) {
-						String acct_num = cur_dial_str.Substring(1, 1);
-						cur_dial_str = cur_dial_str.Substring(2);
-						Account acct = (from a in Account.accounts where a.guid == acct_num select a).SingleOrDefault();
-						if (acct != null) {
-							acct.CreateCall(cur_dial_str);
-							cur_dial_str = "";
-							return;
-						}
-					}
-					if (Account.default_account == null) {
-						MessageBox.Show("no default account, make sure you have added one or more accounts (right click in the account area to add) and they are enabled (checked)");
-						return;
-					}
-					Account.default_account.CreateCall(cur_dial_str);
+				else{
+					DialString(cur_dial_str);
 					cur_dial_str = "";
 				}
 			}
@@ -555,6 +568,10 @@ namespace FSClient {
 				BroadcastHandler = new BroadcastEventDel(BroadcastEvent);
 			Application.Current.Dispatcher.BeginInvoke(BroadcastHandler, new object[] { new FSEvent(args.EventObj) });
 		}
+
+		public OurAutoCompleteBox GetContactSearchBox() {
+			return MainWindow.get_instance().GetContactSearchBox();
+		}
 		private delegate void BroadcastEventDel(FSEvent evt);
 		BroadcastEventDel BroadcastHandler;
 		private void BroadcastEvent(FSEvent evt) {
@@ -587,7 +604,7 @@ namespace FSClient {
 		private bool is_inited;
 		private bool fs_inited;
 		private static IDisposable event_bind;
-
+		
 		private void fs_core_init() {
 			fs_inited = true;
 			freeswitch.switch_core_set_globals();

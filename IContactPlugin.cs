@@ -6,6 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using FSClient.Controls;
+
 namespace FSClient {
 	public class ContactPluginManager : IDisposable {
 		private bool IsTypeOf(Type to_check, Type of) {
@@ -15,6 +17,9 @@ namespace FSClient {
 				return true;
 			return IsTypeOf(to_check.BaseType, of);
 		}
+
+		public static IEnumerable<MenuItem> ContactMenuItems { get; set; }
+
 		private List<IContactPlugin> plugins = new List<IContactPlugin>();
 		public void RegisterPlugin(IContactPlugin plugin) {
 			if (plugins.Count > 0)
@@ -22,12 +27,23 @@ namespace FSClient {
 			try {
 				plugins.Add(plugin);
 				plugin.Initialize();
+				Application.Current.Dispatcher.BeginInvoke((Action)ContactInit);
+				
+
 			} catch (Exception e) {
 				HandleError(plugin, e);
 			}
 		}
+		private void ContactInit(){
+			IContactPlugin plugin = plugins[0];
+			ContactMenuItems = plugin.ContactRightClickMenu();
+			OurAutoCompleteBox box = Broker.get_instance().GetContactSearchBox();
+			if (!plugin.HandleSearchBox(box))
+				box.Visibility = Visibility.Collapsed;
+		}
 		private void HandleError(IContactPlugin plugin, Exception e) {
 			Utils.PluginLog("Contact Plugin Manager", "Plugin \"" + plugin.ProviderName() + "\" had an error Due to: " + e.Message);
+
 		}
 	
 		public ContactPluginManager() {
@@ -142,9 +158,11 @@ namespace FSClient {
 
 		public abstract void ResolveNumber(String number, NumberResolved on_resolved);
 		public abstract void CallRightClickMenu(Call call, ContextMenu menu);
+		public abstract IEnumerable<MenuItem> ContactRightClickMenu();
 		public abstract void Initialize();
 		public abstract void Terminate();
 		public abstract string ProviderName();
+		public abstract bool HandleSearchBox(OurAutoCompleteBox box);
 
 	}
 }

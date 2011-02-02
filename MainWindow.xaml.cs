@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using FSClient.Controls;
+
 namespace FSClient {
 	public partial class MainWindow : Window {
 		private Broker broker;
@@ -19,7 +21,7 @@ namespace FSClient {
 			gridAccounts.DataContext = Account.accounts;
 
 			this.Loaded += MainWindow_Loaded;
-			
+
 
 		}
 
@@ -56,16 +58,12 @@ namespace FSClient {
 
 		void gridCalls_LoadingRow(object sender, DataGridRowEventArgs e) {
 			e.Row.SetResourceReference(ToolTipProperty, "mainCallTooltip");
-			last_tip = e.Row.ToolTip as ToolTip;
 			Call c = e.Row.DataContext as Call;
-			last_row = e.Row;
 			if (c == null)
 				return;
 			e.Row.ContextMenu = c.CallRightClickMenu();
-			
+
 		}
-		private ToolTip last_tip;
-		private DataGridRow last_row;
 		public void SetDialStr(string str) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				txtNumber.Text = str;
@@ -109,7 +107,7 @@ namespace FSClient {
 
 		private TEXT_INPUT_MODE text_mode = TEXT_INPUT_MODE.NUMBERS_ONLY;
 		private void simple_text_mode_char_convert(char c) {
-			if (c == '*' || c == '#' || (c >= '0' && c <= '9')){
+			if (c == '*' || c == '#' || (c >= '0' && c <= '9')) {
 				broker.handle_key_action(c);
 				return;
 			}
@@ -158,13 +156,19 @@ namespace FSClient {
 					break;
 			}
 		}
+
+		private bool text_interception_enabled = true;
 		void MainWindow_PreviewTextInput(object sender, TextCompositionEventArgs e) {
 			if (!broker.fully_loaded)
 				return;
+			if (!text_interception_enabled) {
+				e.Handled = false;
+				return;
+			}
 			char[] chars = e.Text.ToCharArray();
 			char[] sys_chars = e.ControlText.ToCharArray();
 			foreach (Char c in sys_chars) {
-				if (c == 22) //paste
+				if (c == 22) //paste / control + v
 				{
 					String clipboard = Clipboard.GetText();
 					char[] tmp = new char[chars.Length + clipboard.Length];
@@ -172,17 +176,20 @@ namespace FSClient {
 					clipboard.ToCharArray().CopyTo(tmp, chars.Length);
 					chars = tmp;
 				}
+				else if (c == 6){ // control + f
+					txtSearchBox.TextBoxFocus();
+				}
 			}
 
 			e.Handled = false;
 			foreach (Char c in chars) {
 				bool handled = true;
 				if (c > 32 && c < 127) {
-					if (text_mode == TEXT_INPUT_MODE.NUMBERS_ONLY || (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered) )
+					if (text_mode == TEXT_INPUT_MODE.NUMBERS_ONLY || (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered))
 						simple_text_mode_char_convert(c);
 					else
 						broker.handle_key_action(c);
-						
+
 				}
 				else if (c == '\b')
 					broker.handle_special_action(Broker.KEYBOARD_ACTION.Backspace);
@@ -199,8 +206,12 @@ namespace FSClient {
 		void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e) {
 			if (!broker.fully_loaded)
 				return;
+			if (!text_interception_enabled) {
+				e.Handled = false;
+				return;
+			}
 
-			if (e.Key == Key.Return){
+			if (e.Key == Key.Return) {
 				broker.handle_special_action(Broker.KEYBOARD_ACTION.Enter);
 				e.Handled = true;
 			}
@@ -225,12 +236,14 @@ namespace FSClient {
 		void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 			PreviewTextInput += MainWindow_PreviewTextInput;
 			PreviewKeyDown += MainWindow_PreviewKeyDown; //return must be handled seperately as buttons are triggered on down it seems
+			MouseUp += MainWindow_MouseUp;
+
 			Call.CallStateChanged += CallStateChanged;
 			Call.ActiveCallChanged += ActiveCallChanged;
 			Account.accounts.CollectionChanged += accounts_CollectionChanged;
-			Broker.FreeswitchLoaded += new EventHandler<EventArgs>(FreeswitchLoaded);
+			Broker.FreeswitchLoaded += FreeswitchLoaded;
 			broker = Broker.get_instance();
-			
+
 			broker.cur_dial_strChanged += DialStrChanged;
 			broker.call_activeChanged += CallActiveChanged;
 			broker.active_call_ringingChanged += CallRingingChanged;
@@ -244,16 +257,32 @@ namespace FSClient {
 			Windows.systray_icon_setup();
 		}
 
-		private void FreeswitchLoaded(object sender, EventArgs e){
-			Dispatcher.BeginInvoke((Action)(() => 
-			{
+		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e) {
+			if (txtSearchBox.TextBoxHasFocus()){
+				DependencyObject parent = e.OriginalSource as UIElement;
+				while (parent != null && !(parent is OurAutoCompleteBox)) 
+					parent = VisualTreeHelper.GetParent(parent);
+				if (parent == null)
+					RemoveFocus();
+			}
+
+		}
+
+		public void RemoveFocus(){
+			btnMute.Focus(); //should really divert focus a better way
+		}
+
+
+
+		private void FreeswitchLoaded(object sender, EventArgs e) {
+			Dispatcher.BeginInvoke((Action)(() => {
 				busyAnimation.Visibility = Visibility.Hidden;
 			}));
 		}
-		
 
 
-		private void UseNumberOnlyInputChanged(object sender, bool data){
+
+		private void UseNumberOnlyInputChanged(object sender, bool data) {
 			text_mode = broker.UseNumberOnlyInput ? TEXT_INPUT_MODE.NUMBERS_ONLY : TEXT_INPUT_MODE.FULL;
 		}
 
@@ -319,11 +348,11 @@ namespace FSClient {
 		}
 
 		private void Window_Closing(object sender, CancelEventArgs e) {
-			try{
+			try {
 				Windows.systray_icon_remove();
 				broker.Dispose();
 			}
-			catch { }
+			catch{ }
 		}
 
 		private void btnSpeaker_Click(object sender, RoutedEventArgs e) {
@@ -368,7 +397,7 @@ namespace FSClient {
 			Button btn = sender as Button;
 			if (btn != null)
 				broker.handle_key_action(btn.Content.ToString()[0]);
-			Controls.PhonePadButton btn2 = sender as Controls.PhonePadButton;
+			PhonePadButton btn2 = sender as PhonePadButton;
 			if (btn2 != null)
 				broker.handle_key_action(btn2.Number[0]);
 
@@ -390,7 +419,40 @@ namespace FSClient {
 
 
 		}
+		#region ContactSearchBox
+		public OurAutoCompleteBox GetContactSearchBox() {
+			return txtSearchBox;
+		}
 
+		private void txtSearchBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+			text_interception_enabled = false;
+			txtSearchBox.Opacity = 1;
+			if (txtSearchBox.Text == "Contact Search")
+				txtSearchBox.Text = "";
+		}
 
+		private void txtSearchBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+			text_interception_enabled = true;
+			txtSearchBox.Opacity = 0.8;
+
+			if (String.IsNullOrWhiteSpace(txtSearchBox.Text))
+				txtSearchBox.Text = "Contact Search";
+		}
+
+		private bool ContactMenuOpen;
+		private void contactSearchConextMenu_Closed(object sender, RoutedEventArgs e) {
+			ContactMenuOpen = false;
+			txtSearchBox.IsDropDownOpen = false;
+		}
+
+		private void contactSearchConextMenu_Loaded(object sender, RoutedEventArgs e) {
+			ContactMenuOpen = true;
+		}
+
+		private void txtSearchBox_DropDownClosing(object sender, RoutedPropertyChangingEventArgs<bool> e) {
+			if (ContactMenuOpen)
+				e.Cancel = true;
+		}
+		#endregion
 	}
 }
