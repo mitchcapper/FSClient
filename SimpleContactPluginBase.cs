@@ -147,9 +147,10 @@ namespace FSClient
 			}
 		}
 		protected void search_box_PreviewKeyUp(object sender, KeyEventArgs e){
-			if (e.Key == Key.Enter){
+			if (e.Key == Key.Enter)
 				call_current_contact();
-			}
+			else if (e.Key == Key.Escape)
+				Broker.get_instance().MainWindowRemoveFocus();
 		}
 
 		protected OurAutoCompleteBox search_box;
