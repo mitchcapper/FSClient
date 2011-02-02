@@ -38,8 +38,8 @@ namespace FSClient {
 			IContactPlugin plugin = plugins[0];
 			ContactMenuItems = plugin.ContactRightClickMenu();
 			OurAutoCompleteBox box = Broker.get_instance().GetContactSearchBox();
-			if (!plugin.HandleSearchBox(box))
-				box.Visibility = Visibility.Collapsed;
+			if (plugin.HandleSearchBox(box))
+				box.Visibility = Visibility.Visible;
 		}
 		private void HandleError(IContactPlugin plugin, Exception e) {
 			Utils.PluginLog("Contact Plugin Manager", "Plugin \"" + plugin.ProviderName() + "\" had an error Due to: " + e.Message);
@@ -47,7 +47,12 @@ namespace FSClient {
 		}
 	
 		public ContactPluginManager() {
-
+			OurAutoCompleteBox box = Broker.get_instance().GetContactSearchBox();
+			Application.Current.Dispatcher.BeginInvoke((Action) (() => {
+			                                                     	box.Visibility = Visibility.Collapsed;
+			                                                     }));
+			
+			
 
 			String plugin_dir = Utils.plugins_dir();
 			string[] dlls;
