@@ -365,7 +365,8 @@ namespace FSClient {
 		private void AccountNew_Click(object sender, RoutedEventArgs e) {
 			Account acct = new Account();
 			Account.AddAccount(acct);
-			acct.edit();
+			if (!acct.edit())
+				Account.RemoveAccount(acct);
 
 		}
 
@@ -387,7 +388,7 @@ namespace FSClient {
 			Account acct = gridAccounts.SelectedItem as Account;
 			if (acct == null)
 				return;
-			Account.accounts.Remove(acct);
+			Account.RemoveAccount(acct);
 		}
 
 
