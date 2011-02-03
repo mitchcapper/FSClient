@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
-my $FS_BUILD_PATH = "freeswitch.final\\Win32\\Debug";
-my $WORKING_DIR = "FSClient\\working";
+my $FS_BUILD_PATH = "freeswitch\\Win32\\Debug";
+my $WORKING_DIR = "FSClient\\bin\Debug";
 
 my $USE_LN = 0; #THIS SHOULD BE SET TO 0 (unless you have an ln equiv for windows)
 my $COPY_CONF = 1;
@@ -9,8 +9,8 @@ my $VERBOSE = 1;
 my $VERBOSE_SYS_RES = 0;
 die "Build directory does not exist: $FS_BUILD_PATH" if (! -e $FS_BUILD_PATH);
 die "Working directory does not exist: $WORKING_DIR" if (! -e $WORKING_DIR);
-my @MAIN_FILES = qw/FreeSwitch.dll libapr.dll libaprutil.dll libbroadvoice.dll libspandsp.dll libteletone.dll mod_managed.dll pthread.dll/;
-my @modules = qw/mod_celt mod_commands mod_console mod_dialplan_xml mod_dptools mod_event_socket mod_ilbc mod_local_stream mod_logfile mod_loopback mod_PortAudio mod_siren mod_sndfile mod_sofia mod_speex mod_tone_stream mod_h26x mod_silk/;
+my @MAIN_FILES = qw/FreeSwitch.dll libapr.dll libaprutil.dll libbroadvoice.dll libspandsp.dll libteletone.dll mod_managed.dll pthread.dll libeay32.dll ssleay32.dll/;
+my @modules = qw/mod_celt mod_commands mod_console mod_dialplan_xml mod_dptools mod_event_socket mod_ilbc mod_local_stream mod_logfile mod_loopback mod_PortAudio mod_siren mod_sndfile mod_sofia mod_speex mod_tone_stream mod_h26x mod_silk mod_spandsp mod_bv/;
 
 my $link_cmd = $USE_LN ? "ln -s -a" : "copy";
 
