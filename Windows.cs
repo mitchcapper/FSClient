@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 namespace FSClient {
 	class Windows {
@@ -28,7 +29,7 @@ namespace FSClient {
 			MainWindow.get_instance().BringToFront();
 		}
 		private static void systrayicon_SetIcon(System.Drawing.Icon ico) {
-			App.Current.Dispatcher.BeginInvoke((Action)(() => {
+			Application.Current.Dispatcher.BeginInvoke((Action)(() => {
 				systray_icon.Icon = ico;
 				systray_icon.Text = ico == dnd_icon ? "FSClient DND" : "FSClient Available";
 			}));

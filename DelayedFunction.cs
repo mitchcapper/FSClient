@@ -19,10 +19,12 @@ namespace FSClient {
 				timer.Elapsed += timer_Elapsed;
 			}
 			lock (functions) {
-				for (int i = 0; i < functions.Count; i++) {
-					if (functions[i].key == key) {
-						functions.RemoveAt(i);
-						break;
+				if (!String.IsNullOrWhiteSpace(key)){
+					for (int i = 0; i < functions.Count; i++){
+						if (functions[i].key == key){
+							functions.RemoveAt(i);
+							break;
+						}
 					}
 				}
 				functions.Add(new DelayedItem { key = key, action = action, end_time = DateTime.Now.AddMilliseconds(ms) });

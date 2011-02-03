@@ -161,11 +161,11 @@ namespace FSClient {
 		}
 		public Account() {
 			_server = FieldValue.GetByName(values, "server");
-			_server.PropertyChanged += (s, e) => { RaisePropertyChanged("server"); };
+			_server.PropertyChanged += (s, e) => RaisePropertyChanged("server");
 			_username = FieldValue.GetByName(values, "username");
-			_username.PropertyChanged += (s, e) => { RaisePropertyChanged("username"); };
+			_username.PropertyChanged += (s, e) => RaisePropertyChanged("username");
 			_name = FieldValue.GetByName(values, "name");
-			_name.PropertyChanged += (s, e) => { RaisePropertyChanged("name"); };
+			_name.PropertyChanged += (s, e) => RaisePropertyChanged("name");
 			_guid = FieldValue.GetByName(values, "guid");
 			_guid.PropertyChanged += (s, e) => {
 
@@ -181,9 +181,9 @@ namespace FSClient {
 				RaisePropertyChanged("gateway_id");
 			};
 			_caller_id_name = FieldValue.GetByName(values, "caller_id_name");
-			_caller_id_name.PropertyChanged += (s, e) => { RaisePropertyChanged("caller_id_name"); };
+			_caller_id_name.PropertyChanged += (s, e) => RaisePropertyChanged("caller_id_name");
 			_caller_id_number = FieldValue.GetByName(values, "caller_id_number");
-			_caller_id_number.PropertyChanged += (s, e) => { RaisePropertyChanged("caller_id_number"); };
+			_caller_id_number.PropertyChanged += (s, e) => RaisePropertyChanged("caller_id_number");
 			_guid.value = "1";
 			PropertyChanged += Account_PropertyChanged;
 			state = "NOREG";

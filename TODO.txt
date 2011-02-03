@@ -1,2 +1,0 @@
-Plugin control, ability to enable or disable plugins from the options menu.
-Figure out a way to sort codecs, a draggable combo box may work well.

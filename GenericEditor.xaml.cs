@@ -164,17 +164,16 @@ namespace FSClient {
 					break;
 				case Field.FIELD_TYPE.Int:
 				case Field.FIELD_TYPE.String:
-					val = (elem as TextBox).Text;
+					val = ((TextBox) elem).Text;
 					break;
 				case Field.FIELD_TYPE.Password:
-					val = (elem as PasswordBox).Password;
+					val = ((PasswordBox) elem).Password;
 					break;
 				case Field.FIELD_TYPE.Bool:
-					CheckBox cb = (elem as CheckBox);
-					val = (cb.IsChecked == true) ? "true" : "false";
+					val = (((CheckBox) elem).IsChecked == true) ? "true" : "false";
 					break;
 				case Field.FIELD_TYPE.Combo:
-					Field.FieldOption opt = (elem as ComboBox).SelectedItem as Field.FieldOption;
+					Field.FieldOption opt = ((ComboBox) elem).SelectedItem as Field.FieldOption;
 					if (opt != null)
 						val = opt.value;
 					break;
