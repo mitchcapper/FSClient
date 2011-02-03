@@ -38,7 +38,6 @@ Global
 		SccLocalPath4 = SimpleXmlContactPlugin
 		SccProjectUniqueName5 = Setup\\Setup.wixproj
 		SccLocalPath5 = .
-		SccProjectFilePathRelativizedFromConnection5 = Setup\\
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
