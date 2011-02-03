@@ -13,7 +13,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
               xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Product Id="f20f4348-01f9-457f-9112-60edb77761f4" Name="$(var.ProductName)" Language="1033" Version="1.0.0.0" Manufacturer="FreeSWITCH" UpgradeCode="7668faef-2ab3-4079-a986-07a33739b42e">
-		<Package InstallerVersion="200" Compressed="yes" />
+		<Package InstallerVersion="300" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
