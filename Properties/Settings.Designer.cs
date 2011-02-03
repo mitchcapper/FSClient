@@ -120,12 +120,12 @@ namespace FSClient.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IncomingBallons {
+        public bool IncomingBalloons {
             get {
-                return ((bool)(this["IncomingBallons"]));
+                return ((bool)(this["IncomingBalloons"]));
             }
             set {
-                this["IncomingBallons"] = value;
+                this["IncomingBalloons"] = value;
             }
         }
         

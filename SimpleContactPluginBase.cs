@@ -128,7 +128,7 @@ namespace FSClient
 		protected void refresh_search_box(){
 			if (search_box == null)
 				return;
-			search_box.ItemsSource = from c in number_to_alias select new SearchAutoCompleteEntry(c.Key,c.Value);
+			search_box.ItemsSource = from c in number_to_alias orderby c.Value,c.Key select new SearchAutoCompleteEntry(c.Key, c.Value);
 		}
 		protected class SearchAutoCompleteEntry{
 			public string number;

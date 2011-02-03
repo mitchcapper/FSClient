@@ -46,7 +46,7 @@ namespace FSClient {
 				Account.LoadSettings();
 
 
-				IncomingBallons = Properties.Settings.Default.IncomingBallons;
+				IncomingBalloons = Properties.Settings.Default.IncomingBalloons;
 				IncomingTopMost = Properties.Settings.Default.FrontOnIncoming;
 				ClearDTMFS = Properties.Settings.Default.ClearDTMFS;
 				UseNumberOnlyInput = Properties.Settings.Default.UseNumberOnlyInput;
@@ -306,7 +306,7 @@ namespace FSClient {
 			try {
 				SaveAudioSettings();
 				Account.SaveSettings();
-				Properties.Settings.Default.IncomingBallons = IncomingBallons;
+				Properties.Settings.Default.IncomingBalloons = IncomingBalloons;
 				Properties.Settings.Default.FrontOnIncoming = IncomingTopMost;
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
@@ -389,7 +389,7 @@ namespace FSClient {
 				if (IncomingTopMost) {
 					MainWindow.get_instance().BringToFront();
 				}
-				if (IncomingBallons && !DND) {
+				if (IncomingBalloons && !DND) {
 					IncomingCallNotification.ShowCallNotification(args.call);
 					if (Call.active_call != args.call && Call.active_call != null)
 						HandleCallWaiting(null, args.call);
@@ -404,7 +404,7 @@ namespace FSClient {
 		}
 		#region properties
 
-		public bool IncomingBallons;
+		public bool IncomingBalloons;
 		public bool IncomingTopMost;
 
 		public bool UseNumberOnlyInput {

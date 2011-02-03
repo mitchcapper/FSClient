@@ -45,7 +45,7 @@
 		<ComboBox Height="23" Grid.Row="6" Grid.Column="1" Name="comboRingDevice" Width="340" />
 		<StackPanel Grid.Row="7" Grid.Column="1" Grid.RowSpan="3">
 		<CheckBox x:Name="chkIncomingFront"  Content="Bring To Front On Incoming Calls" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-		<CheckBox x:Name="chkIncomingBallons" Content="Show Incoming Call Notification Ballons" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
+		<CheckBox x:Name="chkIncomingBalloons" Content="Show Incoming Call Notification Balloons" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 		<CheckBox x:Name="chkClearDTMFS" Content="Clear Key Presses In Call Stats On Disconnect" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 		<CheckBox x:Name="chkUseNumbers" Content="Only Allow Numerical Input While Dialing" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 		</StackPanel>

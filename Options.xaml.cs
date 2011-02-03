@@ -31,7 +31,7 @@ namespace FSClient {
 				comboSpeakerInput.SelectedItem = broker.SpeakerInDev;
 				comboSpeakerOutput.SelectedItem = broker.SpeakerOutDev;
 				comboRingDevice.SelectedItem = broker.RingDev;
-				chkIncomingBallons.IsChecked = broker.IncomingBallons;
+				chkIncomingBalloons.IsChecked = broker.IncomingBalloons;
 				chkIncomingFront.IsChecked = broker.IncomingTopMost;
 				chkClearDTMFS.IsChecked = broker.ClearDTMFS;
 				chkUseNumbers.IsChecked = broker.UseNumberOnlyInput;
@@ -51,7 +51,7 @@ namespace FSClient {
 			broker.SetSpeakerDevs(indev == null ? "" : indev.name, outdev == null ? "" : outdev.name);
 			outdev = comboRingDevice.SelectedItem as PortAudio.AudioDevice;
 			broker.SetRingDev(outdev == null ? "" : outdev.name);
-			broker.IncomingBallons = chkIncomingBallons.IsChecked == true;
+			broker.IncomingBalloons = chkIncomingBalloons.IsChecked == true;
 			broker.IncomingTopMost = chkIncomingFront.IsChecked == true;
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
