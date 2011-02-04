@@ -1,0 +1,296 @@
+diff --git a/Freeswitch.2010.sln b/Freeswitch.2010.sln
+index edee701..464cb2e 100644
+--- a/Freeswitch.2010.sln
++++ b/Freeswitch.2010.sln
+@@ -1569,18 +1569,18 @@ Global
+ 		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.All|x64 Setup.ActiveCfg = Release DirectSound|x64
+ 		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.All|x64 Setup.Build.0 = Release DirectSound|x64
+ 		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.All|x86 Setup.ActiveCfg = Release DirectSound|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|Win32.ActiveCfg = Debug|Win32
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|Win32.Build.0 = Debug|Win32
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64.ActiveCfg = Debug|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64.Build.0 = Debug|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64 Setup.ActiveCfg = Debug|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x86 Setup.ActiveCfg = Debug|Win32
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|Win32.ActiveCfg = Release|Win32
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|Win32.Build.0 = Release|Win32
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64.ActiveCfg = Release|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64.Build.0 = Release|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64 Setup.ActiveCfg = Release|x64
+-		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x86 Setup.ActiveCfg = Release|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|Win32.ActiveCfg = Debug DirectSound|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|Win32.Build.0 = Debug DirectSound|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64.ActiveCfg = Debug DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64.Build.0 = Debug DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x64 Setup.ActiveCfg = Debug DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Debug|x86 Setup.ActiveCfg = Debug DirectSound|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|Win32.ActiveCfg = Release DirectSound|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|Win32.Build.0 = Release DirectSound|Win32
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64.ActiveCfg = Release DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64.Build.0 = Release DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x64 Setup.ActiveCfg = Release DirectSound|x64
++		{0A18A071-125E-442F-AFF7-A3F68ABECF99}.Release|x86 Setup.ActiveCfg = Release DirectSound|Win32
+ 		{08DAD348-9E0A-4A2E-97F1-F1E7E24A7836}.All|Win32.ActiveCfg = Release|x64
+ 		{08DAD348-9E0A-4A2E-97F1-F1E7E24A7836}.All|x64.ActiveCfg = Release|x64
+ 		{08DAD348-9E0A-4A2E-97F1-F1E7E24A7836}.All|x64.Build.0 = Release|x64
+diff --git a/libs/portaudio/build/msvc/portaudio.2010.vcxproj b/libs/portaudio/build/msvc/portaudio.2010.vcxproj
+index b4eca56..cfc35c5 100644
+--- a/libs/portaudio/build/msvc/portaudio.2010.vcxproj
++++ b/libs/portaudio/build/msvc/portaudio.2010.vcxproj
+@@ -41,11 +41,11 @@
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'" Label="Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseOfMfc>false</UseOfMfc>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'" Label="Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseOfMfc>false</UseOfMfc>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+@@ -57,11 +57,11 @@
+     <UseOfMfc>false</UseOfMfc>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'" Label="Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseOfMfc>false</UseOfMfc>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'" Label="Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseOfMfc>false</UseOfMfc>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+@@ -77,9 +77,11 @@
+   </ImportGroup>
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
++    <Import Project="..\..\..\..\w32\extlib.props" />
+   </ImportGroup>
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
++    <Import Project="..\..\..\..\w32\extlib.props" />
+   </ImportGroup>
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+@@ -92,10 +94,12 @@
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
++    <Import Project="..\..\..\..\w32\extlib.props" />
+   </ImportGroup>
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
++    <Import Project="..\..\..\..\w32\extlib.props" />
+   </ImportGroup>
+   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+@@ -110,18 +114,6 @@
+   <PropertyGroup Label="UserMacros" />
+   <PropertyGroup>
+     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">$(Configuration)\</OutDir>
+-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">$(Configuration)\</IntDir>
+-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</LinkIncremental>
+-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">$(Platform)\$(Configuration)\</OutDir>
+-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">$(Platform)\$(Configuration)\</IntDir>
+-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</LinkIncremental>
+-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">$(Configuration)\</OutDir>
+-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">$(Configuration)\</IntDir>
+-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">false</LinkIncremental>
+-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">$(Platform)\$(Configuration)\</OutDir>
+-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">$(Platform)\$(Configuration)\</IntDir>
+-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">false</LinkIncremental>
+   </PropertyGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+     <Midl>
+@@ -231,45 +223,23 @@
+       <MkTypLibCompatible>true</MkTypLibCompatible>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <TargetEnvironment>Win32</TargetEnvironment>
+-      <TypeLibraryName>.\Debug_x86/portaudio.tlb</TypeLibraryName>
+-      <HeaderFileName>
+-      </HeaderFileName>
+     </Midl>
+     <ClCompile>
+       <Optimization>Disabled</Optimization>
+       <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;..\..\src\os\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>WIN32;_DEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PAWIN_USE_WDMKS_DEVICE_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>WIN32;_DEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PA_NO_WMME;PAWIN_USE_WDMKS_DEVICE_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <MinimalRebuild>true</MinimalRebuild>
+       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+-      <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)/portaudio.pch</PrecompiledHeaderOutputFile>
+-      <AssemblerListingLocation>$(Platform)\$(Configuration)\</AssemblerListingLocation>
+-      <ObjectFileName>$(Platform)\$(Configuration)\</ObjectFileName>
+-      <ProgramDataBaseFileName>$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
+       <WarningLevel>Level3</WarningLevel>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+     </ClCompile>
+     <ResourceCompile>
+       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+-    <Link>
+-      <AdditionalDependencies>ksuser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio_x86.dll</OutputFile>
+-      <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <ModuleDefinitionFile>.\portaudio.def</ModuleDefinitionFile>
+-      <GenerateDebugInformation>true</GenerateDebugInformation>
+-      <ProgramDatabaseFile>$(Platform)\$(Configuration)\portaudio_x86.pdb</ProgramDatabaseFile>
+-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+-      <DataExecutionPrevention>
+-      </DataExecutionPrevention>
+-      <ImportLibrary>$(Platform)\$(Configuration)\portaudio_x86.lib</ImportLibrary>
+-      <TargetMachine>MachineX86</TargetMachine>
+-    </Link>
+     <Bscmake>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio.bsc</OutputFile>
+     </Bscmake>
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">
+@@ -278,45 +248,23 @@
+       <MkTypLibCompatible>true</MkTypLibCompatible>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <TargetEnvironment>X64</TargetEnvironment>
+-      <TypeLibraryName>.\Debug_x86/portaudio.tlb</TypeLibraryName>
+-      <HeaderFileName>
+-      </HeaderFileName>
+     </Midl>
+     <ClCompile>
+       <Optimization>Disabled</Optimization>
+       <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;..\..\src\os\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>WIN32;_DEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PAWIN_USE_WDMKS_DEVICE_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>WIN32;_DEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PA_NO_WMME;PAWIN_USE_WDMKS_DEVICE_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <MinimalRebuild>true</MinimalRebuild>
+       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+-      <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)\portaudio.pch</PrecompiledHeaderOutputFile>
+-      <AssemblerListingLocation>$(Platform)\$(Configuration)\</AssemblerListingLocation>
+-      <ObjectFileName>$(Platform)\$(Configuration)\</ObjectFileName>
+-      <ProgramDataBaseFileName>$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
+       <WarningLevel>Level3</WarningLevel>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+     </ClCompile>
+     <ResourceCompile>
+       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+-    <Link>
+-      <AdditionalDependencies>ksuser.lib;%(AdditionalDependencies)</AdditionalDependencies>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio_x64.dll</OutputFile>
+-      <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <ModuleDefinitionFile>.\portaudio.def</ModuleDefinitionFile>
+-      <GenerateDebugInformation>true</GenerateDebugInformation>
+-      <ProgramDatabaseFile>$(Platform)\$(Configuration)/portaudio_x64.pdb</ProgramDatabaseFile>
+-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+-      <DataExecutionPrevention>
+-      </DataExecutionPrevention>
+-      <ImportLibrary>$(Platform)\$(Configuration)\portaudio_x64.lib</ImportLibrary>
+-      <TargetMachine>MachineX64</TargetMachine>
+-    </Link>
+     <Bscmake>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <OutputFile>$(Platform)\$(Configuration)/portaudio_x64.bsc</OutputFile>
+     </Bscmake>
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">
+@@ -325,22 +273,15 @@
+       <MkTypLibCompatible>true</MkTypLibCompatible>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <TargetEnvironment>Win32</TargetEnvironment>
+-      <TypeLibraryName>.\Release_x86/portaudio.tlb</TypeLibraryName>
+-      <HeaderFileName>
+-      </HeaderFileName>
+     </Midl>
+     <ClCompile>
+       <Optimization>MaxSpeed</Optimization>
+-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
++      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+       <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;..\..\src\os\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PA_NO_WMME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <StringPooling>true</StringPooling>
+       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+       <FunctionLevelLinking>true</FunctionLevelLinking>
+-      <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)/portaudio.pch</PrecompiledHeaderOutputFile>
+-      <AssemblerListingLocation>$(Platform)\$(Configuration)\</AssemblerListingLocation>
+-      <ObjectFileName>$(Platform)\$(Configuration)\</ObjectFileName>
+-      <ProgramDataBaseFileName>$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
+       <WarningLevel>Level3</WarningLevel>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+     </ClCompile>
+@@ -348,20 +289,8 @@
+       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+-    <Link>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio_x86.dll</OutputFile>
+-      <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <ModuleDefinitionFile>.\portaudio.def</ModuleDefinitionFile>
+-      <ProgramDatabaseFile>$(Platform)\$(Configuration)\portaudio_x86.pdb</ProgramDatabaseFile>
+-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+-      <DataExecutionPrevention>
+-      </DataExecutionPrevention>
+-      <ImportLibrary>$(Platform)\$(Configuration)\portaudio_x86.lib</ImportLibrary>
+-      <TargetMachine>MachineX86</TargetMachine>
+-    </Link>
+     <Bscmake>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio.bsc</OutputFile>
+     </Bscmake>
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">
+@@ -370,22 +299,15 @@
+       <MkTypLibCompatible>true</MkTypLibCompatible>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+       <TargetEnvironment>X64</TargetEnvironment>
+-      <TypeLibraryName>.\Release_x86/portaudio.tlb</TypeLibraryName>
+-      <HeaderFileName>
+-      </HeaderFileName>
+     </Midl>
+     <ClCompile>
+       <Optimization>MaxSpeed</Optimization>
+       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+       <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PA_NO_WMME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <StringPooling>true</StringPooling>
+       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+       <FunctionLevelLinking>true</FunctionLevelLinking>
+-      <PrecompiledHeaderOutputFile>$(Platform)\$(Configuration)\portaudio.pch</PrecompiledHeaderOutputFile>
+-      <AssemblerListingLocation>$(Platform)\$(Configuration)\</AssemblerListingLocation>
+-      <ObjectFileName>$(Platform)\$(Configuration)\</ObjectFileName>
+-      <ProgramDataBaseFileName>$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
+       <WarningLevel>Level3</WarningLevel>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+     </ClCompile>
+@@ -393,20 +315,8 @@
+       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+-    <Link>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio_x64.dll</OutputFile>
+-      <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <ModuleDefinitionFile>.\portaudio.def</ModuleDefinitionFile>
+-      <ProgramDatabaseFile>$(Platform)\$(Configuration)/portaudio_x64.pdb</ProgramDatabaseFile>
+-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+-      <DataExecutionPrevention>
+-      </DataExecutionPrevention>
+-      <ImportLibrary>$(Platform)\$(Configuration)/portaudio_x64.lib</ImportLibrary>
+-      <TargetMachine>MachineX64</TargetMachine>
+-    </Link>
+     <Bscmake>
+       <SuppressStartupBanner>true</SuppressStartupBanner>
+-      <OutputFile>$(Platform)\$(Configuration)\portaudio_x64.bsc</OutputFile>
+     </Bscmake>
+   </ItemDefinitionGroup>
+   <ItemGroup>

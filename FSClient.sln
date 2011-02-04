@@ -10,9 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Items", "External Items", "{E5A3FCB6-A888-4290-B076-864674F90508}"
 	ProjectSection(SolutionItems) = preProject
 		External Items\JabraTelephonyAPI.dll = External Items\JabraTelephonyAPI.dll
-		External Items\mod_portaudio.c = External Items\mod_portaudio.c
 		External Items\Plantronics.Device.Common.dll = External Items\Plantronics.Device.Common.dll
-		External Items\portaudio.2010.vcxproj = External Items\portaudio.2010.vcxproj
+		External Items\portaudio_dx_win.patch = External Items\portaudio_dx_win.patch
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "conf", "conf", "{BDB28E84-D1D5-4102-BD29-C638197EFD42}"
@@ -38,6 +37,7 @@ Global
 		SccLocalPath4 = SimpleXmlContactPlugin
 		SccProjectUniqueName5 = Setup\\Setup.wixproj
 		SccLocalPath5 = .
+		SccProjectFilePathRelativizedFromConnection5 = Setup\\
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
