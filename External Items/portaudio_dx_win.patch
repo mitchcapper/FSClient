@@ -34,7 +34,7 @@ index edee701..464cb2e 100644
  		{08DAD348-9E0A-4A2E-97F1-F1E7E24A7836}.All|x64.ActiveCfg = Release|x64
  		{08DAD348-9E0A-4A2E-97F1-F1E7E24A7836}.All|x64.Build.0 = Release|x64
 diff --git a/libs/portaudio/build/msvc/portaudio.2010.vcxproj b/libs/portaudio/build/msvc/portaudio.2010.vcxproj
-index b4eca56..cfc35c5 100644
+index b4eca56..10b4c25 100644
 --- a/libs/portaudio/build/msvc/portaudio.2010.vcxproj
 +++ b/libs/portaudio/build/msvc/portaudio.2010.vcxproj
 @@ -41,11 +41,11 @@
@@ -259,9 +259,11 @@ index b4eca56..cfc35c5 100644
      </Midl>
      <ClCompile>
        <Optimization>MaxSpeed</Optimization>
-       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-       <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+-      <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 -      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
++      <AdditionalIncludeDirectories>..\..\src\common;..\..\include;.\;..\..\src\os\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 +      <PreprocessorDefinitions>WIN32;NDEBUG;_USRDLL;PA_ENABLE_DEBUG_OUTPUT;_CRT_SECURE_NO_DEPRECATE;PA_NO_ASIO;PA_NO_WMME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
        <StringPooling>true</StringPooling>
        <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -294,3 +296,131 @@ index b4eca56..cfc35c5 100644
      </Bscmake>
    </ItemDefinitionGroup>
    <ItemGroup>
+@@ -594,6 +504,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -605,6 +516,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -618,6 +530,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -629,6 +542,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -642,6 +556,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -653,6 +568,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -666,6 +582,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -677,6 +594,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -690,6 +608,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -701,6 +620,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -714,6 +634,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -725,6 +646,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -738,6 +660,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -749,6 +672,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+@@ -762,6 +686,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+@@ -773,6 +698,7 @@
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">true</ExcludedFromBuild>
+       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">..\..\src\hostapi\asio\ASIOSDK\host;..\..\src\hostapi\asio\ASIOSDK\host\pc;..\..\src\hostapi\asio\ASIOSDK\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release DirectSound|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
