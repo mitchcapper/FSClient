@@ -101,6 +101,6 @@
 	</Target>
 	-->
   <Target Name="AfterBuild">
-    <GenerateBootstrapper ApplicationFile="$(TargetFileName)" ApplicationName="FSClient Setup" BootstrapperItems="@(BootstrapperFile)" ComponentsLocation="HomeSite" CopyComponents="True" OutputPath="$(OutputPath)" Path="C:\Program Files (X86)\Microsoft SDKs\Windows\v7.0A\Bootstrapper\" />
+    <GenerateBootstrapper ApplicationFile="$(TargetFileName)" ApplicationName="FSClient" BootstrapperItems="@(BootstrapperFile)" ComponentsLocation="HomeSite" CopyComponents="True" OutputPath="$(OutputPath)" Path="C:\Program Files (X86)\Microsoft SDKs\Windows\v7.0A\Bootstrapper\" />
   </Target>
 </Project>
