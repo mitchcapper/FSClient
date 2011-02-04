@@ -57,6 +57,7 @@ namespace FSClient {
 											new Field(Field.FIELD_TYPE.Int,"SIP Port","sip-port","sip-port","12346","Advanced"),
 											new Field(Field.FIELD_TYPE.Int,"DTMF Duration","dtmf-duration","dtmf-duration","2000","Advanced"),
 											new Field(Field.FIELD_TYPE.Bool,"STUN Enabled","stun-enabled","stun-enabled","true","Advanced"),
+											new Field(Field.FIELD_TYPE.Int,"Jitter Buffer","auto-jitterbuffer-msec","auto-jitterbuffer-msec","60","Advanced"),
 
 											/*Advanced Less Important*/
 											new Field(Field.FIELD_TYPE.Int,"Max Proceeding","max-proceeding","max-proceeding","3","Advanced"),
