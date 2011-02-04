@@ -14,54 +14,54 @@
 	 xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
               xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.0.1.0" Manufacturer="FreeSWITCH" UpgradeCode="7668FAEF-2AB3-4079-A986-07A33739B42E">
-		<Package InstallerVersion="200" Compressed="yes" />
+		<Package InstallerVersion="300" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-		<PropertyRef Id="NETFRAMEWORK40CLIENT"/>
-		<Condition Message="This application requires .NET Framework 4.0 Client. Please run Setup">
-			<![CDATA[Installed OR NETFRAMEWORK40CLIENT]]>
-		</Condition>
+    <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
+    <Condition Message="This application requires .NET Framework 4.0 Client. Please run Setup">
+      <![CDATA[Installed OR NETFRAMEWORK40CLIENT]]>
+    </Condition>
 
-		<Directory Id="TARGETDIR" Name="SourceDir">
+    <Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="$(var.PlatformProgramFilesFolder)">
 				<Directory Id="INSTALLLOCATION" Name="FSClient">
 					<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
 					<!-- <Component Id="ProductComponent" Guid="594203af-235a-4a7d-aff8-045997f872ec"> -->
-					<!-- TODO: Insert files, registry keys, and other resources here. -->
+						<!-- TODO: Insert files, registry keys, and other resources here. -->
 					<!-- </Component> -->
-					<Directory Id="MODLOCATION" Name="Mod">
-					</Directory>
-					<Directory Id="CONFLOCATION" Name="Conf">
-					</Directory>
-					<Directory Id="PLUGINLOCATION" Name="Plugins">
-					</Directory>
+          <Directory Id="MODLOCATION" Name="Mod">
+          </Directory>
+          <Directory Id="CONFLOCATION" Name="Conf">
+          </Directory>
+          <Directory Id="PLUGINLOCATION" Name="Plugins">
+          </Directory>
 				</Directory>
 			</Directory>
-			<?if $(var.Platform) != x64 ?>
-			<Merge Id="CrtFiles_x86"
-			SourceFile="$(env.CommonProgramFiles)\Merge Modules\Microsoft_VC100_CRT_x86.msm"
-			DiskId="1"
-			Language="1033"/>
-			<?endif ?>
-			<?if $(var.Platform) = x64 ?>
-			<Merge Id="CrtFiles_x64"
-			SourceFile="$(env.CommonProgramFiles)\Merge Modules\Microsoft_VC100_CRT_x64.msm"
-			DiskId="1"
-			Language="1033"/>
-			<?endif ?>
-			<Directory Id="ProgramMenuFolder">
-				<Directory Id="ApplicationProgramsFolder" Name="FSClient"/>
-			</Directory>
+      <?if $(var.Platform) != x64 ?>
+      <Merge Id="CrtFiles_x86"
+      SourceFile="$(env.CommonProgramFiles)\Merge Modules\Microsoft_VC100_CRT_x86.msm"
+      DiskId="1"
+      Language="1033"/>
+      <?endif ?>
+      <?if $(var.Platform) = x64 ?>
+      <Merge Id="CrtFiles_x64"
+      SourceFile="$(env.CommonProgramFiles)\Merge Modules\Microsoft_VC100_CRT_x64.msm"
+      DiskId="1"
+      Language="1033"/>
+      <?endif ?>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="FSClient"/>
+      </Directory>
 		</Directory>
 
-		<DirectoryRef Id="ApplicationProgramsFolder">
-			<Component Id="ApplicationShortcut" Guid="20BC8446-684B-44F5-A1E3-AF6010EAF37C">
-				<Shortcut Id="ApplicationStartMenuShortcut"
-									 Name="FSClient"
-									 Description="FreeSWITCH Windows Phone"
-									 Target="[INSTALLLOCATION]FSClient.exe"
-									 WorkingDirectory="INSTALLLOCATION"/>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="20BC8446-684B-44F5-A1E3-AF6010EAF37C">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+							 Name="FSClient"
+							 Description="FreeSWITCH Windows Phone"
+							 Target="[INSTALLLOCATION]FSClient.exe"
+							 WorkingDirectory="INSTALLLOCATION"/>
 				<util:InternetShortcut Id="OnlineDocumentationShortcut"
 									Name="Online Documentation"
 									Target="http://wiki.freeswitch.com/wiki/FSClient"/>
@@ -71,31 +71,31 @@
 									  Arguments="/x [ProductCode]"
 									  Description="Uninstalls FSClient" />
 
-				<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-				<RegistryValue Root="HKCU" Key="Software\FreeSWITCH\FSClient" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-			</Component>
-		</DirectoryRef>
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\FreeSWITCH\FSClient" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
 
 		<Feature Id="ProductFeature" Title="FSClient Core" Level="1">
 			<!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
-			<!-- <ComponentRef Id="ProductComponent" /> -->
-			<ComponentGroupRef Id="FSCoreComp"/>
-			<ComponentGroupRef Id="FSCoreModComp"/>
-			<ComponentRef Id="FSCoreConfComp"/>
-			<ComponentGroupRef Id="FSClientComp"/>
-			<ComponentRef Id="ApplicationShortcut" />
-
+      <!-- <ComponentRef Id="ProductComponent" /> -->
+      <ComponentGroupRef Id="FSCoreComp"/>
+      <ComponentGroupRef Id="FSCoreModComp"/>
+      <ComponentRef Id="FSCoreConfComp"/>
+      <ComponentGroupRef Id="FSClientComp"/>
+      <ComponentRef Id="ApplicationShortcut" />
+			
 			<!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
 			<ComponentGroupRef Id="Product.Generated" />
-			<?if $(var.Platform) != x64 ?>
-			<MergeRef Id="CrtFiles_x86"/>
-			<?endif ?>
-			<?if $(var.Platform) = x64 ?>
-			<MergeRef Id="CrtFiles_x64"/>
-			<?endif ?>
+      <?if $(var.Platform) != x64 ?>
+      <MergeRef Id="CrtFiles_x86"/>
+      <?endif ?>
+      <?if $(var.Platform) = x64 ?>
+      <MergeRef Id="CrtFiles_x64"/>
+      <?endif ?>
 		</Feature>
-		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
-		<UIRef Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+    <UIRef Id="WixUI_InstallDir" />
 		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch FSClient" />
 		<Property Id="WixShellExecTarget" Value="[INSTALLLOCATION]FSClient.exe" />
 		<CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
@@ -108,5 +108,5 @@
 		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
 		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowSameVersionUpgrades="yes"  />
 
-		</Product>
+	</Product>
 </Wix>
