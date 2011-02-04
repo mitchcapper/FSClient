@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Xml;
 
 using FreeSWITCH.Native;
@@ -14,6 +13,7 @@ namespace FSClient {
 	class Broker : IDisposable {
 		private Broker() {
 			_instance = this;
+			upgrade_settings();
 			Utils.PluginLog("", "");//clear file
 			headset_plugin_manager = new HeadsetPluginManager();
 
@@ -28,6 +28,21 @@ namespace FSClient {
 		}
 
 		public bool fully_loaded;
+		private void upgrade_settings(){
+			try {
+				if (Properties.Settings.Default.SettingsUpgrade) {
+					Properties.Settings.Default.Upgrade();
+					Properties.Settings.Default.SettingsUpgrade = false;
+					Properties.Settings.Default.Save();
+				}
+			}
+			catch {
+				Properties.Settings.Default.SettingsUpgrade = false;
+				Properties.Settings.Default.Save();
+				
+				
+			}
+		}
 		private void init_us() {
 			if (is_inited)
 				return;
