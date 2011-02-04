@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Items", "External 
 	ProjectSection(SolutionItems) = preProject
 		External Items\JabraTelephonyAPI.dll = External Items\JabraTelephonyAPI.dll
 		External Items\Plantronics.Device.Common.dll = External Items\Plantronics.Device.Common.dll
-		External Items\portaudio_dx_win.patch = External Items\portaudio_dx_win.patch
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "conf", "conf", "{BDB28E84-D1D5-4102-BD29-C638197EFD42}"
