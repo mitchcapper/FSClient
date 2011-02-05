@@ -23,8 +23,8 @@ namespace FSClient {
 			Call.CallStateChanged += CallStateChangedHandler;
 			Call.ActiveCallChanged += ActiveCallChanged;
 
-			DelayedFunction.DelayedCall("LoadContactManager", initContactManager, 1000);
 			init_us();
+			DelayedFunction.DelayedCall("LoadContactManager", initContactManager, 1000);
 		}
 
 		public bool fully_loaded;
@@ -42,6 +42,13 @@ namespace FSClient {
 				
 				
 			}
+		}
+		private void initContactManager() {
+			if (Properties.Settings.Default.ContactPlugins != null)
+				contact_plugin_manager = ContactPluginManager.GetPluginManager(Properties.Settings.Default.ContactPlugins);
+			else
+				contact_plugin_manager = new ContactPluginManager();
+			contact_plugin_manager.LoadPlugins();
 		}
 		private void init_us() {
 			if (is_inited)
@@ -74,6 +81,12 @@ namespace FSClient {
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
 				else
 					sofia = new Sofia();
+
+				if (Properties.Settings.Default.HeadsetPlugins != null)
+					headset_plugin_manager = HeadsetPluginManager.GetPluginManager(Properties.Settings.Default.HeadsetPlugins);
+				else
+					headset_plugin_manager = new HeadsetPluginManager();
+				headset_plugin_manager.LoadPlugins();
 
 				if (Properties.Settings.Default.EventSocket != null)
 					event_socket = Properties.Settings.Default.EventSocket.GetEventSocket();
@@ -114,10 +127,6 @@ namespace FSClient {
 #endif
 		}
 
-		private void initContactManager() {
-			contact_plugin_manager = new ContactPluginManager();
-
-		}
 
 		#region Text Input
 
@@ -340,6 +349,8 @@ namespace FSClient {
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
 
 				Properties.Settings.Default.Sofia = new SettingsSofia(sofia);
+				Properties.Settings.Default.ContactPlugins = contact_plugin_manager.GetSettings();
+				Properties.Settings.Default.HeadsetPlugins = headset_plugin_manager.GetSettings();
 				Properties.Settings.Default.EventSocket = new SettingsEventSocket(event_socket);
 				Properties.Settings.Default.Save();
 			} catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else

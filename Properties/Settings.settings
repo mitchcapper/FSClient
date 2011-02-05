@@ -44,5 +44,11 @@
     <Setting Name="EventSocket" Type="FSClient.SettingsEventSocket" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="HeadsetPlugins" Type="FSClient.SettingsPluginDataCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ContactPlugins" Type="FSClient.SettingsPluginDataCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

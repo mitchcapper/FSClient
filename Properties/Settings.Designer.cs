@@ -187,5 +187,25 @@ namespace FSClient.Properties {
                 this["EventSocket"] = value;
             }
         }
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::FSClient.SettingsPluginDataCollection HeadsetPlugins {
+            get {
+                return ((global::FSClient.SettingsPluginDataCollection)(this["HeadsetPlugins"]));
+            }
+            set {
+                this["HeadsetPlugins"] = value;
+            }
+        }
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::FSClient.SettingsPluginDataCollection ContactPlugins {
+            get {
+                return ((global::FSClient.SettingsPluginDataCollection)(this["ContactPlugins"]));
+            }
+            set {
+                this["ContactPlugins"] = value;
+            }
+        }
     }
 }

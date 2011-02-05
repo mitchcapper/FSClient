@@ -114,10 +114,12 @@
     <Compile Include="InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="IPlugin.cs" />
     <Compile Include="ObservableClass.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PluginManagerBase.cs" />
     <Compile Include="SimpleContactPluginBase.cs" />
     <Compile Include="Sofia.cs" />
     <Compile Include="Utils.cs" />
