@@ -176,7 +176,7 @@
 		</Canvas>
 		<Button Canvas.Left="283" Canvas.Top="21" Content="Send To Voicemail" FontWeight="Bold" Foreground="#FFF5E200" Height="20" Name="btnSendVoicemail" Style="{DynamicResource GlassButtonStyle}" Width="120" Visibility="Hidden" Click="btnSendVoicemail_Click" />
 
-		<ours:OurAutoCompleteBox Canvas.Left="435" Text="Contact Search" Canvas.Top="265" Height="22" Width="164.553" Opacity="0.8" x:Name="txtSearchBox" FilterMode="Contains" GotKeyboardFocus="txtSearchBox_GotKeyboardFocus" LostKeyboardFocus="txtSearchBox_LostKeyboardFocus" DropDownClosing="txtSearchBox_DropDownClosing">
+		<ours:OurAutoCompleteBox Canvas.Left="435" Text="Contact Search" Canvas.Top="265" Height="22" Width="164.553" Opacity="0.8" x:Name="txtSearchBox" FilterMode="Contains" GotKeyboardFocus="txtSearchBox_GotKeyboardFocus" LostKeyboardFocus="txtSearchBox_LostKeyboardFocus" DropDownClosing="txtSearchBox_DropDownClosing" FontSize="11">
 			<ours:OurAutoCompleteBox.ItemTemplate>
 				<DataTemplate>
 
