@@ -96,15 +96,6 @@
                   </settings>
                 </configuration>
 
-                <configuration name="event_socket.conf" description="Socket Client">
-                      <settings>
-                            <param name="nat-map" value="false"/>
-                            <param name="listen-ip" value="127.0.0.1"/>
-                            <param name="listen-port" value="8022"/>
-                            <param name="password" value="ClueCon"/>
-                      </settings>
-                </configuration>
-
                 <configuration name="post_load_modules.conf" description="Modules">
                         <modules>
                         </modules>

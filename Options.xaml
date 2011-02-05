@@ -54,6 +54,7 @@
 		<StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
 			<Button Content="Reload Devices"  Height="23"  Name="btnReloadDevices"  Width="100" Click="btnReloadDevices_Click" />
 			<Button Content="Sofia Settings" Height="23" Name="btnSofiaSettings" Width="100" Margin="10,0,0,0" Click="btnSofiaSettings_Click" />
+			<Button Content="Event Socket Settings" Height="23" Name="btnEventSocketSettings" Width="125" Margin="10,0,0,0" Click="btnEventSocketSettings_Click" />
 		</StackPanel>
 		
 	</Grid>

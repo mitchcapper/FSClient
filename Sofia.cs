@@ -71,12 +71,8 @@ namespace FSClient {
 
 									   };
 		public FieldValue[] values = FieldValue.FieldValues(fields);
-		public void gen_config(XmlNode parent) {
+		public void gen_config(XmlNode config_node) {
 
-
-			XmlNode config_node = XmlUtils.AddNodeNode(parent, "configuration");
-			XmlUtils.AddNodeAttrib(config_node, "name", "sofia.conf");
-			XmlUtils.AddNodeAttrib(config_node, "description", "Sofia Endpoint");
 			XmlNode global_settings = XmlUtils.AddNodeNode(config_node, "global_settings");
 			Utils.add_xml_param(global_settings, "auto-restart", "true");
 			Utils.add_xml_param(global_settings, "debug-presence", "0");
@@ -115,8 +111,7 @@ namespace FSClient {
 					DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 100);
 					break;
 				case RELOAD_CONFIG_MODE.MODULE:
-					Utils.api_exec("unload", "mod_sofia");
-					Utils.api_exec("load", "mod_sofia");
+					Utils.api_exec("reload", "mod_sofia");
 					DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 500);
 					break;
 			}

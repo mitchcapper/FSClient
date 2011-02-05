@@ -101,6 +101,7 @@
     </Compile>
     <Compile Include="Converters.cs" />
     <Compile Include="DelayedFunction.cs" />
+    <Compile Include="EventSocket.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="FSEvent.cs" />
     <Compile Include="GenericEditor.xaml.cs">

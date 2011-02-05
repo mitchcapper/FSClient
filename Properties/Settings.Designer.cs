@@ -176,5 +176,16 @@ namespace FSClient.Properties {
                 this["SettingsUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::FSClient.SettingsEventSocket EventSocket {
+            get {
+                return ((global::FSClient.SettingsEventSocket)(this["EventSocket"]));
+            }
+            set {
+                this["EventSocket"] = value;
+            }
+        }
     }
 }

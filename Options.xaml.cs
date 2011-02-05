@@ -82,5 +82,9 @@ namespace FSClient {
 		private void btnSofiaSettings_Click(object sender, RoutedEventArgs e) {
 			broker.edit_sofia();
 		}
+
+		private void btnEventSocketSettings_Click(object sender, RoutedEventArgs e){
+			broker.edit_event_socket();
+		}
 	}
 }

@@ -41,5 +41,8 @@
     <Setting Name="SettingsUpgrade" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="EventSocket" Type="FSClient.SettingsEventSocket" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

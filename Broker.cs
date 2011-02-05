@@ -48,6 +48,10 @@ namespace FSClient {
 				return;
 			is_inited = true;
 			try {
+				if (! System.IO.File.Exists("conf/freeswitch.xml")){
+					MessageBox.Show("conf/freeswitch.xml is not found, without it we must quit.", "Missing Base Configuration File", MessageBoxButton.OK, MessageBoxImage.Error);
+					Environment.Exit(-1);
+				}
 				if (System.IO.File.Exists("log/freeswitch.log")) {
 					try {
 						System.IO.File.WriteAllText("log/freeswitch.log", "");
@@ -70,6 +74,11 @@ namespace FSClient {
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
 				else
 					sofia = new Sofia();
+
+				if (Properties.Settings.Default.EventSocket != null)
+					event_socket = Properties.Settings.Default.EventSocket.GetEventSocket();
+				else
+					event_socket = new EventSocket();
 
 			} catch (Exception e) {
 				MessageBoxResult res = MessageBox.Show(
@@ -228,6 +237,10 @@ namespace FSClient {
 		}
 
 		public void reload_audio_devices(bool and_settings, bool no_save) {
+			if(active_calls > 0){
+				MessageBox.Show("Unable to reload audio devices while calls are active");
+				return;
+			}
 			if (and_settings && !no_save)
 				SaveAudioSettings();
 			audio_devices = PortAudio.get_devices(true);
@@ -327,6 +340,7 @@ namespace FSClient {
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
 
 				Properties.Settings.Default.Sofia = new SettingsSofia(sofia);
+				Properties.Settings.Default.EventSocket = new SettingsEventSocket(event_socket);
 				Properties.Settings.Default.Save();
 			} catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
 				MessageBox.Show("Error saving settings out: " + e.Message + "\n" + e.StackTrace);
@@ -566,11 +580,15 @@ namespace FSClient {
 			return _instance ?? (_instance = new Broker());
 		}
 
-		ContactPluginManager contact_plugin_manager;
-		HeadsetPluginManager headset_plugin_manager;
-		Sofia sofia;
+		private ContactPluginManager contact_plugin_manager;
+		private HeadsetPluginManager headset_plugin_manager;
+		private Sofia sofia;
+		private EventSocket event_socket;
 		public void edit_sofia() {
 			sofia.edit();
+		}
+		public void edit_event_socket() {
+			event_socket.edit();
 		}
 		public void reload_sofia(Sofia.RELOAD_CONFIG_MODE mode) {
 			sofia.reload_config(mode);
@@ -598,24 +616,35 @@ namespace FSClient {
 		}
 
 		#region Config Generation
-		XmlDocument sofia_doc;
-		private string get_sofia_xml() {
 
-			sofia_doc = new XmlDocument();
-			XmlNode doc = sofia_doc.CreateElement("document");
-			sofia_doc.AppendChild(doc);
+		private delegate void config_gen_del(XmlNode parent);
+
+		private string generate_xml_config(String name, String desc, config_gen_del func){
+			XmlDocument root_doc = new XmlDocument();
+			XmlNode doc = root_doc.CreateElement("document");
+			root_doc.AppendChild(doc);
 			XmlUtils.AddNodeAttrib(doc, "type", "freeswitch/xml");
 			XmlNode sect = XmlUtils.AddNodeNode(doc, "section");
 			XmlUtils.AddNodeAttrib(sect, "name", "configuration");
-			sofia.gen_config(sect);
-			//sofia_doc.Save(@"c:\temp\out.xml");
-			return sofia_doc.OuterXml;
+
+			XmlNode config_node = XmlUtils.AddNodeNode(sect, "configuration");
+			XmlUtils.AddNodeAttrib(config_node, "name", name);
+			XmlUtils.AddNodeAttrib(config_node, "description", desc);
+			func(config_node);
+			root_doc.Save(@"c:\temp\fs_" + name);
+			return root_doc.OuterXml;
 		}
 		private string xml_search(FreeSWITCH.SwitchXmlSearchBinding.XmlBindingArgs args) {
-			if (args.KeyName == "name" && args.KeyValue == "sofia.conf" && args.Section == "configuration" && args.TagName == "configuration") {
-				return get_sofia_xml();
+			if (args.KeyName != "name" || args.Section != "configuration" || args.TagName != "configuration")
+				return null;
+			switch (args.KeyValue){
+				case "sofia.conf":
+					return generate_xml_config(args.KeyValue, "Sofia Endpoint", sofia.gen_config);
+				case "event_socket.conf":
+					return generate_xml_config(args.KeyValue, "Socket Client", event_socket.gen_config);
 			}
 			return null;
+
 		}
 		private static IDisposable search_bind;
 		#endregion
