@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
+
 namespace FSClient {
 	public abstract class IHeadsetDevice {
 		[Flags]
@@ -53,19 +52,28 @@ namespace FSClient {
 			public IHeadsetDevice device;
 			public bool active;
 			public bool in_use;
-			public IHeadsetPlugin plugin;
+			public PluginData plugin;
 			public IHeadsetDevice.HEADSET_LIMITATIONS limitations;
 			public bool HasLimit(IHeadsetDevice.HEADSET_LIMITATIONS limit) {
 				return (limitations & limit) == limit;
 			}
 		}
-
-
+		private class PluginData{
+			public IHeadsetPlugin plugin;
+			public int error_tries_left = 0;
+			public DateTime last_error_time = DateTime.Now;//start with now so error count will not reset right away
+		}
+		private class PluginError{
+			public DeviceData device;
+			public PluginData plugin;
+			public Exception exception;
+		}
+		private object devices_lock = new object();
 		private Broker broker;
 		private const int DEFAULT_PLUGIN_RETRIES = 5;
 		private List<DeviceData> devices = new List<DeviceData>();
 
-		private List<IHeadsetPlugin> plugins = new List<IHeadsetPlugin>();
+		private List<PluginData> plugins = new List<PluginData>();
 		public string[] AvailableDevices() {
 			return (from d in devices select d.device.GetName()).ToArray();
 		}
@@ -77,7 +85,9 @@ namespace FSClient {
 		public void SetActiveDevice(String name) {
 			active_device_name = name;
 			bool found_already = false;
-			lock (devices) {
+			List<PluginError> errors = null;
+
+			lock (devices_lock) {
 				foreach (DeviceData device in devices) {
 					try {
 						if (device.device.GetName() == name && !found_already) {
@@ -93,10 +103,15 @@ namespace FSClient {
 						}
 					}
 					catch (Exception e) {
-						HandleError(device, e, DEFAULT_PLUGIN_RETRIES);
+						if (errors == null)
+							errors = new List<PluginError>();
+						errors.Add(new PluginError{device = device, exception = e});
 					}
 				}
 			}
+			if (errors != null)
+				foreach (PluginError err in errors)
+					HandleError(err);
 		}
 		private void Ring(bool enable) {
 			CreateEvent(IDeviceHost.PHONE_EVENT_TYPE.Ring, enable);
@@ -117,28 +132,40 @@ namespace FSClient {
 			CreateEvent(type, enable, false);
 		}
 		private void CreateEvent(IDeviceHost.PHONE_EVENT_TYPE type, bool enable, bool is_during_call) {
-			foreach (DeviceData data in devices) {
-				if (!data.active)
-					continue;
-				try {
-					if (type != IDeviceHost.PHONE_EVENT_TYPE.LineActive)
-						data.host.CreateEvent(type, enable);
-					else {
-						if (data.HasLimit(IHeadsetDevice.HEADSET_LIMITATIONS.ONLY_ACTIVE_DURING_CALLS)) {
-							if (is_during_call)
+			List<PluginError> errors = null;
+
+			lock (devices_lock) {
+				foreach (DeviceData data in devices){
+					if (!data.active)
+						continue;
+					try{
+						if (type != IDeviceHost.PHONE_EVENT_TYPE.LineActive)
+							data.host.CreateEvent(type, enable);
+						else{
+							if (data.HasLimit(IHeadsetDevice.HEADSET_LIMITATIONS.ONLY_ACTIVE_DURING_CALLS)){
+								if (is_during_call)
+									data.host.CreateEvent(type, enable);
+							}
+							else if (!is_during_call)
 								data.host.CreateEvent(type, enable);
 						}
-						else if (!is_during_call)
-							data.host.CreateEvent(type, enable);
+					}
+					catch (Exception e){
+						if (errors == null)
+							errors = new List<PluginError>();
+						errors.Add(new PluginError { device = data, exception = e });
+
 					}
 				}
-				catch (Exception e) {
-					HandleError(data, e, DEFAULT_PLUGIN_RETRIES);
-				}
 			}
+
+			if (errors != null)
+				foreach (PluginError err in errors)
+					HandleError(err);
 		}
 		public void SetCallerID(String name, String number) {
-			lock (devices) {
+			List<PluginError> errors = null;
+			lock (devices_lock) {
 				foreach (DeviceData data in devices) {
 
 					if (data.active) {
@@ -146,11 +173,18 @@ namespace FSClient {
 							data.device.SetCallerId(name, number);
 						}
 						catch (Exception e) {
-							HandleError(data, e, DEFAULT_PLUGIN_RETRIES);
+
+							if (errors == null)
+								errors = new List<PluginError>();
+							errors.Add(new PluginError { device = data, exception = e });
+
 						}
 					}
 				}
 			}
+			if (errors != null)
+				foreach (PluginError err in errors)
+					HandleError(err);
 		}
 		private void DeviceStatusChanged(object sender, IHeadsetDevice.StatusEventArgs e) {
 			IHeadsetDevice device = sender as IHeadsetDevice;
@@ -188,11 +222,13 @@ namespace FSClient {
 			}
 
 		}
-		private void DeviceAdded(object sender, IHeadsetPlugin.DeviceEventArgs e) {
+		private void DeviceAdded(object sender, IHeadsetPlugin.DeviceEventArgs e){
 
-			DeviceData data = new DeviceData { device = e.device, host = new IDeviceHost(), active = false, in_use = false, plugin = sender as IHeadsetPlugin };
+			IHeadsetPlugin plugin = sender as IHeadsetPlugin;
+			DeviceData data = new DeviceData { device = e.device, host = new IDeviceHost(), active = false, in_use = false };
+			data.plugin = (from p in plugins where p.plugin == plugin select p).Single();
 			try {
-				lock (devices) {
+				lock (devices_lock) {
 					devices.Add(data);
 				}
 				data.device.StatusChanged += DeviceStatusChanged;
@@ -204,14 +240,15 @@ namespace FSClient {
 				}
 			}
 			catch (Exception exp) {
-				HandleError(data, exp, DEFAULT_PLUGIN_RETRIES);
+				HandleError(new PluginError{device = data, exception = exp});
 			}
 		}
+		
 		private void DeviceRemoved(object sender, IHeadsetPlugin.DeviceEventArgs e) {
 			DeviceData data = (from d in devices where d.device == e.device select d).SingleOrDefault();
 			if (data == null)
 				return;
-			lock (devices) {
+			lock (devices_lock) {
 				devices.Remove(data);
 			}
 			if (data.device.GetName() == active_device_name) {
@@ -220,14 +257,16 @@ namespace FSClient {
 			}
 		}
 		public void RegisterPlugin(IHeadsetPlugin plugin) {
-			try {
-				plugins.Add(plugin);
+			PluginData data = new PluginData() { plugin = plugin };
+			plugins.Add(data);
+			try{
 				plugin.DeviceAdded += DeviceAdded;
 				plugin.DeviceRemoved += DeviceRemoved;
 				plugin.Initialize();
+				data.error_tries_left = DEFAULT_PLUGIN_RETRIES;
 			}
 			catch (Exception e) {
-				HandleError(plugin, e, 0); //no retries if you error during init
+				HandleError(new PluginError { plugin = data, exception = e });
 			}
 		}
 		private bool IsTypeOf(Type to_check, Type of) {
@@ -301,25 +340,29 @@ namespace FSClient {
 		public void Dispose() {
 			if (!disposed) {
 				disposed = true;
-				foreach (IHeadsetPlugin plugin in plugins) {
+				foreach (PluginData plugin_data in plugins) {
 					try {
-						plugin.Terminate();
+						plugin_data.plugin.Terminate();
 					}
 					catch (Exception e) { Utils.PluginLog("Headset Plugin Manager", "Error terminating a plugin: " + e.Message); }
 				}
 			}
 			GC.SuppressFinalize(this);
 		}
-		private void HandleError(DeviceData device, Exception e, int trys_left) {
-			HandleError(device.plugin, e, trys_left);
-		}
-		private void HandleError(IHeadsetPlugin plugin, Exception e, int trys_left){
-			String restart_msg = trys_left > 0 ? " will try to restart/init it " + trys_left + " more times" : "";
-			Utils.PluginLog("Headset Plugin Manager", "Plugin " + plugin.ProviderName() + " had an error Due to: " + e.Message + "\n" + restart_msg);
+
+		private void HandleError(PluginError error) {
+			if (error.plugin == null)
+				error.plugin = error.device.plugin;
+			if ((DateTime.Now - error.plugin.last_error_time).TotalSeconds > 60 * 5)  //if no errors for 5 minutes reset error count
+				error.plugin.error_tries_left = DEFAULT_PLUGIN_RETRIES;
+
+			error.plugin.last_error_time = DateTime.Now;
+			String restart_msg = error.plugin.error_tries_left > 0 ? " will try to restart/init it " + error.plugin.error_tries_left + " more times" : " will not be restarting it";
+			Utils.PluginLog("Headset Plugin Manager", "Plugin " + error.plugin.plugin.ProviderName() + " had an error Due to: " + error.exception.Message + "\n" + restart_msg);
 			List<DeviceData> to_remove = new List<DeviceData>();
-			lock (devices){
+			lock (devices_lock) {
 				foreach (DeviceData device in devices){
-					if (device.plugin == plugin){
+					if (device.plugin == error.plugin) {
 						try{
 							device.device.SetActive(false);
 						}
@@ -330,20 +373,20 @@ namespace FSClient {
 					}
 				}
 			}
-			lock (devices){
+			lock (devices_lock) {
 				foreach (DeviceData device in to_remove)
 					devices.Remove(device);
 			}
-			plugin.Terminate();
-			if (trys_left-- > 0)
-				DelayedFunction.DelayedCall("IHeadsetPlugin_PluginStart_ " + plugin.ProviderName(), () => init_plugin(plugin, trys_left), 1000);//give it a second
+			error.plugin.plugin.Terminate();
+			if (error.plugin.error_tries_left-- > 0)
+				DelayedFunction.DelayedCall("IHeadsetPlugin_PluginStart_ " + error.plugin.plugin.ProviderName(), () => init_plugin(error.plugin), 1000);//give it a second
 		}
-		private void init_plugin(IHeadsetPlugin plugin, int trys_left){
+		private void init_plugin(PluginData plugin){
 			try{
-			plugin.Initialize();
+				plugin.plugin.Initialize();
 			}
 			catch (Exception e) {
-				HandleError(plugin, e, trys_left);
+				HandleError(new PluginError { plugin = plugin, exception = e });
 			}
 		}
 	}
