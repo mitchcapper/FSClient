@@ -86,5 +86,9 @@ namespace FSClient {
 		private void btnEventSocketSettings_Click(object sender, RoutedEventArgs e){
 			broker.edit_event_socket();
 		}
+
+		private void btnPluginSettings_Click(object sender, RoutedEventArgs e){
+			broker.edit_plugins();
+		}
 	}
 }

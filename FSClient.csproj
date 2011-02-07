@@ -120,6 +120,9 @@
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
     <Compile Include="PluginManagerBase.cs" />
+    <Compile Include="PluginOptionsWindow.xaml.cs">
+      <DependentUpon>PluginOptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SimpleContactPluginBase.cs" />
     <Compile Include="Sofia.cs" />
     <Compile Include="Utils.cs" />
@@ -158,6 +161,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PluginOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PortAudio.cs" />
@@ -177,6 +184,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
@@ -216,6 +224,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="warning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

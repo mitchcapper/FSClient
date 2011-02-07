@@ -174,6 +174,12 @@ namespace FSClient {
 		public PortAudio.AudioDevice HeadsetOutDev { get; private set; }
 		public PortAudio.AudioDevice RingDev { get; private set; }
 		public PortAudio.AudioDevice[] audio_devices;
+		public IEnumerable<PluginManagerBase.PluginData> contact_plugins {
+			get { return contact_plugin_manager.GetPlugins(); }
+		}
+		public IEnumerable<PluginManagerBase.PluginData> headset_plugins {
+			get { return headset_plugin_manager.GetPlugins(); }
+		}
 
 		public string[] AvailableHeadsets() {
 			return headset_plugin_manager.AvailableDevices();
@@ -600,6 +606,10 @@ namespace FSClient {
 		}
 		public void edit_event_socket() {
 			event_socket.edit();
+		}
+		public void edit_plugins(){
+			PluginOptionsWindow window = new PluginOptionsWindow();
+			window.ShowDialog();
 		}
 		public void reload_sofia(Sofia.RELOAD_CONFIG_MODE mode) {
 			sofia.reload_config(mode);

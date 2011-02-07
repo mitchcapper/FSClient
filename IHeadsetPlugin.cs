@@ -335,7 +335,7 @@ namespace FSClient {
 				data.state = PluginData.PluginDataState.LOADED;
 			}
 			catch (Exception e) {
-				HandleError(new PluginError { plugin = data, exception = e });
+				HandleError(new PluginError { plugin = data, exception = e }, PluginData.PluginDataState.ERROR_LOADING);
 			}
 		}
 
@@ -361,15 +361,16 @@ namespace FSClient {
 			GC.SuppressFinalize(this);
 		}
 
-		private void HandleError(PluginError error) {
+		private void HandleError(PluginError error, PluginData.PluginDataState failed_state = PluginData.PluginDataState.DISABLED_ERROR) {
 			if (error.plugin == null)
 				error.plugin = error.device.plugin;
 			if ((DateTime.Now - error.plugin.last_error_time).TotalSeconds > 60 * 5)  //if no errors for 5 minutes reset error count
 				error.plugin.error_tries_left = DEFAULT_PLUGIN_RETRIES;
 
 			error.plugin.last_error_time = DateTime.Now;
+			error.plugin.last_error = error.exception.Message;
 			String restart_msg = error.plugin.error_tries_left > 0 ? " will try to restart/init it " + error.plugin.error_tries_left + " more times" : " will not be restarting it";
-			Utils.PluginLog(PluginManagerName(), "Plugin " + error.plugin.plugin.ProviderName() + " had an error Due to: " + error.exception.Message + "\n" + restart_msg);
+			Utils.PluginLog(PluginManagerName(), "Plugin " + error.plugin.plugin.ProviderName() + " had an error due to: " + error.exception.Message + "\n" + restart_msg);
 			List<DeviceData> to_remove = new List<DeviceData>();
 			lock (devices_lock) {
 				foreach (DeviceData device in devices) {
@@ -391,6 +392,9 @@ namespace FSClient {
 			error.plugin.plugin.Terminate();
 			if (error.plugin.error_tries_left-- > 0)
 				DelayedFunction.DelayedCall("IHeadsetPlugin_PluginStart_ " + error.plugin.plugin.ProviderName(), () => init_plugin(error.plugin), 1000);//give it a second
+			else
+				error.plugin.state = failed_state;
+			
 		}
 		private void init_plugin(HeadsetPluginData plugin) {
 			try {

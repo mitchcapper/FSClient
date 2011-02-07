@@ -49,9 +49,10 @@ namespace FSClient {
 				box.Visibility = Visibility.Visible;
 			active_plugin.state = PluginData.PluginDataState.LOADED;
 		}
-		private void HandleError(ContactPluginData plugin, Exception e) {
+		private void HandleError(ContactPluginData plugin, Exception e, PluginData.PluginDataState failed_state = PluginData.PluginDataState.DISABLED_ERROR) {
 			Utils.PluginLog(PluginManagerName(), "Plugin \"" + plugin.contact_plugin.ProviderName() + "\" had an error Due to: " + e.Message);
-			plugin.state = PluginData.PluginDataState.DISABLED_ERROR;
+			plugin.state = failed_state;
+			plugin.last_error = e.Message;
 			active_plugin = null;
 
 		}
@@ -99,10 +100,10 @@ namespace FSClient {
 				throw new Exception("Can only handle one contact plugin at a time right now and the current one is: " + active_plugin.plugin.ProviderName());
 			try {
 				data.contact_plugin.Initialize();
-				Application.Current.Dispatcher.BeginInvoke((Action)ContactInit);
 				active_plugin = data;
+				Application.Current.Dispatcher.BeginInvoke((Action)ContactInit);
 			} catch (Exception e) {
-				HandleError(data, e);
+				HandleError(data, e, PluginData.PluginDataState.ERROR_LOADING);
 			}
 			
 		}

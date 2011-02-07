@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -98,6 +99,21 @@ namespace FSClient {
 			if (value == null)
 				return "";
 			return Convert((DateTime)value);
+
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			throw new NotImplementedException();
+		}
+	}
+	public class BoolToVisibilityConverter : IValueConverter {
+		public static Visibility Convert(bool value) {
+			 return value ? Visibility.Visible : Visibility.Hidden;
+		}
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			if (value == null)
+				return "";
+			return Convert((bool)value);
 
 		}
 
