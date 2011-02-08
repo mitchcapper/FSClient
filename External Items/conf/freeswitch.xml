@@ -1,14 +1,8 @@
 <?xml version="1.0"?>
 <document type="freeswitch/xml">
-        <X-PRE-PROCESS cmd="set" data="auto_answer=false"/>
-        <X-PRE-PROCESS cmd="set" data="domain=$${local_ip_v4}"/>
         <X-PRE-PROCESS cmd="set" data="hold_music=local_stream://moh"/>
-        <X-PRE-PROCESS cmd="set" data="external_rtp_ip=stun:stun.freeswitch.org"/>
-        <X-PRE-PROCESS cmd="set" data="external_sip_ip=stun:stun.freeswitch.org"/>
         <X-PRE-PROCESS cmd="set" data="console_loglevel=info"/>
         <X-PRE-PROCESS cmd="set" data="us-ring=v=0;%(2000,4000,440.0,480.0)"/>
-        <X-PRE-PROCESS cmd="set" data="bong-ring=v=-7;%(100,0,941.0,1477.0);v=-7;>=2;+=.1;%(1400,0,350,440)"/>
-        <X-PRE-PROCESS cmd="set" data="sit=%(274,0,913.8);%(274,0,1370.6);%(380,0,1776.7)"/>
 
         <section name="configuration" description="Various Configuration">
                 <configuration name="console.conf" description="Console Logger">
@@ -36,15 +30,12 @@
                         </settings>
                         <profiles>
                                 <profile name="default">
-                                        <settings>
-                                        </settings>
                                         <mappings>
                                                 <map name="all" value="debug,info,notice,warning,err,crit,alert"/>
                                         </mappings>
                                 </profile>
                         </profiles>
                 </configuration>
-
                 <configuration name="modules.conf" description="Modules">
                         <modules>
                                 <load module="mod_console"/>
@@ -69,38 +60,20 @@
                                 <load module="mod_event_socket"/>
                         </modules>
                 </configuration>
-
                 <configuration name="portaudio.conf" description="Soundcard Endpoint">
                   <settings>
-                    <param name="indev" value="4"/>
-                    <param name="outdev" value="8"/>
-					<param name="ringdev" value="8"/>
 					<param name="dual-streams" value="true" />
 					<param name="live-stream-switch" value="true" />
 					<param name="no-auto-resume-call" value="true" />
-					<param name="no-ring-during-call" value="true" />
-					
-					
+					<param name="no-ring-during-call" value="true" />			
                     <param name="ring-file" value="tone_stream://%(2000,4000,440.0,480.0);loops=20"/>
                     <param name="ring-interval" value="5"/>
                     <param name="hold-file" value="$${hold_music}"/>
                     <param name="dialplan" value="XML"/>
                     <param name="sample-rate" value="24000"/>
                     <param name="codec-ms" value="20"/>
-					<!--
-						Alternate items:
-							codec-ms
-							sample-rate=8000
-						
-					-->
                   </settings>
                 </configuration>
-
-                <configuration name="post_load_modules.conf" description="Modules">
-                        <modules>
-                        </modules>
-                </configuration>
-
                 <configuration name="switch.conf" description="Core Configuration">
                         <cli-keybindings>
                                 <key name="1" value="help"/>
@@ -117,12 +90,10 @@
                                 <key name="12" value="version"/>
                         </cli-keybindings>
                         <settings>
-                                <param name="colorize-console" value="true"/>
-                                <param name="max-sessions" value="20"/>
-                                <param name="sessions-per-second" value="5"/>
+								<param name="colorize" value="true"/>
+                                <param name="max-sessions" value="100"/>
+                                <param name="sessions-per-second" value="30"/>
                                 <param name="loglevel" value="debug"/>
-                                <param name="crash-protection" value="false"/>
-                                <param name="dump-cores" value="yes"/>
                                 <param name="rtp-start-port" value="16384"/>
                                 <param name="rtp-end-port" value="16484"/>
                         </settings>

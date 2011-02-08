@@ -75,7 +75,6 @@ namespace FSClient {
 
 			XmlNode global_settings = XmlUtils.AddNodeNode(config_node, "global_settings");
 			Utils.add_xml_param(global_settings, "auto-restart", "true");
-			Utils.add_xml_param(global_settings, "debug-presence", "0");
 			Utils.add_xml_param(global_settings, "log-level", "0");
 			XmlNode profiles = XmlUtils.AddNodeNode(config_node, "profiles");
 			XmlNode profile = XmlUtils.AddNodeNode(profiles, "profile");
@@ -87,7 +86,6 @@ namespace FSClient {
 			Utils.add_xml_param(settings, "context", "public");
 			Utils.add_xml_param(settings, "dialplan", "xml");
 			Utils.add_xml_param(settings, "disable-register", "true");
-			Utils.add_xml_param(settings, "manage-presence", "false");
 			foreach (FieldValue value in values) {
 				if (!String.IsNullOrEmpty(value.field.xml_name))
 					Utils.add_xml_param(settings, value.field.xml_name, value.value);

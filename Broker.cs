@@ -652,7 +652,7 @@ namespace FSClient {
 			XmlUtils.AddNodeAttrib(config_node, "name", name);
 			XmlUtils.AddNodeAttrib(config_node, "description", desc);
 			func(config_node);
-			root_doc.Save(@"c:\temp\fs_" + name);
+			//root_doc.Save(@"c:\temp\fs_" + name);
 			return root_doc.OuterXml;
 		}
 		private string xml_search(FreeSWITCH.SwitchXmlSearchBinding.XmlBindingArgs args) {
@@ -675,8 +675,8 @@ namespace FSClient {
 		
 		private void fs_core_init() {
 			fs_inited = true;
-			freeswitch.switch_core_set_globals();
 			String err = "";
+			freeswitch.switch_core_set_globals();
 			const uint flags = (uint)(switch_core_flag_enum_t.SCF_USE_SQL | switch_core_flag_enum_t.SCF_USE_AUTO_NAT);
 			switch_status_t res = freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, ref err);
 			search_bind = FreeSWITCH.SwitchXmlSearchBinding.Bind(xml_search, switch_xml_section_enum_t.SWITCH_XML_SECTION_CONFIG);
