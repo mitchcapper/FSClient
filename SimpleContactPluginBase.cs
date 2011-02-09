@@ -23,6 +23,12 @@ namespace FSClient
 		{
 			return number;
 		}
+		protected virtual void DeleteNumber(string number){
+			number_to_alias.Remove(number);
+		}
+		protected virtual bool CanDeleteContact(){
+			return true;
+		}
 		protected virtual string IsValidAlias(String str)//return null to abort updating, otherwire return string
 		{ 
 			return str;
@@ -50,11 +56,31 @@ namespace FSClient
 			item.Click += item_Click;
 			item.Header = "Edit Contact";
 			items.Add(item);
+			if (CanDeleteContact()){
+				item = new MenuItem();
+				item.Click += delete_item_click;
+				item.Header = "Delete Contact";
+				items.Add(item);
+			}
 			item = new MenuItem();
 			item.Click +=contact_call_click;
 			item.Header = "Call";
 			items.Add(item);
 			return items;
+		}
+
+		private void delete_item_click(object sender, RoutedEventArgs e){
+			MenuItem item = sender as MenuItem;
+			if (item == null)
+				return;
+
+			SearchAutoCompleteEntry entry = item.DataContext as SearchAutoCompleteEntry ?? search_box.SelectedItem as SearchAutoCompleteEntry;
+			if (entry == null)
+				return;
+			String number = entry.number;
+			number = NormalizeNumber(number);
+			DeleteNumber(number);
+			refresh_search_box();
 		}
 
 		private void contact_call_click(object sender, RoutedEventArgs e){

@@ -89,6 +89,10 @@ namespace SimpleXmlContactPlugin {
 		protected override void UpdateDatabase(string number, string alias){
 			SaveDatabase();
 		}
+		protected override void DeleteNumber(string number) {
+			base.DeleteNumber(number);
+			SaveDatabase();
+		}
 
 	}
 }
