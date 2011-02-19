@@ -68,10 +68,9 @@ namespace FSClient {
 											new Field(Field.FIELD_TYPE.Int,"RTP Hold Timeout Seconds","rtp-hold-timeout-sec","rtp-hold-timeout-sec","1800","Advanced"),
 											new Field(Field.FIELD_TYPE.Int,"RTP Tiemout Seconds","rtp-timeout-sec","rtp-timeout-sec","300","Advanced"),
 											new Field(Field.FIELD_TYPE.String,"RTP Timer Name","rtp-timer-name","rtp-timer-name","soft","Advanced"),
-
-
-
 									   };
+
+		private static string[] AllowedEmptyFields = new string[] { };
 		public FieldValue[] values = FieldValue.FieldValues(fields);
 		public void gen_config(XmlNode config_node) {
 
@@ -82,37 +81,40 @@ namespace FSClient {
 			XmlNode profile = XmlUtils.AddNodeNode(profiles, "profile");
 			XmlUtils.AddNodeAttrib(profile, "name", "softphone");
 			XmlNode gateways = XmlUtils.AddNodeNode(profile, "gateways");
-			Account.create_gateway_nodes(gateways,FieldValue.GetByName(values, "tls").value == "true");
+			Account.create_gateway_nodes(gateways, FieldValue.GetByName(values, "tls").value == "true");
 			XmlNode settings = XmlUtils.AddNodeNode(profile, "settings");
 
 			Utils.add_xml_param(settings, "context", "public");
 			Utils.add_xml_param(settings, "dialplan", "xml");
 			Utils.add_xml_param(settings, "disable-register", "true");
 			foreach (FieldValue value in values) {
-				if (!String.IsNullOrEmpty(value.field.xml_name)){
-					String param_value = value.value;
-					if (value.field.name == "tls" && value.value == "true") {//lets make sure that we have a cafile.pem
-						
-						String base_dir = FieldValue.GetByName(values, "tls-cert-dir").value;
-						if (String.IsNullOrWhiteSpace(base_dir))
-							base_dir = "conf/ssl";
-								//this is what freeswitch uses by default if its empty, if this changes this code needs to be updated
-						base_dir = base_dir.Replace('/', '\\'); //windows file path
-						if (base_dir[base_dir.Length - 1] != '\\')
-							base_dir += '\\';
-						if (!System.IO.File.Exists(base_dir + "cafile.pem")){
-							MessageBox.Show("Your sofia settings have TLS enabled however you do not have a cafile.pem in your cert folder, this will most likely cause the entire softphone profile not to load so I am disabling TLS in the profile for now");
-							param_value = "false";
-						}
+				if (String.IsNullOrEmpty(value.field.xml_name))
+					continue;
+				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
+					continue;
+				String param_value = value.value;
+				if (value.field.name == "tls" && value.value == "true" && ! tls_cert_exist_check())
+					param_value = "false";
 
-					}
-					Utils.add_xml_param(settings, value.field.xml_name, param_value);
-				}
+				Utils.add_xml_param(settings, value.field.xml_name, param_value);
 			}
 
 			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1200);
 		}
-
+		private bool tls_cert_exist_check(){
+			String base_dir = FieldValue.GetByName(values, "tls-cert-dir").value;
+			if (String.IsNullOrWhiteSpace(base_dir))
+				base_dir = "conf/ssl";
+			//this is what freeswitch uses by default if its empty, if this changes this code needs to be updated
+			base_dir = base_dir.Replace('/', '\\'); //windows file path
+			if (base_dir[base_dir.Length - 1] != '\\')
+				base_dir += '\\';
+			if (!System.IO.File.Exists(base_dir + "cafile.pem")) {
+				MessageBox.Show("Your sofia settings have TLS enabled however you do not have a cafile.pem in your cert folder, this will most likely cause the entire softphone profile not to load so I am disabling TLS in the profile for now");
+				return false;
+			}
+			return true;
+		}
 		public enum RELOAD_CONFIG_MODE {
 			SOFT,
 			HARD,

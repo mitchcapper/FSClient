@@ -63,7 +63,7 @@ namespace FSClient {
 
 								  };
 		#region Static Methods
-
+		private static string[] AllowedEmptyFields = new string[] { };
 		private static void callback(object state) {
 			Broker.get_instance().reload_sofia(Sofia.RELOAD_CONFIG_MODE.SOFT);
 		}
@@ -128,7 +128,7 @@ namespace FSClient {
 			account.guid = "";
 			account.guid = old_guid;
 		}
-		public static void RemoveAccount(Account account){
+		public static void RemoveAccount(Account account) {
 			account.KillGateway();
 			accounts.Remove(account);
 			ReloadSofia();
@@ -137,7 +137,7 @@ namespace FSClient {
 		public static void create_gateway_nodes(XmlNode gateways_node, bool tls_enabled) {
 			foreach (Account account in accounts) {
 				if (account.enabled)
-					account.create_gateway_node(gateways_node,tls_enabled);
+					account.create_gateway_node(gateways_node, tls_enabled);
 			}
 		}
 		public static void HandleGatewayEvent(FSEvent evt) {
@@ -177,7 +177,7 @@ namespace FSClient {
 			_guid.PropertyChanged += (s, e) => {
 
 				if (!guid_ok(this, _guid.value) || String.IsNullOrEmpty(_guid.value)) {
-					for (int i = 1; i <= 10; i++){
+					for (int i = 1; i <= 10; i++) {
 						int val = i == 10 ? 0 : i; // want 0 checked last.
 						if (guid_ok(this, val.ToString())) {
 							_guid.value = val.ToString();
@@ -267,7 +267,7 @@ namespace FSClient {
 					is_default_account = false;
 				else
 					ensure_default_account();
-				
+
 				RaisePropertyChanged("enabled");
 			}
 		}
@@ -326,7 +326,7 @@ namespace FSClient {
 
 		#endregion
 		private string old_gateway_id;
-		private void acct_status_check(){
+		private void acct_status_check() {
 			if (enabled && state == "NOREG")
 				Broker.get_instance().reload_sofia(Sofia.RELOAD_CONFIG_MODE.SOFT);
 
@@ -336,23 +336,24 @@ namespace FSClient {
 			XmlUtils.AddNodeAttrib(node, "name", gateway_id);
 			old_gateway_id = gateway_id;
 			foreach (FieldValue value in values) {
-				if (!String.IsNullOrEmpty(value.field.xml_name)){
-					if (value.field.name == "register-transport" && value.value == "tls" && ! tls_enabled){
-						MessageBox.Show("Warning the register-transport for account: " + name + " is set to tls, however you have tls disabled in your sofia settings this account will be disabled for now");
-						gateways_node.RemoveChild(node);
-						enabled = false;
-						return;
-					}
-					if (value.field.name == "sip_secure_media")
-						secure_media = value.value == "true";
-					Utils.add_xml_param(node, value.field.xml_name, value.value);
+				if (String.IsNullOrEmpty(value.field.xml_name))
+					continue;
+				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
+					continue;
+				if (value.field.name == "register-transport" && value.value == "tls" && !tls_enabled) {
+					MessageBox.Show("Warning the register-transport for account: " + name + " is set to tls, however you have tls disabled in your sofia settings this account will be disabled for now");
+					gateways_node.RemoveChild(node);
+					enabled = false;
+					return;
 				}
+				if (value.field.name == "sip_secure_media")
+					secure_media = value.value == "true";
+				Utils.add_xml_param(node, value.field.xml_name, value.value);
 			}
 			//Was preventing gateway ID from being passed to create_channel so removed (needed for incoming calls)
 			//FieldValue user = FieldValue.GetByName(values, "username");
 			//Utils.add_xml_param(node, "extension-in-contact", user.value);
 		}
-
 		public void ReloadAccount() {
 			KillGateway();
 			ReloadSofia();
