@@ -33,12 +33,16 @@ namespace FSClient {
 										new Field(Field.FIELD_TYPE.Bool,"Nat Map","nat-map","nat-map","false",""),
 										new Field(Field.FIELD_TYPE.Combo,"Debug Mode","debug","debug","0","",new Field.FieldOption{display_value="true", value="1"},new Field.FieldOption{display_value="false", value="0"}),
 	};
+		private static string[] AllowedEmptyFields = new[] { "password", "listen-ip" };
 		public FieldValue[] values = FieldValue.FieldValues(fields);
 		public void gen_config(XmlNode config_node){
 			XmlNode settings = XmlUtils.AddNodeNode(config_node, "settings");
 			foreach (FieldValue value in values) {
-				if (!String.IsNullOrEmpty(value.field.xml_name))
-					Utils.add_xml_param(settings, value.field.xml_name, value.value);
+				if (String.IsNullOrEmpty(value.field.xml_name))
+					continue;
+				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
+					continue;
+				Utils.add_xml_param(settings, value.field.xml_name, value.value);
 			}
 		}
 		public void reload_config(){

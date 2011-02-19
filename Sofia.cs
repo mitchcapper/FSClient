@@ -138,8 +138,11 @@ namespace FSClient {
 		public void sofia_profile_check() {
 			master_profile_ok = true;
 			String res = Utils.api_exec("sofia", "status profile softphone");
-			if (res.Trim() == "Invalid Profile!") {
-				MessageBox.Show("Warning the master sofia profile was not able to load and the phone will most likely _not_ work, make sure the local bind port (" + FieldValue.GetByName(values, "sip-port").value + ") is free(set under the Advanced tab of in the sofia settings) and FSClient is allowed through your firewall, otherwise check the freeswitch.log for more details.  You can try reloading the sofia profile by editing the sofia settings and clicking save to see if fixed.");
+			if (res.Trim() == "Invalid Profile!"){
+				String tls_port_msg = "";
+				if (FieldValue.GetByName(values, "tls").value == "true")
+					tls_port_msg += " and tls bind port (" + FieldValue.GetByName(values, "tls-sip-port").value + ")";
+				MessageBox.Show("Warning the master sofia profile was not able to load and the phone will most likely _not_ work, make sure the local bind port (" + FieldValue.GetByName(values, "sip-port").value + ")" + tls_port_msg + " is free(set under the Advanced tab of in the sofia settings) and FSClient is allowed through your firewall, otherwise check the freeswitch.log for more details.  You can try reloading the sofia profile by editing the sofia settings and clicking save to see if fixed.");
 				master_profile_ok = false;
 			}
 

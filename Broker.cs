@@ -481,7 +481,7 @@ namespace FSClient {
 			}
 		}
 		private bool _ClearDTMFS;
-		public Utils.ObjectEventHandler<bool> ClearDTMFSChanged;
+		public Utils.ObjectEventHandler<bool> ClearDTMFSChanged = null;
 
 		public bool SpeakerphoneActive {
 			get { return _SpeakerphoneActive; }
@@ -525,7 +525,7 @@ namespace FSClient {
 			get { return _active_calls; }
 		}
 		private int _active_calls;
-		public Utils.ObjectEventHandler<int> active_callsChanged;
+		public Utils.ObjectEventHandler<int> active_callsChanged = null;
 
 
 		public bool CanEnd //true when hangup would have an effect, an active call or a ringing call, dial tone
