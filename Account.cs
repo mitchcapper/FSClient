@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Xml;
 using FreeSWITCH.Native;
 using System.Xml.Serialization;
@@ -49,15 +50,17 @@ namespace FSClient {
 									new	Field(Field.FIELD_TYPE.String, "SIP URL for Checking Voicemail","sip_check_voicemail_url","","",""),
 									new	Field(Field.FIELD_TYPE.String, "SIP URL for Sending to Voicemail","sip_send_voicemail_url","","",""),
 									new Field(Field.FIELD_TYPE.Bool,"Register","register","register","true",""),
+									new Field(Field.FIELD_TYPE.Combo,"Register Transport","register-transport","register-transport","udp","", "udp","tcp","sctp","tls"),
+									new Field(Field.FIELD_TYPE.Bool,"SIP Secure Media","sip_secure_media","sip_secure_media","false",""),
+
 									new Field(Field.FIELD_TYPE.String,"Proxy","proxy","proxy","","Advanced"),
+									new Field(Field.FIELD_TYPE.Int,"Ping Seconds","ping","ping","30","Advanced"),
 									new Field(Field.FIELD_TYPE.String,"Outbound Proxy","outbound-proxy","outbound-proxy","","Advanced"),
 									new Field(Field.FIELD_TYPE.String,"Register Proxy","register-proxy","register-proxy","","Advanced"),
-									
 									new Field(Field.FIELD_TYPE.Int,"Expire Seconds","expire-seconds","expire-seconds","3600","Advanced"),
 									new Field(Field.FIELD_TYPE.Int,"Retry Seconds","retry-seconds","retry-seconds","30","Advanced"),
-									new Field(Field.FIELD_TYPE.Int,"Ping Seconds","ping","ping","30","Advanced"),
-									new Field(Field.FIELD_TYPE.Combo,"Register Transport","register-transport","register-transport","udp","Advanced", "udp","tcp","sctp","tls"),
-									new Field(Field.FIELD_TYPE.Bool,"SIP Secure Media","sip_secure_media","sip_secure_media","false","")
+									new Field(Field.FIELD_TYPE.String,"Contact Params","contact-params","contact-params","","Advanced")
+
 								  };
 		#region Static Methods
 
@@ -131,10 +134,10 @@ namespace FSClient {
 			ReloadSofia();
 		}
 
-		public static void create_gateway_nodes(XmlNode gateways_node) {
+		public static void create_gateway_nodes(XmlNode gateways_node, bool tls_enabled) {
 			foreach (Account account in accounts) {
 				if (account.enabled)
-					account.create_gateway_node(gateways_node);
+					account.create_gateway_node(gateways_node,tls_enabled);
 			}
 		}
 		public static void HandleGatewayEvent(FSEvent evt) {
@@ -197,7 +200,8 @@ namespace FSClient {
 		public void CreateCall(String number) {
 			if (!enabled)
 				return;
-			PortAudio.Call("sofia/gateway/" + gateway_id + "/" + number);
+			String sec_media = secure_media ? "{sip_secure_media=true}" : "";
+			PortAudio.Call(sec_media + "sofia/gateway/" + gateway_id + "/" + number);
 		}
 		private void KillGateway() {
 			if (!String.IsNullOrEmpty(old_gateway_id))
@@ -269,6 +273,16 @@ namespace FSClient {
 		}
 		private bool _enabled;
 
+		public bool secure_media {
+			get { return _secure_media; }
+			private set {
+				if (value == _secure_media)
+					return;
+				_secure_media = value;
+				RaisePropertyChanged("secure_media");
+			}
+		}
+		private bool _secure_media;
 
 		public string name {
 			get { return _name.value; }
@@ -317,13 +331,22 @@ namespace FSClient {
 				Broker.get_instance().reload_sofia(Sofia.RELOAD_CONFIG_MODE.SOFT);
 
 		}
-		private void create_gateway_node(XmlNode gateways_node) {
+		private void create_gateway_node(XmlNode gateways_node, bool tls_enabled) {
 			XmlNode node = XmlUtils.AddNodeNode(gateways_node, "gateway");
 			XmlUtils.AddNodeAttrib(node, "name", gateway_id);
 			old_gateway_id = gateway_id;
 			foreach (FieldValue value in values) {
-				if (!String.IsNullOrEmpty(value.field.xml_name))
+				if (!String.IsNullOrEmpty(value.field.xml_name)){
+					if (value.field.name == "register-transport" && value.value == "tls" && ! tls_enabled){
+						MessageBox.Show("Warning the register-transport for account: " + name + " is set to tls, however you have tls disabled in your sofia settings this account will be disabled for now");
+						gateways_node.RemoveChild(node);
+						enabled = false;
+						return;
+					}
+					if (value.field.name == "sip_secure_media")
+						secure_media = value.value == "true";
 					Utils.add_xml_param(node, value.field.xml_name, value.value);
+				}
 			}
 			//Was preventing gateway ID from being passed to create_channel so removed (needed for incoming calls)
 			//FieldValue user = FieldValue.GetByName(values, "username");

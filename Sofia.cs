@@ -46,11 +46,13 @@ namespace FSClient {
 
 											/*Security*/
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
-											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","tlsv1","Security","tlsv1","sslv23"),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Outbound Certificates", value="out"},new Field.FieldOption{display_value="Outbound Certs & Hostnames", value="subjects_out"}),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","sslv23","Security","sslv23","tlsv1"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
-											new Field(Field.FIELD_TYPE.Bool,"Auth All Packets","auth-all-packets","auth-all-packets","false","Security"),
-											new Field(Field.FIELD_TYPE.Bool,"Auth Calls","auth-calls","auth-calls","false","Security"),
+											new Field(Field.FIELD_TYPE.String,"TLS Certificate Directory","tls-cert-dir","tls-cert-dir","conf/ssl","Security"),
+											new Field(Field.FIELD_TYPE.Int,"TLS Max Verify Depth","tls-verify-depth","tls-verify-depth","2","Security"),
+											new Field(Field.FIELD_TYPE.Bool,"TLS No Certificate Date Validation","tls-no-verify-date","tls-no-verify-date","false","Security"),
 
 											/*Advanced*/
 											new Field(Field.FIELD_TYPE.String,"Challenge Realm","challenge-realm","challenge-realm","auto_from","Advanced"),
@@ -66,7 +68,7 @@ namespace FSClient {
 											new Field(Field.FIELD_TYPE.Int,"RTP Hold Timeout Seconds","rtp-hold-timeout-sec","rtp-hold-timeout-sec","1800","Advanced"),
 											new Field(Field.FIELD_TYPE.Int,"RTP Tiemout Seconds","rtp-timeout-sec","rtp-timeout-sec","300","Advanced"),
 											new Field(Field.FIELD_TYPE.String,"RTP Timer Name","rtp-timer-name","rtp-timer-name","soft","Advanced"),
-											
+
 
 
 									   };
@@ -80,18 +82,35 @@ namespace FSClient {
 			XmlNode profile = XmlUtils.AddNodeNode(profiles, "profile");
 			XmlUtils.AddNodeAttrib(profile, "name", "softphone");
 			XmlNode gateways = XmlUtils.AddNodeNode(profile, "gateways");
-			Account.create_gateway_nodes(gateways);
+			Account.create_gateway_nodes(gateways,FieldValue.GetByName(values, "tls").value == "true");
 			XmlNode settings = XmlUtils.AddNodeNode(profile, "settings");
 
 			Utils.add_xml_param(settings, "context", "public");
 			Utils.add_xml_param(settings, "dialplan", "xml");
 			Utils.add_xml_param(settings, "disable-register", "true");
 			foreach (FieldValue value in values) {
-				if (!String.IsNullOrEmpty(value.field.xml_name))
-					Utils.add_xml_param(settings, value.field.xml_name, value.value);
+				if (!String.IsNullOrEmpty(value.field.xml_name)){
+					String param_value = value.value;
+					if (value.field.name == "tls" && value.value == "true") {//lets make sure that we have a cafile.pem
+						
+						String base_dir = FieldValue.GetByName(values, "tls-cert-dir").value;
+						if (String.IsNullOrWhiteSpace(base_dir))
+							base_dir = "conf/ssl";
+								//this is what freeswitch uses by default if its empty, if this changes this code needs to be updated
+						base_dir = base_dir.Replace('/', '\\'); //windows file path
+						if (base_dir[base_dir.Length - 1] != '\\')
+							base_dir += '\\';
+						if (!System.IO.File.Exists(base_dir + "cafile.pem")){
+							MessageBox.Show("Your sofia settings have TLS enabled however you do not have a cafile.pem in your cert folder, this will most likely cause the entire softphone profile not to load so I am disabling TLS in the profile for now");
+							param_value = "false";
+						}
+
+					}
+					Utils.add_xml_param(settings, value.field.xml_name, param_value);
+				}
 			}
 
-
+			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1200);
 		}
 
 		public enum RELOAD_CONFIG_MODE {
@@ -106,11 +125,9 @@ namespace FSClient {
 					break;
 				case RELOAD_CONFIG_MODE.HARD:
 					Utils.api_exec("sofia", "profile softphone restart reloadxml");
-					DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 100);
 					break;
 				case RELOAD_CONFIG_MODE.MODULE:
 					Utils.api_exec("reload", "mod_sofia");
-					DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 500);
 					break;
 			}
 		}
