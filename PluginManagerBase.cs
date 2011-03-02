@@ -140,7 +140,7 @@ namespace FSClient {
 		protected abstract void SetPlugins(IEnumerable<PluginData> plugins);
 
 		public virtual void SetPluginEnabled(bool enabled, PluginData plugin){
-			plugin.enabled = false;
+			plugin.enabled = enabled;
 		}
 		public abstract void Dispose();
 	}

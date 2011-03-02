@@ -187,6 +187,7 @@ namespace FSClient.Properties {
                 this["EventSocket"] = value;
             }
         }
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::FSClient.SettingsPluginDataCollection HeadsetPlugins {
@@ -197,6 +198,7 @@ namespace FSClient.Properties {
                 this["HeadsetPlugins"] = value;
             }
         }
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::FSClient.SettingsPluginDataCollection ContactPlugins {
@@ -205,6 +207,18 @@ namespace FSClient.Properties {
             }
             set {
                 this["ContactPlugins"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("recordings")]
+        public string RecordingPath {
+            get {
+                return ((string)(this["RecordingPath"]));
+            }
+            set {
+                this["RecordingPath"] = value;
             }
         }
     }

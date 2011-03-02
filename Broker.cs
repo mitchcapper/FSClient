@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -71,7 +72,7 @@ namespace FSClient {
 				}
 				Account.LoadSettings();
 
-
+				recordings_folder = Properties.Settings.Default.RecordingPath;
 				IncomingBalloons = Properties.Settings.Default.IncomingBalloons;
 				IncomingTopMost = Properties.Settings.Default.FrontOnIncoming;
 				ClearDTMFS = Properties.Settings.Default.ClearDTMFS;
@@ -353,7 +354,7 @@ namespace FSClient {
 				Properties.Settings.Default.FrontOnIncoming = IncomingTopMost;
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
-
+				Properties.Settings.Default.RecordingPath = recordings_folder;
 				Properties.Settings.Default.Sofia = new SettingsSofia(sofia);
 				Properties.Settings.Default.ContactPlugins = contact_plugin_manager.GetSettings();
 				Properties.Settings.Default.HeadsetPlugins = headset_plugin_manager.GetSettings();
@@ -588,6 +589,24 @@ namespace FSClient {
 		}
 		private string _cur_dial_str;
 		public Utils.ObjectEventHandler<string> cur_dial_strChanged;
+
+		public string recordings_folder {
+			get { return _recordings_folder; }
+			set {
+				if (value == _recordings_folder)
+					return;
+				if (! Directory.Exists(value)){
+					Directory.CreateDirectory(value);
+					if (! Directory.Exists(value)) //maybe we should prompt here if there is an issue but then again if they don't want to use recordings lets not force it
+						value = null;
+				}
+				_recordings_folder = value;
+				if (recordings_folderChanged != null)
+					recordings_folderChanged(this, value);
+			}
+		}
+		private string _recordings_folder;
+		public Utils.ObjectEventHandler<string> recordings_folderChanged;
 		#endregion
 
 

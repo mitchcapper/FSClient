@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -229,6 +230,10 @@ namespace FSClient {
 				menu.Items.Add(CreateMenuItem("Call on Account " + account.name, create_outgoing_call));
 			}
 			else {
+				if (am_recording_file != null)
+					menu.Items.Add(CreateMenuItem("Stop Recording Call", StopRecordCall));
+				else if (broker.recordings_folder != null)
+					menu.Items.Add(CreateMenuItem("Record Call", RecordCall));
 				menu.Items.Add(CreateMenuItem("Transfer", TransferPrompt));
 				item = new MenuItem() { Header = "Their Volume" };
 				for (int x = -4; x <= 4; x++) {
@@ -251,6 +256,29 @@ namespace FSClient {
 				CallRightClickMenuShowing(this, new CallRightClickEventArgs { call = this, menu = menu });
 			}
 		}
+
+		private void StopRecordCall(){
+			Utils.bgapi_exec("uuid_record", leg_b_uuid + " stop \"" + am_recording_file + "\"");
+			am_recording_file = null;
+		}
+
+		private string am_recording_file;
+		private void RecordCall(){
+			String full_path = broker.recordings_folder.Replace('/', '\\');
+			if (! full_path.Contains(":\\"))
+				full_path = Path.Combine(Directory.GetCurrentDirectory(),full_path); //freeswitch is not happy with relative paths when using quotes
+			full_path = Path.Combine(full_path,"rec_" + other_party_number + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+			int num =1;
+			String orig_full_path = full_path;
+			while (File.Exists(full_path + ".wav"))
+				full_path = orig_full_path + "." + num++;
+
+			full_path = full_path.Replace('\\', '/'); //seems freeswitch will selectively escape what it cant otherwise
+			am_recording_file = full_path + ".wav";
+			Utils.bgapi_exec("uuid_setvar", leg_b_uuid + " record_stereo true");
+			Utils.bgapi_exec("uuid_record", leg_b_uuid + " start \"" + am_recording_file  +"\"");
+		}
+
 		private void Call_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
 			CallPropertyEventArgs args = new CallPropertyEventArgs(this, e.PropertyName);
 			if (e.PropertyName == "state" && CallStateChanged != null)
@@ -407,6 +435,8 @@ namespace FSClient {
 			start_time = DateTime.Now;
 			if (duration_timer == null)
 				duration_timer = new System.Threading.Timer(DurationTimerFired, null, 1000, 1000);
+			if (broker == null)
+				broker = Broker.get_instance();
 		}
 		private static void DurationTimerFired(object obj) {
 			if (Application.Current != null)
@@ -463,8 +493,8 @@ namespace FSClient {
 			return menu;
 		}
 
-		
 
+		private static Broker broker;
 		public void SetOurAudioLevel(int level){
 			if (level > 4 || level < -4)
 				return;

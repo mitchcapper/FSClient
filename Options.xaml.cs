@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
+using WF=System.Windows.Forms;
 
 namespace FSClient {
 	/// <summary>
@@ -35,6 +37,7 @@ namespace FSClient {
 				chkIncomingFront.IsChecked = broker.IncomingTopMost;
 				chkClearDTMFS.IsChecked = broker.ClearDTMFS;
 				chkUseNumbers.IsChecked = broker.UseNumberOnlyInput;
+				txtRecordingPath.Text = broker.recordings_folder;
 
 				comboHeadsetDevice.SelectedItem = broker.ActiveHeadset();
 				if (comboHeadsetDevice.SelectedIndex == -1)
@@ -55,6 +58,7 @@ namespace FSClient {
 			broker.IncomingTopMost = chkIncomingFront.IsChecked == true;
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
+			broker.recordings_folder = txtRecordingPath.Text;
 			broker.SetActiveHeadset(comboHeadsetDevice.SelectedItem as string);
 			broker.SaveSettings();
 
@@ -89,6 +93,15 @@ namespace FSClient {
 
 		private void btnPluginSettings_Click(object sender, RoutedEventArgs e){
 			broker.edit_plugins();
+		}
+
+		private void btnPathBrowse_Click(object sender, RoutedEventArgs e) {
+			WF.FolderBrowserDialog dlg = new WF.FolderBrowserDialog();
+			dlg.SelectedPath = txtRecordingPath.Text;
+			DialogResult res = dlg.ShowDialog();
+			if (res != System.Windows.Forms.DialogResult.OK)
+				return;
+			txtRecordingPath.Text = dlg.SelectedPath;
 		}
 	}
 }

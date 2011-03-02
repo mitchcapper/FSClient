@@ -50,5 +50,8 @@
     <Setting Name="ContactPlugins" Type="FSClient.SettingsPluginDataCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="RecordingPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">recordings</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
