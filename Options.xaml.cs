@@ -19,8 +19,8 @@ namespace FSClient {
 		}
 		private void load_devices(bool from_settings) {
 			PortAudio.AudioDevice[] devices = broker.audio_devices;
-			comboSpeakerInput.ItemsSource = comboHeadsetInput.ItemsSource = from d in devices where d.inputs > 0 select d;
-			comboRingDevice.ItemsSource = comboSpeakerOutput.ItemsSource = comboHeadsetOutput.ItemsSource = from d in devices where d.outputs > 0 select d;
+			comboSpeakerInput.ItemsSource = comboHeadsetInput.ItemsSource = (from d in devices where d.inputs > 0 select d).ToArray();
+			comboRingDevice.ItemsSource = comboSpeakerOutput.ItemsSource = comboHeadsetOutput.ItemsSource = (from d in devices where d.outputs > 0 select d).ToArray();
 			string old_selected_item = comboHeadsetDevice.SelectedItem as string;
 			comboHeadsetDevice.Items.Clear();
 			comboHeadsetDevice.Items.Add("None");

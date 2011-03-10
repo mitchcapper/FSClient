@@ -52,7 +52,7 @@ namespace FSClient {
 			}
 		}
 		protected virtual void LoadSettings(SettingsPluginDataCollection settings){
-			SetPlugins(settings.data.Select(settings_data => settings_data.GetPluginData()));
+			SetPlugins(settings.data.Select(settings_data => settings_data.GetPluginData()).ToArray());
 		}
 
 		public abstract void LoadPlugins();
