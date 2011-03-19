@@ -46,7 +46,7 @@ namespace FSClient {
 
 											/*Security*/
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
-											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Outbound Certificates", value="out"},new Field.FieldOption{display_value="Outbound Certs & Hostnames", value="subjects_out"}),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Outbound Certs", value="out"},new Field.FieldOption{display_value="Outbound Certs & Hostnames", value="subjects_out"},new Field.FieldOption{display_value="All Certs", value="all"},new Field.FieldOption{display_value="All Certs & Outbound Hostnames", value="subjects_out|in"}),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","sslv23","Security","sslv23","tlsv1"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
