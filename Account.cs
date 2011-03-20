@@ -134,10 +134,10 @@ namespace FSClient {
 			ReloadSofia();
 		}
 
-		public static void create_gateway_nodes(XmlNode gateways_node, bool tls_enabled) {
+		public static void create_gateway_nodes(XmlNode gateways_node, bool tls_enabled, bool tls_only) {
 			foreach (Account account in accounts) {
 				if (account.enabled)
-					account.create_gateway_node(gateways_node, tls_enabled);
+					account.create_gateway_node(gateways_node, tls_enabled, tls_only);
 			}
 		}
 		public static void HandleGatewayEvent(FSEvent evt) {
@@ -331,7 +331,7 @@ namespace FSClient {
 				Broker.get_instance().reload_sofia(Sofia.RELOAD_CONFIG_MODE.SOFT);
 
 		}
-		private void create_gateway_node(XmlNode gateways_node, bool tls_enabled) {
+		private void create_gateway_node(XmlNode gateways_node, bool tls_enabled, bool tls_only) {
 			XmlNode node = XmlUtils.AddNodeNode(gateways_node, "gateway");
 			XmlUtils.AddNodeAttrib(node, "name", gateway_id);
 			old_gateway_id = gateway_id;
@@ -340,11 +340,19 @@ namespace FSClient {
 					continue;
 				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
 					continue;
-				if (value.field.name == "register-transport" && value.value == "tls" && !tls_enabled) {
-					MessageBox.Show("Warning the register-transport for account: " + name + " is set to tls, however you have tls disabled in your sofia settings this account will be disabled for now");
-					gateways_node.RemoveChild(node);
-					enabled = false;
-					return;
+				if (value.field.name == "register-transport") {
+					if (value.value == "tls" && !tls_enabled){
+						MessageBox.Show("Warning the register-transport for account: " + name + " is set to tls, however you have tls disabled in your sofia settings this account will be disabled for now");
+						gateways_node.RemoveChild(node);
+						enabled = false;
+						return;
+					}
+					if(value.value != "tls" && tls_only){
+						MessageBox.Show("Warning the register-transport for account: " + name + " is not set to tls, however you have tls only enabled in your sofia settings this account will be disabled for now");
+						gateways_node.RemoveChild(node);
+						enabled = false;
+						return;
+					}
 				}
 				if (value.field.name == "sip_secure_media")
 					secure_media = value.value == "true";

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Xml;
@@ -46,6 +47,7 @@ namespace FSClient {
 
 											/*Security*/
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
+											new Field(Field.FIELD_TYPE.Bool,"TLS Only","tls-only","tls-only","false","Security"),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Outbound Certs", value="out"},new Field.FieldOption{display_value="Outbound Certs & Hostnames", value="subjects_out"},new Field.FieldOption{display_value="All Certs", value="all"},new Field.FieldOption{display_value="All Certs & Outbound Hostnames", value="subjects_out|in"}),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","sslv23","Security","sslv23","tlsv1"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
@@ -81,20 +83,25 @@ namespace FSClient {
 			XmlNode profile = XmlUtils.AddNodeNode(profiles, "profile");
 			XmlUtils.AddNodeAttrib(profile, "name", "softphone");
 			XmlNode gateways = XmlUtils.AddNodeNode(profile, "gateways");
-			Account.create_gateway_nodes(gateways, FieldValue.GetByName(values, "tls").value == "true");
+			Account.create_gateway_nodes(gateways, FieldValue.GetByName(values, "tls").value == "true", FieldValue.GetByName(values, "tls-only").value == "true");
 			XmlNode settings = XmlUtils.AddNodeNode(profile, "settings");
 
 			Utils.add_xml_param(settings, "context", "public");
 			Utils.add_xml_param(settings, "dialplan", "xml");
 			Utils.add_xml_param(settings, "disable-register", "true");
+			bool tls_cert_check_already = false;
 			foreach (FieldValue value in values) {
 				if (String.IsNullOrEmpty(value.field.xml_name))
 					continue;
 				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
 					continue;
 				String param_value = value.value;
-				if (value.field.name == "tls" && value.value == "true" && ! tls_cert_exist_check())
-					param_value = "false";
+				if ((value.field.name=="tls-only" || value.field.name == "tls") && value.value == "true" && !tls_cert_check_already) {
+					if (!tls_cert_exist_check())
+						param_value = "false";
+					else
+						tls_cert_check_already = true;
+				}
 
 				Utils.add_xml_param(settings, value.field.xml_name, param_value);
 			}
@@ -135,17 +142,30 @@ namespace FSClient {
 		}
 
 		private bool master_profile_ok;
-		public void sofia_profile_check() {
-			master_profile_ok = true;
+		private bool sofia_actual_profile_check(bool is_last_try){
 			String res = Utils.api_exec("sofia", "status profile softphone");
-			if (res.Trim() == "Invalid Profile!"){
+			if (res.Trim() == "Invalid Profile!") {
+				if (is_last_try)
+					return false;
 				String tls_port_msg = "";
 				if (FieldValue.GetByName(values, "tls").value == "true")
 					tls_port_msg += " and tls bind port (" + FieldValue.GetByName(values, "tls-sip-port").value + ")";
 				MessageBox.Show("Warning the master sofia profile was not able to load and the phone will most likely _not_ work, make sure the local bind port (" + FieldValue.GetByName(values, "sip-port").value + ")" + tls_port_msg + " is free(set under the Advanced tab of in the sofia settings) and FSClient is allowed through your firewall, otherwise check the freeswitch.log for more details.  You can try reloading the sofia profile by editing the sofia settings and clicking save to see if fixed.");
 				master_profile_ok = false;
+				return false;
 			}
+			master_profile_ok = true;
+			return true;
+		}
+		public void sofia_profile_check_last(){
+			
+			bool res = sofia_actual_profile_check(true);
+			Debug.WriteLine("GOT TO Last Check and its result was: " + res);
+		}
 
+		public void sofia_profile_check() {
+			if (!sofia_actual_profile_check(false))
+				DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check_last, 1200);
 		}
 		public void edit() {
 			if (Broker.get_instance().active_calls != 0) {

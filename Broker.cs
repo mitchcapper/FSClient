@@ -606,7 +606,7 @@ namespace FSClient {
 			}
 		}
 		private string _recordings_folder;
-		public Utils.ObjectEventHandler<string> recordings_folderChanged;
+		public Utils.ObjectEventHandler<string> recordings_folderChanged=null;
 		#endregion
 
 
