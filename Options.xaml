@@ -18,7 +18,7 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition />
-			<RowDefinition Height="80" />
+			<RowDefinition Height="90" />
 			<RowDefinition Height="30" />
 		</Grid.RowDefinitions>
 		<Grid Grid.ColumnSpan="2">
@@ -63,11 +63,12 @@
 				<Button Name="btnPathBrowse" Content="Browse" Height="25" Click="btnPathBrowse_Click" />
 			</StackPanel>
 		</Grid>
-		<StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="3">
+		<StackPanel Grid.Row="1" Grid.Column="1">
 			<CheckBox x:Name="chkIncomingFront"  Content="Bring To Front On Incoming Calls" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 			<CheckBox x:Name="chkIncomingBalloons" Content="Show Incoming Call Notification Balloons" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 			<CheckBox x:Name="chkClearDTMFS" Content="Clear Key Presses In Call Stats On Disconnect" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 			<CheckBox x:Name="chkUseNumbers" Content="Only Allow Numerical Input While Dialing" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
+			<CheckBox x:Name="chkUpdatesOnStart" Content="Check for Updates on Startup"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 		</StackPanel>
 		<Button Content="Save" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="101,0,0,0" Name="btnSave" VerticalAlignment="Center" Width="75" Grid.ColumnSpan="2" Click="btnSave_Click" />
 		<Button Content="Cancel"  Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="172,0,0,0" Name="btnCancel" VerticalAlignment="Center" Width="75" Click="btnCancel_Click" />

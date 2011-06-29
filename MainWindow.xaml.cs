@@ -158,6 +158,20 @@ namespace FSClient {
 		}
 
 		private bool text_interception_enabled = true;
+		private bool HandleTextInput(String text){
+			char[] chars = text.ToCharArray();
+			bool handled = false;
+			foreach (Char c in chars) {
+				if (c > 32 && c < 127) {
+					if (text_mode == TEXT_INPUT_MODE.NUMBERS_ONLY || (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered))
+						simple_text_mode_char_convert(c);
+					else
+						broker.handle_key_action(c);
+					handled = true;
+				}			
+			}
+			return handled;
+		}
 		void MainWindow_PreviewTextInput(object sender, TextCompositionEventArgs e) {
 			if (!broker.fully_loaded)
 				return;
@@ -165,43 +179,8 @@ namespace FSClient {
 				e.Handled = false;
 				return;
 			}
-			char[] chars = e.Text.ToCharArray();
-			char[] sys_chars = e.ControlText.ToCharArray();
-			foreach (Char c in sys_chars) {
-				if (c == 22) //paste / control + v
-				{
-					String clipboard = Clipboard.GetText();
-					char[] tmp = new char[chars.Length + clipboard.Length];
-					chars.CopyTo(tmp, 0);
-					clipboard.ToCharArray().CopyTo(tmp, chars.Length);
-					chars = tmp;
-				}
-				else if (c == 6){ // control + f
-					txtSearchBox.TextBoxFocus();
-				}
-			}
+			e.Handled = HandleTextInput(e.Text);
 
-			e.Handled = false;
-			foreach (Char c in chars) {
-				bool handled = true;
-				if (c > 32 && c < 127) {
-					if (text_mode == TEXT_INPUT_MODE.NUMBERS_ONLY || (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered))
-						simple_text_mode_char_convert(c);
-					else
-						broker.handle_key_action(c);
-
-				}
-				else if (c == '\b')
-					broker.handle_special_action(Broker.KEYBOARD_ACTION.Backspace);
-				else if (c == '\r')
-					broker.handle_special_action(Broker.KEYBOARD_ACTION.Enter);
-				else if (c == 27)
-					broker.handle_special_action(Broker.KEYBOARD_ACTION.Escape);
-				else
-					handled = false;
-				if (handled)
-					e.Handled = true;
-			}
 		}
 		void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e) {
 			if (!broker.fully_loaded)
@@ -210,11 +189,20 @@ namespace FSClient {
 				e.Handled = false;
 				return;
 			}
-
-			if (e.Key == Key.Return) {
+			bool cntrl_pressed = (System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control;
+			if (e.Key == Key.Return)
 				broker.handle_special_action(Broker.KEYBOARD_ACTION.Enter);
-				e.Handled = true;
-			}
+			else if (e.Key == Key.Back)
+				broker.handle_special_action(Broker.KEYBOARD_ACTION.Backspace);
+			else if (e.Key == Key.Escape)
+				broker.handle_special_action(Broker.KEYBOARD_ACTION.Escape);
+			else if (e.Key == Key.V && cntrl_pressed)
+				HandleTextInput(Clipboard.GetText());
+			else if (e.Key == Key.F && cntrl_pressed)
+				txtSearchBox.TextBoxFocus();
+			else
+				return;
+			e.Handled = true;
 		}
 		#endregion
 		private static MainWindow _instance;
@@ -235,6 +223,7 @@ namespace FSClient {
 		}
 		void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 			PreviewTextInput += MainWindow_PreviewTextInput;
+			txtNumber.PreviewTextInput += MainWindow_PreviewTextInput;
 			PreviewKeyDown += MainWindow_PreviewKeyDown; //return must be handled seperately as buttons are triggered on down it seems
 			MouseUp += MainWindow_MouseUp;
 

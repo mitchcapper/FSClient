@@ -10,7 +10,12 @@ namespace FSClient {
 			this.evt = evt;
 		}
 		public string get_header(string name) {
-			return freeswitch.switch_event_get_header(evt, name);
+			//return freeswitch.switch_event_get_header(evt, name); //removed as for some reason its not swigging right for now...
+			for (var x = evt.headers; x != null; x = x.next){
+				if (name.ToLower() == x.name.ToLower())
+					return x.value;
+			}
+			return null;
 		}
 		public string body { get { return evt.body; } }
 		public int flags { get { return evt.flags; } }

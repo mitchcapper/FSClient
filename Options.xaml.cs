@@ -37,6 +37,7 @@ namespace FSClient {
 				chkIncomingFront.IsChecked = broker.IncomingTopMost;
 				chkClearDTMFS.IsChecked = broker.ClearDTMFS;
 				chkUseNumbers.IsChecked = broker.UseNumberOnlyInput;
+				chkUpdatesOnStart.IsChecked = broker.CheckForUpdates != "Never";
 				txtRecordingPath.Text = broker.recordings_folder;
 
 				comboHeadsetDevice.SelectedItem = broker.ActiveHeadset();
@@ -59,6 +60,7 @@ namespace FSClient {
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
 			broker.recordings_folder = txtRecordingPath.Text;
+			broker.CheckForUpdates = chkUpdatesOnStart.IsChecked == true ?  "OnStart" : "Never";
 			broker.SetActiveHeadset(comboHeadsetDevice.SelectedItem as string);
 			broker.SaveSettings();
 

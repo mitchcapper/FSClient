@@ -53,5 +53,11 @@
     <Setting Name="RecordingPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">recordings</Value>
     </Setting>
+    <Setting Name="CheckForUpdates" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OnStart</Value>
+    </Setting>
+    <Setting Name="UpdateURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://fsclient.fluky.biz/version</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

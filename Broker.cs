@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Xml;
@@ -29,7 +31,7 @@ namespace FSClient {
 		}
 
 		public bool fully_loaded;
-		private void upgrade_settings(){
+		private void upgrade_settings() {
 			try {
 				if (Properties.Settings.Default.SettingsUpgrade) {
 					Properties.Settings.Default.Upgrade();
@@ -40,8 +42,8 @@ namespace FSClient {
 			catch {
 				Properties.Settings.Default.SettingsUpgrade = false;
 				Properties.Settings.Default.Save();
-				
-				
+
+
 			}
 		}
 		private void initContactManager() {
@@ -56,14 +58,15 @@ namespace FSClient {
 				return;
 			is_inited = true;
 			try {
-				if (! System.IO.File.Exists("conf/freeswitch.xml")){
+				if (!System.IO.File.Exists("conf/freeswitch.xml")) {
 					MessageBox.Show("conf/freeswitch.xml is not found, without it we must quit.", "Missing Base Configuration File", MessageBoxButton.OK, MessageBoxImage.Error);
 					Environment.Exit(-1);
 				}
 				if (System.IO.File.Exists("log/freeswitch.log")) {
 					try {
 						System.IO.File.WriteAllText("log/freeswitch.log", "");
-					} catch (System.IO.IOException e) {
+					}
+					catch (System.IO.IOException e) {
 						MessageBox.Show(
 							"Unable to truncate freeswitch.log (most likely due to FSCLient already running) due to: " + e.Message,
 							"Truncation Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -77,6 +80,7 @@ namespace FSClient {
 				IncomingTopMost = Properties.Settings.Default.FrontOnIncoming;
 				ClearDTMFS = Properties.Settings.Default.ClearDTMFS;
 				UseNumberOnlyInput = Properties.Settings.Default.UseNumberOnlyInput;
+				CheckForUpdates = Properties.Settings.Default.CheckForUpdates;
 
 				if (Properties.Settings.Default.Sofia != null)
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
@@ -94,7 +98,8 @@ namespace FSClient {
 				else
 					event_socket = new EventSocket();
 
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				MessageBoxResult res = MessageBox.Show(
 					"Unable to properly load our settings if you continue existing settings may be lost, do you want to continue?(No to exit)\n" +
 					e.Message, "Error Loading Settings", MessageBoxButton.YesNo);
@@ -102,6 +107,9 @@ namespace FSClient {
 					Environment.Exit(-1);
 			}
 			Thread t = new Thread(init_freeswitch);
+			t.IsBackground = true;
+			t.Start();
+			t = new Thread(VersionCheck);
 			t.IsBackground = true;
 			t.Start();
 		}
@@ -115,7 +123,8 @@ namespace FSClient {
 				if (FreeswitchLoaded != null)
 					FreeswitchLoaded(this, null);
 				fully_loaded = true;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				while (e.InnerException != null)
 					e = e.InnerException;
 				MessageBox.Show("Unable to properly init freeswitch core due to:\n" + e.Message + "\n" + e.StackTrace, "Error Starting Freeswitch Core", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -253,7 +262,7 @@ namespace FSClient {
 		}
 
 		public void reload_audio_devices(bool and_settings, bool no_save) {
-			if(active_calls > 0){
+			if (active_calls > 0) {
 				MessageBox.Show("Unable to reload audio devices while calls are active");
 				return;
 			}
@@ -270,7 +279,7 @@ namespace FSClient {
 			//OffHook = true;
 			//Utils.bgapi_exec("pa", "play tone_stream://%(10000,0,350,440);loops=20");
 		}
-		public void DialString(String str){
+		public void DialString(String str) {
 			if (string.IsNullOrWhiteSpace(str))
 				return;
 			MainWindowRemoveFocus(true);
@@ -296,10 +305,11 @@ namespace FSClient {
 					Call.active_call.answer();
 				else
 					DialTone();
-			} else {
+			}
+			else {
 				if (String.IsNullOrEmpty(cur_dial_str))
 					DialTone();
-				else{
+				else {
 					DialString(cur_dial_str);
 					cur_dial_str = "";
 				}
@@ -309,9 +319,11 @@ namespace FSClient {
 			if (Call.active_call != null) {
 				if (Call.active_call.state == Call.CALL_STATE.Ringing) {
 					Call.active_call.hangup(Call.active_call.is_outgoing ? "User Cancelled" : "User Ignored Call");
-				} else
+				}
+				else
 					Call.active_call.hangup("User Ended");
-			} else
+			}
+			else
 				cur_dial_str = "";
 		}
 		public void FlashPressed() {
@@ -351,6 +363,7 @@ namespace FSClient {
 				SaveAudioSettings();
 				Account.SaveSettings();
 				Properties.Settings.Default.IncomingBalloons = IncomingBalloons;
+				Properties.Settings.Default.CheckForUpdates = CheckForUpdates;
 				Properties.Settings.Default.FrontOnIncoming = IncomingTopMost;
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
@@ -360,7 +373,8 @@ namespace FSClient {
 				Properties.Settings.Default.HeadsetPlugins = headset_plugin_manager.GetSettings();
 				Properties.Settings.Default.EventSocket = new SettingsEventSocket(event_socket);
 				Properties.Settings.Default.Save();
-			} catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
+			}
+			catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
 				MessageBox.Show("Error saving settings out: " + e.Message + "\n" + e.StackTrace);
 			}
 		}
@@ -453,7 +467,47 @@ namespace FSClient {
 
 		public bool IncomingBalloons;
 		public bool IncomingTopMost;
+		public string CheckForUpdates;
 
+		private void VersionCheck() {
+			if (CheckForUpdates == "Never")
+				return;
+			try {
+				Version our_version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+				WebRequest request = WebRequest.Create(Properties.Settings.Default.UpdateURL);
+				using (WebResponse response = request.GetResponse()) {
+					using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8)) {
+						string content = reader.ReadToEnd();
+						String[] arr = content.Split(new[] { '!' });
+						int pos = 0;
+						String version_str = arr[pos++];
+						String version_url = "";
+						String version_message = "";
+						if (arr.Length > 1)
+							version_url = arr[pos++];
+						if (arr.Length > 2)
+							version_message = arr[pos++];
+						Version latest_version = new Version(version_str);
+						if (latest_version.CompareTo(our_version) == 1) {
+							if (String.IsNullOrWhiteSpace(version_message))
+								version_message = "An update is available for FSClient.";
+
+							MessageBoxButton buttons = MessageBoxButton.OK;
+							if (!String.IsNullOrWhiteSpace(version_url)) {
+								version_message += "\nDo you want to proceed to the url below(default browser will be launched) to obtain FSClient:\n" + version_url;
+								buttons = MessageBoxButton.YesNo;
+							}
+							MessageBoxResult res = MessageBox.Show(version_message, "FSClient Update", buttons, MessageBoxImage.Question);
+							if (res == MessageBoxResult.Yes)
+								System.Diagnostics.Process.Start(version_url);
+						}
+					}
+				}
+			}
+			catch (Exception){}
+
+		}
 		public bool UseNumberOnlyInput {
 			get { return _UseNumberOnlyInput; }
 			set {
@@ -568,7 +622,8 @@ namespace FSClient {
 							call.hangup("Call ignored due to DND");
 					}
 					PortAudio.ClearRingDev();
-				} else if (RingDev != null)
+				}
+				else if (RingDev != null)
 					RingDev.SetRingDev();
 				if (DNDChanged != null)
 					DNDChanged(this, value);
@@ -595,9 +650,9 @@ namespace FSClient {
 			set {
 				if (value == _recordings_folder)
 					return;
-				if (! Directory.Exists(value)){
+				if (!Directory.Exists(value)) {
 					Directory.CreateDirectory(value);
-					if (! Directory.Exists(value)) //maybe we should prompt here if there is an issue but then again if they don't want to use recordings lets not force it
+					if (!Directory.Exists(value)) //maybe we should prompt here if there is an issue but then again if they don't want to use recordings lets not force it
 						value = null;
 				}
 				_recordings_folder = value;
@@ -606,7 +661,7 @@ namespace FSClient {
 			}
 		}
 		private string _recordings_folder;
-		public Utils.ObjectEventHandler<string> recordings_folderChanged=null;
+		public Utils.ObjectEventHandler<string> recordings_folderChanged = null;
 		#endregion
 
 
@@ -626,7 +681,7 @@ namespace FSClient {
 		public void edit_event_socket() {
 			event_socket.edit();
 		}
-		public void edit_plugins(){
+		public void edit_plugins() {
 			PluginOptionsWindow window = new PluginOptionsWindow();
 			window.ShowDialog();
 		}
@@ -636,7 +691,8 @@ namespace FSClient {
 		public static EventHandler<EventArgs> FreeswitchLoaded;
 		public static EventHandler<FSEvent> NewEvent;
 		private void event_handler(FreeSWITCH.EventBinding.EventBindingArgs args) {
-
+			if (Application.Current == null)//can happen during shutdown
+				return;
 			if (BroadcastHandler == null)
 				BroadcastHandler = new BroadcastEventDel(BroadcastEvent);
 			Application.Current.Dispatcher.BeginInvoke(BroadcastHandler, new object[] { new FSEvent(args.EventObj) });
@@ -645,7 +701,7 @@ namespace FSClient {
 		public OurAutoCompleteBox GetContactSearchBox() {
 			return MainWindow.get_instance().GetContactSearchBox();
 		}
-		public void MainWindowRemoveFocus(bool ResetContactSearchText=false){
+		public void MainWindowRemoveFocus(bool ResetContactSearchText = false) {
 			MainWindow.get_instance().RemoveFocus(ResetContactSearchText);
 		}
 		private delegate void BroadcastEventDel(FSEvent evt);
@@ -659,7 +715,7 @@ namespace FSClient {
 
 		private delegate void config_gen_del(XmlNode parent);
 
-		private string generate_xml_config(String name, String desc, config_gen_del func){
+		private string generate_xml_config(String name, String desc, config_gen_del func) {
 			XmlDocument root_doc = new XmlDocument();
 			XmlNode doc = root_doc.CreateElement("document");
 			root_doc.AppendChild(doc);
@@ -677,7 +733,7 @@ namespace FSClient {
 		private string xml_search(FreeSWITCH.SwitchXmlSearchBinding.XmlBindingArgs args) {
 			if (args.KeyName != "name" || args.Section != "configuration" || args.TagName != "configuration")
 				return null;
-			switch (args.KeyValue){
+			switch (args.KeyValue) {
 				case "sofia.conf":
 					return generate_xml_config(args.KeyValue, "Sofia Endpoint", sofia.gen_config);
 				case "event_socket.conf":
@@ -691,7 +747,7 @@ namespace FSClient {
 		private bool is_inited;
 		private bool fs_inited;
 		private static IDisposable event_bind;
-		
+
 		private void fs_core_init() {
 			fs_inited = true;
 			String err = "";
