@@ -13,7 +13,8 @@
         <ComponentRef Id="cmpA55C2541EC04E8B75AD76101C9804EBB"/>
         <ComponentRef Id="cmpE91707685ACB2C88135F5471F2366258"/>
         <ComponentRef Id="cmp064A31C0D0158D484EBB856753AC6878"/>
-      </ComponentGroup>
+		<ComponentRef Id="cmp0936352374F44B63BEBD8A5A83D0D1E3"/>
+	  </ComponentGroup>
         <DirectoryRef Id="INSTALLLOCATION">
           <Component Id="cmp3900B358BC2FB69DF2C42DDE35C5BBB2" Guid="*">
             <File Id="fil322A57E96A97A8179B75065ABF94F809" KeyPath="yes" Source="$(var.FSClient.TargetDir)\FreeSwitch.dll" />
@@ -51,7 +52,11 @@
           <Component Id="cmp064A31C0D0158D484EBB856753AC6878" Guid="*">
             <File Id="fil446D50CD91F7AAF5B4F0CCF070B2C140" KeyPath="yes" Source="$(var.FSClient.TargetDir)\ssleay32.dll" />
           </Component>
-        </DirectoryRef>
+			<Component Id="cmp0936352374F44B63BEBD8A5A83D0D1E3" Guid="*">
+				<File Id="fil2B20FA74F4734346894CD085F4A0829E" KeyPath="yes" Source="$(var.FSClient.TargetDir)\fs_cli.exe" />
+			</Component>
+			
+		</DirectoryRef>
     </Fragment>
     <Fragment>
       <ComponentGroup Id="FSCoreModComp">

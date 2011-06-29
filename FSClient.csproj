@@ -263,7 +263,8 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_bv.dll .\mod
 
 if not exist ".\conf" md conf
-copy ..\..\"external items"\conf\freeswitch.xml .\conf</PostBuildEvent>
+copy ..\..\"external items"\conf\freeswitch.xml .\conf
+copy ..\..\"external items"\fs_cli.exe .</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>if exist "%25FREESWITCH_SRC_LOCATION%25" copy  "%25FREESWITCH_SRC_LOCATION%25"\Win32\$(ConfigurationName)\mod\FreeSWITCH.Managed.dll ..\..\"external items\release\"</PreBuildEvent>
