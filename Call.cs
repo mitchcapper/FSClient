@@ -258,7 +258,7 @@ namespace FSClient {
 		}
 
 		private void StopRecordCall(){
-			Utils.bgapi_exec("uuid_record", leg_b_uuid + " stop \"" + am_recording_file + "\"");
+			Utils.bgapi_exec("uuid_record", leg_b_uuid + " stop '" + am_recording_file + "'");
 			am_recording_file = null;
 		}
 
@@ -276,7 +276,7 @@ namespace FSClient {
 			full_path = full_path.Replace('\\', '/'); //seems freeswitch will selectively escape what it cant otherwise
 			am_recording_file = full_path + ".wav";
 			Utils.bgapi_exec("uuid_setvar", leg_b_uuid + " record_stereo true");
-			Utils.bgapi_exec("uuid_record", leg_b_uuid + " start \"" + am_recording_file  +"\"");
+			Utils.bgapi_exec("uuid_record", leg_b_uuid + " start '" + am_recording_file  +"'");
 		}
 
 		private void Call_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
