@@ -495,6 +495,8 @@ namespace FSClient {
 
 							MessageBoxButton buttons = MessageBoxButton.OK;
 							if (!String.IsNullOrWhiteSpace(version_url)) {
+								if (!version_url.StartsWith("http")) //a bit of a security check, lets make sure the update website isn't trying to get the user to launch a local process
+									version_url = "https://" + version_url;
 								version_message += "\nDo you want to proceed to the url below(default browser will be launched) to obtain FSClient:\n" + version_url;
 								buttons = MessageBoxButton.YesNo;
 							}
