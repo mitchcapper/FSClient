@@ -416,7 +416,7 @@ namespace FSClient {
 
 		private static void HandleChannelAnswerEvent(FSEvent evt, String uuid) {
 			Call call = (from c in calls where c.leg_b_uuid == uuid select c).SingleOrDefault();
-			if (call == null)
+			if (call == null || call.state == CALL_STATE.Answered)
 				return;
 
 			if (call.state == CALL_STATE.Ringing || (call.state == CALL_STATE.Hold_Ringing && !call.is_outgoing))
@@ -585,7 +585,8 @@ namespace FSClient {
 			PortAudio.SendDTMF(dtmf);
 		}
 		public void switch_to() {
-			PortAudio.SwitchTo(portaudio_id);
+			if (active_call != this)
+				PortAudio.SwitchTo(portaudio_id);
 		}
 		public void create_outgoing_call() {
 			account.CreateCall(other_party_number);
@@ -594,7 +595,7 @@ namespace FSClient {
 			switch (state) {
 				case CALL_STATE.Hold_Ringing:
 				case CALL_STATE.Hold:
-					switch_to();
+						switch_to();
 					break;
 				case CALL_STATE.Ringing:
 					if (is_outgoing)
