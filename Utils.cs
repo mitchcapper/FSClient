@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Reflection;
+using System.Timers;
 using System.Windows;
 using System.Xml;
 using FreeSWITCH.Native;
@@ -13,6 +14,7 @@ namespace FSClient {
 
 	public class Utils {
 		private static BackgroundWorker bgWorker;
+		private static Timer bg_watcher;
 		private static Api API;
 		public delegate void ObjectEventHandler<T>(object sender, T data);
 		public static string api_exec(String cmd, String args) {
@@ -25,12 +27,16 @@ namespace FSClient {
 			public string args;
 		}
 		private static Api BGAPI;
+		private static BGArgs current_exec;
 		private static Queue pending_bg_queue = new Queue();
 		public static void bgapi_exec(String cmd, String args) {
 			if (bgWorker == null) {
+				bg_watcher = new Timer(30 * 1000);
+				bg_watcher.Elapsed += new ElapsedEventHandler(bg_watcher_Elapsed);
 				bgWorker = new BackgroundWorker();
 				bgWorker.DoWork += bgWorker_DoWork;
 				bgWorker.RunWorkerCompleted += bgWorker_RunWorkerCompleted;
+				bg_watcher.Start();
 			}
 			BGArgs newBGArgs = new BGArgs { args = args, cmd = cmd };
 			lock (pending_bg_queue.SyncRoot) {
@@ -39,6 +45,12 @@ namespace FSClient {
 				else
 					bgWorker.RunWorkerAsync(newBGArgs);
 			}
+		}
+		private static BGArgs last_exec_check;
+		static void bg_watcher_Elapsed(object sender, ElapsedEventArgs e) {
+			if (current_exec != null && current_exec == last_exec_check)
+				MessageBox.Show("Warning freeswitch is most likely deadlocked, something has been pending in the bg queue for > 30 seconds, currently executing: " + current_exec.cmd + " " + current_exec.args);
+			last_exec_check = current_exec;
 		}
 
 		private static void bgapi_dequeue() {
@@ -53,10 +65,11 @@ namespace FSClient {
 
 		static void bgWorker_DoWork(object sender, DoWorkEventArgs e) {
 
-			BGArgs args = (BGArgs)e.Argument;
+			current_exec = (BGArgs)e.Argument;
 			if (BGAPI == null)
 				BGAPI = new Api();
-			e.Result = BGAPI.Execute(args.cmd, args.args);
+			e.Result = BGAPI.Execute(current_exec.cmd, current_exec.args);
+			current_exec = null;
 		}
 
 		public static void add_xml_param(XmlNode node, String name, String value) {

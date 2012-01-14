@@ -29,7 +29,7 @@ namespace FSClient {
 		public static Field[] fields = {
 
 										   /*Default*/
-											new Field(Field.FIELD_TYPE.MultiItem,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i"),
+											new Field(Field.FIELD_TYPE.MultiItem,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i","G729"),
 											new Field(Field.FIELD_TYPE.Combo,"Inbound Codec Negotiation","inbound-codec-negotiation","inbound-codec-negotiation","generous","","generous","greedy","scrooge"),
 											new Field(Field.FIELD_TYPE.String,"External RTP IP","ext-rtp-ip","ext-rtp-ip","auto-nat",""),
 											new Field(Field.FIELD_TYPE.String,"External SIP IP","ext-sip-ip","ext-sip-ip","auto-nat",""),
@@ -54,7 +54,7 @@ namespace FSClient {
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
 											new Field(Field.FIELD_TYPE.String,"TLS Certificate Directory","tls-cert-dir","tls-cert-dir","conf/ssl","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS Max Verify Depth","tls-verify-depth","tls-verify-depth","2","Security"),
-											new Field(Field.FIELD_TYPE.Bool,"TLS No Certificate Date Validation","tls-no-verify-date","tls-no-verify-date","false","Security"),
+											new Field(Field.FIELD_TYPE.Bool,"TLS Verify Date","tls-verify-date","tls-verify-date","true","Security"),
 
 											/*Advanced*/
 											new Field(Field.FIELD_TYPE.String,"Challenge Realm","challenge-realm","challenge-realm","auto_from","Advanced"),
@@ -106,7 +106,7 @@ namespace FSClient {
 				Utils.add_xml_param(settings, value.field.xml_name, param_value);
 			}
 
-			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1200);
+			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1000);
 		}
 		private bool tls_cert_exist_check(){
 			String base_dir = FieldValue.GetByName(values, "tls-cert-dir").value;
@@ -137,15 +137,23 @@ namespace FSClient {
 					break;
 				case RELOAD_CONFIG_MODE.MODULE:
 					Utils.api_exec("reload", "mod_sofia");
+					DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1500);
 					break;
 			}
 		}
 
 		private bool master_profile_ok;
 		private bool sofia_actual_profile_check(bool is_last_try){
-			String res = Utils.api_exec("sofia", "status profile softphone");
-			if (res.Trim() == "Invalid Profile!") {
-				if (is_last_try)
+			String res = Utils.api_exec("sofia", "xmlstatus profile softphone").ToLower().Trim();
+			if (res == "invalid command!"){
+				if (! is_last_try)
+					return false;
+				MessageBox.Show("Warning mod_sofia module does not seem to be loaded please make sure it exists");
+				master_profile_ok = false;
+				return false;
+			}
+			if (res == "invalid profile!") {
+				if (! is_last_try)
 					return false;
 				String tls_port_msg = "";
 				if (FieldValue.GetByName(values, "tls").value == "true")
@@ -154,13 +162,19 @@ namespace FSClient {
 				master_profile_ok = false;
 				return false;
 			}
+			if (res.Contains("<context>public</context>") == false){
+				if (!is_last_try)
+					return false;
+				master_profile_ok = false;
+				MessageBox.Show("I believe there may be a problem with sofia, but I do not know what");
+				return false;
+			}
 			master_profile_ok = true;
 			return true;
 		}
 		public void sofia_profile_check_last(){
 			
 			bool res = sofia_actual_profile_check(true);
-			Debug.WriteLine("GOT TO Last Check and its result was: " + res);
 		}
 
 		public void sofia_profile_check() {

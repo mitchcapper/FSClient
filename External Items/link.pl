@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 use strict;
-my $FS_BUILD_PATH = "freeswitch\\Win32\\Debug";
-my $WORKING_DIR = "FSClient\\bin\Debug";
+my $FS_BUILD_PATH = "c:\\software\\freeswitch\\Win32\\Debug";
+my $WORKING_DIR = "..\\bin\\Debug";
 
-my $USE_LN = 0; #THIS SHOULD BE SET TO 0 (unless you have an ln equiv for windows)
+my $USE_LN =0; #THIS SHOULD BE SET TO 0 (unless you have an ln equiv for windows)
 my $COPY_CONF = 1;
-my $VERBOSE = 1;
+my $VERBOSE = 0;
 my $try_pdb = 1;
 my $VERBOSE_SYS_RES = 0;
 die "Build directory does not exist: $FS_BUILD_PATH" if (! -e $FS_BUILD_PATH);
@@ -24,12 +24,17 @@ sub exec_cmd($){
 	$res =~ s/\n/\n\t/g;
 	print $res . "\n" if ($VERBOSE_SYS_RES);
 }
+sub link_file($$){
+	my ($src,$dst) = @_;
+	exec_cmd(qq~$link_cmd "$src" "$dst"~);
+	print STDERR "Warning after copying/linking file: \"$dst\" did not exist src: $src\n" if (! -e $dst);
+}
 exec_cmd("mkdir " . $WORKING_DIR . "\\mod") if (-e $WORKING_DIR . "\\mod" == 0);
 foreach my $module (@modules){
 	my $rel_path = "mod\\" . $module . ".dll";
 	my $src_path = $FS_BUILD_PATH . "\\" . $rel_path;
 	if (-e $src_path == 0){
-		print "Warning: $src_path does not exist\n";
+		print STDERR "Warning: $src_path does not exist\n";
 		next;
 	}
 	if ($try_pdb){
@@ -37,12 +42,10 @@ foreach my $module (@modules){
 		$pdb_file =~ s/\.dll$/.pdb/si;
 		my $pdb_dest = "$WORKING_DIR\\$rel_path";
 		$pdb_dest =~ s/\.dll$/.pdb/si;
-		if (-e $pdb_file && (! $USE_LN || ! -e $pdb_dest) ){
-			exec_cmd($link_cmd . qq~ "$pdb_file" "$pdb_dest"~);	
-		}
+		link_file($pdb_file,$pdb_dest) if (-e $pdb_file && (! $USE_LN || ! -e $pdb_dest));
 	}
 	next if (-e "$WORKING_DIR\\" . $rel_path && $USE_LN);
-	exec_cmd($link_cmd . qq~ "$src_path" "$WORKING_DIR\\$rel_path"~);
+	link_file($src_path, "$WORKING_DIR\\$rel_path");
 
 }
 
@@ -50,7 +53,7 @@ foreach my $file (@MAIN_FILES){
 	my $src_path = $FS_BUILD_PATH . "\\" . $file;
 	$src_path = $FS_BUILD_PATH . "\\mod\\" . $file if (-e $FS_BUILD_PATH . "\\mod\\" . $file); #mainly for putting mod_managed.dll into the root
 	if (-e $src_path == 0){
-		print "Warning: $src_path does not exist\n";
+		print STDERR "Warning: $src_path does not exist\n";
 		next;
 	}
 	if ($try_pdb){
@@ -58,15 +61,13 @@ foreach my $file (@MAIN_FILES){
 		$pdb_file =~ s/\.dll$/.pdb/si;
 		my $pdb_dest = "$WORKING_DIR\\$file";
 		$pdb_dest =~ s/\.dll$/.pdb/si;
-		if (-e $pdb_file && (! $USE_LN || ! -e $pdb_dest) ){
-			exec_cmd($link_cmd . qq~ "$pdb_file" "$pdb_dest"~);	
-		}
+		link_file($pdb_file,$pdb_dest) if (-e $pdb_file && (! $USE_LN || ! -e $pdb_dest));
 	}
 	next if (-e "$WORKING_DIR\\" . $file && $USE_LN);
-	exec_cmd($link_cmd . qq~ "$src_path" "$WORKING_DIR\\$file"~);
+	link_file($src_path, "$WORKING_DIR\\$file");
 }
 
 if ($COPY_CONF){
 	exec_cmd("mkdir " . $WORKING_DIR . "\\conf") if (-e $WORKING_DIR . "\\conf" == 0);
-	exec_cmd($link_cmd . qq~ "conf\\freeswitch.xml" "$WORKING_DIR\\conf\\freeswitch.xml"~);
+	link_file("conf\\freeswitch.xml","$WORKING_DIR\\conf\\freeswitch.xml");
 }

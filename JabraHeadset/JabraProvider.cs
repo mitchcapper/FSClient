@@ -10,16 +10,16 @@ namespace JabraHeadset {
 
 		//ake sure mic mute actually goes both ways
 		internal JA.IDevice device;
-
-		public string device_path { get { return device.DeviceHandle.ToString(); } }
+		public string device_path { get; private set; }
+		private string device_name;
 		public override string GetName() {
-			return device.Name;
+			return device_name;
 		}
 		public override string GetManufacturer() {
 			return "Jabra";
 		}
 		public override string GetModel() {
-			return device.Name;
+			return device_name;
 		}
 		public override string GetUniqueId() {
 			return "Jabra " + device_path;
@@ -42,6 +42,8 @@ namespace JabraHeadset {
 		}
 		public JabraHeadset(JA.IDevice device) {
 			this.device = device;
+			device_path = device.DeviceHandle.ToString();
+			device_name = device.Name;
 		}
 		private IDeviceHost host;
 		private void HostStatusChanged(object sender, IDeviceHost.StatusEventArgs e) {
@@ -140,9 +142,14 @@ namespace JabraHeadset {
 
 	public class JabraProvider : IHeadsetPlugin {
 		private void AddNewDevice(JA.IDevice ja_device) {
+			try{
 			JabraHeadset device = new JabraHeadset(ja_device);
 			devices.Add(device);
 			DeviceAdded(this, new DeviceEventArgs(device));
+		}
+			catch (System.IO.FileNotFoundException) {
+				Utils.PluginLog("Jabra Provider", "Unable to add new device");
+			}
 		}
 		private void OnDeviceAttached(JA.IDevice device) {
 			AddNewDevice(device);

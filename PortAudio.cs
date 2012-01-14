@@ -106,11 +106,13 @@ namespace FSClient {
 		}
 		public static AudioDevice[] get_devices(bool refresh) {
 			if (refresh || _pub_devices == null)
-				refresh_devices();
+				refresh_devices(true);
 			return _pub_devices;
 		}
 
-		public static void refresh_devices() {
+		public static void refresh_devices(bool force=false) {
+			if (! force && !Broker.get_instance().fully_loaded)
+				return;
 			foreach (InternalAudioDevice device in _devices)
 				device.is_alive = false;
 			Utils.api_exec("pa", "rescan");
