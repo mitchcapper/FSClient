@@ -284,20 +284,23 @@ namespace FSClient {
 				return;
 			MainWindowRemoveFocus(true);
 
+			Account call_acct = Account.default_account;
 			if (str.StartsWith("#") && str.Length > 2) {
 				String acct_num = str.Substring(1, 1);
 				str = str.Substring(2);
-				Account acct = (from a in Account.accounts where a.guid == acct_num select a).SingleOrDefault();
-				if (acct != null) {
-					acct.CreateCall(str);
+				call_acct = (from a in Account.accounts where a.guid == acct_num select a).SingleOrDefault();
+				if (call_acct == null)
 					return;
-				}
 			}
-			if (Account.default_account == null) {
+			if (call_acct == null && Account.default_account == null) {
 				MessageBox.Show("no default account, make sure you have added one or more accounts (right click in the account area to add) and they are enabled (checked)");
 				return;
 			}
-			Account.default_account.CreateCall(str);
+			DialString(call_acct, str);
+			
+		}
+		public void DialString(Account account, String str){
+			account.CreateCall(str);
 		}
 		public void TalkPressed() {
 			if (Call.active_call != null) {

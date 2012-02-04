@@ -66,9 +66,37 @@ namespace FSClient
 			item.Click +=contact_call_click;
 			item.Header = "Call";
 			items.Add(item);
+			item = new MenuItem();
+			item.Header = "Call On Account";
+			item.SubmenuOpened += call_on_account_item_SubmenuOpened;
+			MenuItem item2 = new MenuItem { Header = "Call On Default Account",IsEnabled = false};
+			item2.Click += contact_call_click;
+			item.Items.Add(item2);
+			items.Add(item);
 			return items;
 		}
 
+		void call_on_account_item_SubmenuOpened(object sender, RoutedEventArgs e) {
+			MenuItem item = sender as MenuItem;
+			if (item == null || item.Items.Count == 0)
+				return;
+			MenuItem first = item.Items[0] as MenuItem;
+			if (first == null)
+				return;
+			item.Items.Clear();
+			item.Items.Add(first);
+			foreach (var acct in Account.accounts){
+				MenuItem new_item = new MenuItem();
+				new_item.Header = acct.ToString();
+				new_item.Click += contact_call_click;
+				item.Items.Add(new_item);
+			}
+			first.Visibility = item.Items.Count > 1 ? Visibility.Collapsed : Visibility.Visible;
+		}
+		
+		
+
+		
 		private void delete_item_click(object sender, RoutedEventArgs e){
 			MenuItem item = sender as MenuItem;
 			if (item == null)
@@ -91,7 +119,12 @@ namespace FSClient
 			SearchAutoCompleteEntry entry = item.DataContext as SearchAutoCompleteEntry ?? search_box.SelectedItem as SearchAutoCompleteEntry;
 			if (entry == null)
 				return;
-			Broker.get_instance().DialString(entry.number);
+			Account acct = item.Tag as Account;
+			if (acct != null)
+				Broker.get_instance().DialString(acct, entry.number);
+			else
+				Broker.get_instance().DialString(entry.number);
+
 		}
 
 		protected void item_Click(object sender, RoutedEventArgs e)
@@ -183,7 +216,6 @@ namespace FSClient
 		private TextBox real_search_box;
 		public override bool HandleSearchBox(OurAutoCompleteBox box) {
 			search_box = box;
-
 			real_search_box = search_box.GetActualTextbox();
 			real_search_box.ContextMenu = new ContextMenu();
 			real_search_box.ContextMenuOpening += search_box_ContextMenuOpening;
@@ -198,6 +230,8 @@ namespace FSClient
 				refresh_search_box();
 			return true;
 		}
+
+
 		protected void call_current_contact(){
 			SearchAutoCompleteEntry entry = search_box.SelectedItem as SearchAutoCompleteEntry;
 			if (entry != null)
