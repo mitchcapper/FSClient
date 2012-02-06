@@ -89,6 +89,7 @@ namespace FSClient
 				MenuItem new_item = new MenuItem();
 				new_item.Header = acct.ToString();
 				new_item.Click += contact_call_click;
+				new_item.Tag = acct;
 				item.Items.Add(new_item);
 			}
 			first.Visibility = item.Items.Count > 1 ? Visibility.Collapsed : Visibility.Visible;
