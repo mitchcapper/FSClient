@@ -142,7 +142,21 @@ namespace FSClient {
 			}
 		}
 
-		private bool master_profile_ok;
+		private bool _master_profile_ok;
+		private bool master_profile_ok{
+			get { return _master_profile_ok; }
+			set{
+				_master_profile_ok = value;
+				if (!value)
+				{
+					foreach (var acct in Account.accounts)
+					{
+						if (acct.enabled)
+							acct.state = "SOFIA OFFLINE";
+					}
+				}
+			}
+		}
 		private bool sofia_actual_profile_check(bool is_last_try){
 			String res = Utils.api_exec("sofia", "xmlstatus profile softphone").ToLower().Trim();
 			if (res == "invalid command!"){
