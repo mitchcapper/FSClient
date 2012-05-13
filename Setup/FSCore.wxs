@@ -79,7 +79,9 @@
         <ComponentRef Id="cmp91B3DE0582A7BC591025241179545460"/>
         <ComponentRef Id="cmpB896C4672ADB1C3BAA362811356CADAC"/>
         <ComponentRef Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5"/>
-      </ComponentGroup>
+		<ComponentRef Id="cmpEF5CC6E154E049EFB9F49F3E6C17BC1C"/>
+		  
+	  </ComponentGroup>
         <DirectoryRef Id="MODLOCATION">
             <Component Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6" Guid="*">
               <File Id="fil7C529E485AFB44229053672D51A187AA" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_spandsp.dll" />
@@ -135,6 +137,9 @@
             <Component Id="cmpB896C4672ADB1C3BAA362811356CADAC" Guid="*">
                 <File Id="fil73C98378C5F9DA18EE1999B19D808D6E" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_speex.dll" />
             </Component>
+			<Component Id="cmpEF5CC6E154E049EFB9F49F3E6C17BC1C" Guid="*">
+				<File Id="fil1A554A6DC0954F50851207370BA4FA63" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_isac.dll" />
+			</Component>			
             <Component Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5" Guid="*">
                 <File Id="fil16EBD6FB1A5BBD319C4751C62500B2F0" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_tone_stream.dll" />
             </Component>
