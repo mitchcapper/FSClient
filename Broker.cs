@@ -83,6 +83,7 @@ namespace FSClient {
 				DirectSipDial = Properties.Settings.Default.DirectSipDial;
 				UseNumberOnlyInput = Properties.Settings.Default.UseNumberOnlyInput;
 				CheckForUpdates = Properties.Settings.Default.CheckForUpdates;
+				GUIStartup = Properties.Settings.Default.GuiStartup;
 
 				if (Properties.Settings.Default.Sofia != null)
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
@@ -369,6 +370,7 @@ namespace FSClient {
 				Account.SaveSettings();
 				Properties.Settings.Default.IncomingBalloons = IncomingBalloons;
 				Properties.Settings.Default.CheckForUpdates = CheckForUpdates;
+				Properties.Settings.Default.GuiStartup = GUIStartup;
 				Properties.Settings.Default.FrontOnIncoming = IncomingTopMost;
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UPNPNAT = UPNPNAT;
@@ -475,6 +477,7 @@ namespace FSClient {
 		public bool IncomingBalloons;
 		public bool IncomingTopMost;
 		public string CheckForUpdates;
+		public string GUIStartup;
 
 		private void VersionCheck() {
 			if (CheckForUpdates == "Never")

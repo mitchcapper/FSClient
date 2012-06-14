@@ -269,5 +269,17 @@ namespace FSClient.Properties {
                 this["DirectSipDial"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("All")]
+        public string GuiStartup {
+            get {
+                return ((string)(this["GuiStartup"]));
+            }
+            set {
+                this["GuiStartup"] = value;
+            }
+        }
     }
 }

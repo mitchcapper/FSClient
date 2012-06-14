@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using WF=System.Windows.Forms;
@@ -14,9 +15,22 @@ namespace FSClient {
 		}
 		private Broker broker = Broker.get_instance();
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
-
+			GuiOptions = new List<StartupOptions>();
+			GuiOptions.Add(new StartupOptions { key = "All",name = "Calls, Dialpad and Accounts"});
+			GuiOptions.Add(new StartupOptions { key = "Calls", name = "Calls and Dialpad" });
+			GuiOptions.Add(new StartupOptions { key = "Accounts", name = "Dialpad and Accounts" });
+			GuiOptions.Add(new StartupOptions { key = "Dialpad", name = "Dialpad Only" });
+			comboGUIStartup.ItemsSource = GuiOptions;
 			load_devices(true);
 		}
+		private class StartupOptions{
+			public string name;
+			public string key;
+			public override string ToString() {
+				return name;
+			}
+		}
+		private List<StartupOptions> GuiOptions;
 		private void load_devices(bool from_settings) {
 			PortAudio.AudioDevice[] devices = broker.audio_devices;
 			comboSpeakerInput.ItemsSource = comboHeadsetInput.ItemsSource = (from d in devices where d.inputs > 0 select d).ToArray();
@@ -41,7 +55,9 @@ namespace FSClient {
 				chkNAT.IsChecked = broker.UPNPNAT;
 				txtRecordingPath.Text = broker.recordings_folder;
 				chkDirectSip.IsChecked = broker.DirectSipDial;
-
+				comboGUIStartup.SelectedItem = (from g in GuiOptions where g.key == broker.GUIStartup select g).FirstOrDefault();
+				if (comboGUIStartup.SelectedIndex == -1)
+					comboGUIStartup.SelectedIndex = 0;
 				comboHeadsetDevice.SelectedItem = broker.ActiveHeadset();
 				if (comboHeadsetDevice.SelectedIndex == -1)
 					comboHeadsetDevice.SelectedIndex = 0;
@@ -65,6 +81,7 @@ namespace FSClient {
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
 			broker.recordings_folder = txtRecordingPath.Text;
 			broker.CheckForUpdates = chkUpdatesOnStart.IsChecked == true ?  "OnStart" : "Never";
+			broker.GUIStartup = (comboGUIStartup.SelectedItem as StartupOptions).key;
 			broker.SetActiveHeadset(comboHeadsetDevice.SelectedItem as string);
 			broker.SaveSettings();
 

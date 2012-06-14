@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FSClient.Options"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Options" Height="430" Width="550" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" Icon="phone.ico">
+        Title="Options" Height="460" Width="550" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" Icon="phone.ico">
 	<Window.Resources>
 		<Style x:Key="OptionHeaderStyle" TargetType="{x:Type TextBlock}">
 			<Setter Property="FontWeight" Value="Bold"/>
@@ -35,6 +35,7 @@
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 			<StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
 				<Button Content="Reload Devices"  Height="23"  Name="btnReloadDevices"  Width="100" Click="btnReloadDevices_Click" />
@@ -57,9 +58,11 @@
 			<ComboBox Height="23" Grid.Row="5" Grid.Column="1" Name="comboSpeakerOutput" Width="340" />
 			<TextBlock Grid.Row="6" Text="Ring Device:" Style="{DynamicResource OptionHeaderStyle}" />
 			<ComboBox Height="23" Grid.Row="6" Grid.Column="1" Name="comboRingDevice" Width="340" />
-			<TextBlock Grid.Row="7" Text="Recording Path:" Style="{DynamicResource OptionHeaderStyle}" />
-			<StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1">
-			<TextBox Height="23" Name="txtRecordingPath" Width="286" Margin="10,0" />
+			<TextBlock Grid.Row="7" Text="Startup Layout:" Style="{DynamicResource OptionHeaderStyle}" />
+			<ComboBox Height="23" Grid.Row="7" Grid.Column="1" Name="comboGUIStartup" Width="340" />
+			<TextBlock Grid.Row="8" Text="Recording Path:" Style="{DynamicResource OptionHeaderStyle}" />
+			<StackPanel Orientation="Horizontal" Grid.Row="8" Grid.Column="1">
+				<TextBox Height="23" Name="txtRecordingPath" Width="286" Margin="10,0" />
 				<Button Name="btnPathBrowse" Content="Browse" Height="25" Click="btnPathBrowse_Click" />
 			</StackPanel>
 		</Grid>
