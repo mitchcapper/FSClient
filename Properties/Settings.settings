@@ -59,5 +59,11 @@
     <Setting Name="UpdateURL" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://fsclient.fluky.biz/version</Value>
     </Setting>
+    <Setting Name="UPNPNAT" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DirectSipDial" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

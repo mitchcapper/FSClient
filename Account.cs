@@ -1,7 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml;
 using FreeSWITCH.Native;
@@ -45,8 +45,8 @@ namespace FSClient {
 									new	Field(Field.FIELD_TYPE.String, "Server","server","realm","",""),
   									new Field(Field.FIELD_TYPE.String,"Username", "username","username","",""),
 									new Field(Field.FIELD_TYPE.Password,"Password", "password","password","",""),
-									new	Field(Field.FIELD_TYPE.String, "Caller ID Name","caller_id_name","caller_id_name","",""),
-									new	Field(Field.FIELD_TYPE.String, "Caller ID Number","caller_id_number","cid-num","",""),
+									new	Field(Field.FIELD_TYPE.String, "Caller ID Name","caller_id_name","","",""),
+									new	Field(Field.FIELD_TYPE.String, "Caller ID Number","caller_id_number","","",""),
 									new	Field(Field.FIELD_TYPE.String, "SIP URL for Checking Voicemail","sip_check_voicemail_url","","",""),
 									new	Field(Field.FIELD_TYPE.String, "SIP URL for Sending to Voicemail","sip_send_voicemail_url","","",""),
 									new Field(Field.FIELD_TYPE.Bool,"Register","register","register","true",""),
@@ -196,12 +196,25 @@ namespace FSClient {
 			PropertyChanged += Account_PropertyChanged;
 			state = "NOREG";
 		}
-
+		private static Regex sip_regex;
 		public void CreateCall(String number) {
 			if (!enabled)
 				return;
-			String sec_media = secure_media ? "{sip_secure_media=true}" : "";
-			PortAudio.Call(sec_media + "sofia/gateway/" + gateway_id + "/" + number);
+			String var_str = "origination_caller_id_name='" + caller_id_name + "',origination_caller_id_number='" + caller_id_number + "'";
+			if (secure_media)
+				var_str += "sip_secure_media=true";
+
+			if (Broker.get_instance().DirectSipDial){
+				if (sip_regex == null)
+					sip_regex = new Regex(@"^sip:(.+)$");
+				Match match = sip_regex.Match(number);
+				if (match.Success){
+					string sip_uri = match.Groups[1].Value;
+					PortAudio.Call("{" + var_str + "}sofia/softphone/" + sip_uri);
+					return;
+				}
+			}
+			PortAudio.Call("{" + var_str + "}sofia/gateway/" + gateway_id + "/" + number);
 		}
 		private void KillGateway() {
 			if (!String.IsNullOrEmpty(old_gateway_id))

@@ -38,7 +38,9 @@ namespace FSClient {
 				chkClearDTMFS.IsChecked = broker.ClearDTMFS;
 				chkUseNumbers.IsChecked = broker.UseNumberOnlyInput;
 				chkUpdatesOnStart.IsChecked = broker.CheckForUpdates != "Never";
+				chkNAT.IsChecked = broker.UPNPNAT;
 				txtRecordingPath.Text = broker.recordings_folder;
+				chkDirectSip.IsChecked = broker.DirectSipDial;
 
 				comboHeadsetDevice.SelectedItem = broker.ActiveHeadset();
 				if (comboHeadsetDevice.SelectedIndex == -1)
@@ -58,6 +60,8 @@ namespace FSClient {
 			broker.IncomingBalloons = chkIncomingBalloons.IsChecked == true;
 			broker.IncomingTopMost = chkIncomingFront.IsChecked == true;
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
+			broker.UPNPNAT = chkNAT.IsChecked == true;
+			broker.DirectSipDial = chkDirectSip.IsChecked == true;
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
 			broker.recordings_folder = txtRecordingPath.Text;
 			broker.CheckForUpdates = chkUpdatesOnStart.IsChecked == true ?  "OnStart" : "Never";

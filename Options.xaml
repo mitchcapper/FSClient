@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FSClient.Options"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Options" Height="390" Width="550" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" Icon="phone.ico">
+        Title="Options" Height="430" Width="550" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" Icon="phone.ico">
 	<Window.Resources>
 		<Style x:Key="OptionHeaderStyle" TargetType="{x:Type TextBlock}">
 			<Setter Property="FontWeight" Value="Bold"/>
@@ -18,7 +18,7 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition />
-			<RowDefinition Height="90" />
+			<RowDefinition Height="130" />
 			<RowDefinition Height="30" />
 		</Grid.RowDefinitions>
 		<Grid Grid.ColumnSpan="2">
@@ -69,6 +69,8 @@
 			<CheckBox x:Name="chkClearDTMFS" Content="Clear Key Presses In Call Stats On Disconnect" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 			<CheckBox x:Name="chkUseNumbers" Content="Only Allow Numerical Input While Dialing" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 			<CheckBox x:Name="chkUpdatesOnStart" Content="Check for Updates on Startup"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
+			<CheckBox x:Name="chkNAT" Content="UPNP NAT Startup Check(slows startup 5-10s)"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
+			<CheckBox x:Name="chkDirectSip" Content="Direct SIP: Dialing"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
 		</StackPanel>
 		<Button Content="Save" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="101,0,0,0" Name="btnSave" VerticalAlignment="Center" Width="75" Grid.ColumnSpan="2" Click="btnSave_Click" />
 		<Button Content="Cancel"  Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="172,0,0,0" Name="btnCancel" VerticalAlignment="Center" Width="75" Click="btnCancel_Click" />
