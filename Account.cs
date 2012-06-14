@@ -202,15 +202,15 @@ namespace FSClient {
 				return;
 			String var_str = "origination_caller_id_name='" + caller_id_name + "',origination_caller_id_number='" + caller_id_number + "'";
 			if (secure_media)
-				var_str += "sip_secure_media=true";
+				var_str += ",sip_secure_media=true";
 
 			if (Broker.get_instance().DirectSipDial){
 				if (sip_regex == null)
-					sip_regex = new Regex(@"^sip:(.+)$");
+					sip_regex = new Regex(@"^sip:(.+)$",RegexOptions.Compiled);
 				Match match = sip_regex.Match(number);
 				if (match.Success){
 					string sip_uri = match.Groups[1].Value;
-					PortAudio.Call("{" + var_str + "}sofia/softphone/" + sip_uri);
+					PortAudio.Call("{" + var_str + ",gw_ref='" + gateway_id + "'}sofia/softphone/" + sip_uri);
 					return;
 				}
 			}

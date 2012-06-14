@@ -511,17 +511,31 @@ namespace FSClient {
 			if (calls.Contains(this))
 				calls.Remove(this);
 		}
+
+
+		private static Regex DestNumberRegex;
+		private static Regex DestSipRegex;
 		private void SetCallInfoFromEvent(FSEvent evt) {
 
 
 			leg_a_uuid = evt.get_header("Unique-ID");
 			leg_b_uuid = evt.get_header("Other-Leg-Unique-ID");
 			if (is_outgoing) {
-				Match match = Regex.Match(evt.get_header("Caller-Destination-Number"), "sofia/gateway/([0-9]+)/(.+)");
+				bool is_sip_direct = false;
+				if (DestNumberRegex == null)
+					DestNumberRegex  = new Regex("sofia/gateway/([0-9]+)/(.+)", RegexOptions.Compiled);
+				Match match = DestNumberRegex.Match(evt.get_header("Caller-Destination-Number"));
+				if (! match.Success){
+					if (DestSipRegex == null)
+						DestSipRegex = new Regex("gw_ref=([0-9]+)}sofia/softphone/(.+)", RegexOptions.Compiled);
+					match = DestSipRegex.Match(evt.get_header("Caller-Destination-Number"));
+					is_sip_direct = true;
+				}
+				
 				if (match.Success && match.Groups.Count == 3) {
 					String gw_id = match.Groups[1].Value;
 					account = (from a in Account.accounts where a.gateway_id == gw_id select a).SingleOrDefault();
-					other_party_number = match.Groups[2].Value;
+					other_party_number = is_sip_direct ? "sip:" + match.Groups[2].Value : match.Groups[2].Value;
 				}
 			}
 			else {
