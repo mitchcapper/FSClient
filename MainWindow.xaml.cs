@@ -294,6 +294,7 @@ namespace FSClient {
 		private void FreeswitchLoaded(object sender, EventArgs e) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				busyAnimation.Visibility = Visibility.Hidden;
+				Title = "FSClient " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 			}));
 		}
 
