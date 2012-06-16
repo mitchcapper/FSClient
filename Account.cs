@@ -130,6 +130,7 @@ namespace FSClient {
 		}
 		public static void RemoveAccount(Account account) {
 			account.KillGateway();
+			account.is_default_account = false;
 			accounts.Remove(account);
 			ReloadSofia();
 		}

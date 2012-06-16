@@ -44,24 +44,35 @@ namespace FSClient {
 			gridCalls.Items.SortDescriptions.Add(new SortDescription("sort_order", ListSortDirection.Descending));
 		}
 		void accounts_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+			if (e.OldItems != null){
+				RefreshStatusDefaultAccount();
+				RefreshStatusAccountTotals();
+			}
 			if (e.NewItems == null)
 				return;
 			foreach (Account acct in e.NewItems) {
 				acct.PropertyChanged += acct_PropertyChanged;
 			}
+			RefreshStatusDefaultAccount();
+			RefreshStatusAccountTotals();
 		}
-
+		private void RefreshStatusAccountTotals(){
+			account_status.total_accounts = (from a in Account.accounts where a.enabled == true select a).Count();
+			account_status.active_accounts = (from a in Account.accounts where a.state == "REGED" select a).Count();
+		}
+		private void RefreshStatusDefaultAccount(){
+			Account primary = (from a in Account.accounts where a.is_default_account == true select a).FirstOrDefault();
+			account_status.primary_account = primary == null ? "" : primary.ToString();
+		}
 		void acct_PropertyChanged(object sender, PropertyChangedEventArgs e) {
 			if (e.PropertyName == "gateway_id") {
 				gridAccounts.Items.SortDescriptions.Clear();
 				gridAccounts.Items.SortDescriptions.Add(new SortDescription("gateway_id", ListSortDirection.Ascending));
 			}
 			else if (e.PropertyName == "is_default_account"){
-				Account primary = (from a in Account.accounts where a.is_default_account == true select a).FirstOrDefault();
-				account_status.primary_account = primary == null ? "" : primary.ToString();
-			}else if (e.PropertyName == "state"){
-				account_status.total_accounts = (from a in Account.accounts where a.enabled == true select a).Count();
-				account_status.active_accounts = (from a in Account.accounts where a.state == "REGED" select a).Count();
+				RefreshStatusDefaultAccount();
+			}else if (e.PropertyName == "state" || e.PropertyName=="enabled"){
+				RefreshStatusAccountTotals();
 			}
 
 		}
