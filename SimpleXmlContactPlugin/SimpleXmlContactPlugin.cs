@@ -64,6 +64,7 @@ namespace SimpleXmlContactPlugin {
 		}
 
 		private XmlDictionary<string, string> number_to_alias_ref;
+		private XmlDictionary<string, string> number_to_xfer_ref;
 		protected override void LoadDatabase(ref Dictionary<string, string> number_to_alias_db)//alright so we hijack the database to convert it to be serializeable
 		{
 			number_to_alias_ref = new XmlDictionary<string, string>();
@@ -74,6 +75,18 @@ namespace SimpleXmlContactPlugin {
 			}catch{}
 			number_to_alias_db = number_to_alias_ref;
 		}
+
+		protected override void LoadXFERDatabase(ref Dictionary<string, string> number_to_xfer_db){
+			number_to_xfer_ref = new XmlDictionary<string, string>();
+			try {
+				using (FileStream ReadFileStream = new FileStream(Utils.GetUserDataPath() + "\\SimpleXmlContactsXFER.xml", FileMode.Open, FileAccess.Read, FileShare.Read)) {
+					number_to_xfer_ref = (XmlDictionary<string, string>)SerializerObj.Deserialize(ReadFileStream);
+				}
+			}
+			catch { }
+			number_to_xfer_db = number_to_xfer_ref;
+		}
+
 		public override void Terminate()
 		{
 
@@ -87,6 +100,20 @@ namespace SimpleXmlContactPlugin {
 		}
 		
 		protected override void UpdateDatabase(string number, string alias){
+			SaveDatabase();
+		}
+
+		protected override void UpdateXFERDatabase(string number, string xfer_name){
+			SaveXFERDatabase();
+		}
+
+		private void SaveXFERDatabase(){
+			TextWriter WriteFileStream = new StreamWriter(Utils.GetUserDataPath() + "\\SimpleXmlContactsXFER.xml");
+			SerializerObj.Serialize(WriteFileStream, number_to_xfer_ref);
+			WriteFileStream.Close();
+		}
+		protected override void DeleteXFER(string number) {
+			base.DeleteXFER(number);
 			SaveDatabase();
 		}
 		protected override void DeleteNumber(string number) {

@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml;
 
 using FreeSWITCH.Native;
@@ -53,6 +54,26 @@ namespace FSClient {
 				contact_plugin_manager = new ContactPluginManager();
 			contact_plugin_manager.LoadPlugins();
 		}
+		private ContextMenu _XFERContextMenu;
+		public ContextMenu XFERContextMenu(){
+			if (_XFERContextMenu == null){
+				_XFERContextMenu = new ContextMenu();
+				_XFERContextMenu.Opened += XFERContextMenuOpened;
+			}
+			return _XFERContextMenu;
+		}
+
+		public delegate void XFERMenuOpeningDel(Call active_call,ContextMenu menu);
+
+		public XFERMenuOpeningDel XFERMenuOpenedHandler;
+
+		private void XFERContextMenuOpened(object sender, RoutedEventArgs e){
+			ContextMenu menu = sender as ContextMenu;
+			menu.Items.Clear();
+			if (XFERMenuOpenedHandler != null)
+				XFERMenuOpenedHandler(Call.active_call, menu);
+		}
+
 		private void init_us() {
 			if (is_inited)
 				return;

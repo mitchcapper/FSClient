@@ -75,8 +75,16 @@ namespace FSClient {
 			if (active_plugin != null){
 				Call.calls.CollectionChanged += calls_CollectionChanged;
 				Call.CallRightClickMenuShowing += calls_RightClickMenuShowing;
+				Broker.get_instance().XFERMenuOpenedHandler += broker_xferMenuOpened;
 			}
 		}
+
+		private void broker_xferMenuOpened(Call active_call, ContextMenu menu){
+			if (active_plugin == null)
+				return;
+			active_plugin.contact_plugin.XFERRightClickMenu(active_call, menu);
+		}
+
 		protected override void HandlePluginLoadException(PluginData data, Exception e){
 			base.HandlePluginLoadException(data, e);
 			active_plugin = null;
@@ -191,6 +199,7 @@ namespace FSClient {
 		public delegate void NumberResolved(String DisplayName);
 		public abstract void ResolveNumber(String number, NumberResolved on_resolved);
 		public abstract void CallRightClickMenu(Call call, ContextMenu menu);
+		public abstract void XFERRightClickMenu(Call call, ContextMenu menu);
 		public abstract IEnumerable<MenuItem> ContactRightClickMenu();
 		public abstract bool HandleSearchBox(OurAutoCompleteBox box);
 

@@ -12,11 +12,17 @@ namespace FSClient
 	{
 		protected abstract void _TryResolveNewNumber(string number, NumberResolved on_resolved);
 		protected abstract void LoadDatabase(ref Dictionary<string, string> number_to_alias_db);
+		protected abstract void LoadXFERDatabase(ref Dictionary<string, string> number_to_xfer_db);
 		protected abstract void UpdateDatabase(string number, string alias);
+
+		protected abstract void UpdateXFERDatabase(string number, string xfer_name);
 
 
 		protected virtual void ModifyRightClickMenu(Call call, ContextMenu menu)
 		{
+			return;
+		}
+		protected virtual void ModifyXFERRightClickMenu(Call call, ContextMenu menu) {
 			return;
 		}
 		protected virtual string NormalizeNumber(string number)
@@ -26,11 +32,25 @@ namespace FSClient
 		protected virtual void DeleteNumber(string number){
 			number_to_alias.Remove(number);
 		}
+		protected virtual void DeleteXFER(string number) {
+			number_to_xfer.Remove(number);
+		}
 		protected virtual bool CanDeleteContact(){
+			return true;
+		}
+		protected virtual bool CanDeleteXFER() {
 			return true;
 		}
 		protected virtual string IsValidAlias(String str)//return null to abort updating, otherwire return string
 		{ 
+			return str;
+		}
+		protected virtual string IsValidXFERAlias(String str)//return null to abort updating, otherwire return string
+		{
+			return str;
+		}
+		protected virtual string IsValidXFERNumber(String str)//return null to abort updating, otherwire return string
+		{
 			return str;
 		}
 		protected virtual string DefaultEditValue(Call call)
@@ -41,6 +61,7 @@ namespace FSClient
 		}
 
 		protected Dictionary<string, string> number_to_alias = new Dictionary<string, string>();
+		protected Dictionary<string, string> number_to_xfer = new Dictionary<string, string>();
 
 		public override void CallRightClickMenu(Call call, ContextMenu menu) {
 			MenuItem item = new MenuItem();
@@ -49,6 +70,77 @@ namespace FSClient
 			menu.Items.Add(item);
 			ModifyRightClickMenu(call, menu);
 		}
+		public override void XFERRightClickMenu(Call call, ContextMenu menu) {
+			MenuItem item;
+			foreach (KeyValuePair<string, string> kvp in number_to_xfer) {
+				item = new MenuItem();
+				String num = kvp.Key;
+				item.MouseDoubleClick += (s, e) => { menu.IsOpen=false;call.Transfer(num); };
+				item.Header = kvp.Value + " (" + num + ")";
+				menu.Items.Add(item);
+				
+				MenuItem sub_item = new MenuItem();
+				sub_item.Click += (s, e) => call.Transfer(num);
+				sub_item.Header = "Transfer";
+				sub_item.DataContext = kvp;
+				item.Items.Add(sub_item);
+				sub_item = new MenuItem();
+				sub_item.Click += edit_xfer_click;
+				sub_item.Header = "Edit XFER";
+				sub_item.DataContext = kvp;
+				item.Items.Add(sub_item);
+				if (CanDeleteContact()) {
+					sub_item = new MenuItem();
+					sub_item.Click += del_xfer_click;
+					sub_item.Header = "Delete XFER";
+					sub_item.DataContext = kvp;
+					item.Items.Add(sub_item);
+				}
+			}
+			item = new MenuItem();
+			item.Click += add_xfer_click;
+			item.Header = "Add XFER";
+			menu.Items.Add(item);
+			ModifyXFERRightClickMenu(call, menu);
+		}
+
+		private void add_xfer_click(object sender, RoutedEventArgs e){
+			String number = InputBox.GetInput("Adding XFER", "What number should the transfer go to?", "");
+			number = IsValidXFERNumber(number);
+			if (String.IsNullOrWhiteSpace(number))
+				return;
+			String alias = InputBox.GetInput("Editing XFER", "Edit xfer alias for number: " + number, "");
+			alias = IsValidAlias(alias);
+			if (String.IsNullOrWhiteSpace(alias))
+				return;
+			number_to_xfer[number] = alias;
+			UpdateXFERDatabase(number, alias);
+		}
+
+		protected void del_xfer_click(object sender, RoutedEventArgs e) {
+			MenuItem item = sender as MenuItem;
+			if (item == null)
+				return;
+			KeyValuePair<string, string> kvp = (KeyValuePair<string, string>) item.DataContext;
+			DeleteXFER(kvp.Key);
+		}
+
+		protected void edit_xfer_click(object sender, RoutedEventArgs e) {
+			MenuItem item = sender as MenuItem;
+			if (item == null)
+				return;
+			KeyValuePair<string, string> kvp = (KeyValuePair<string, string>)item.DataContext;
+			String number = kvp.Key;
+			String alias = InputBox.GetInput("Editing XFER", "Edit xfer alias for number: " + number, kvp.Value);
+			alias = IsValidAlias(alias);
+			if (alias == null)
+				return;
+
+			number_to_xfer[number] = alias;
+
+			UpdateXFERDatabase(number, alias);
+		}
+
 
 		public override IEnumerable<MenuItem> ContactRightClickMenu(){
 			List<MenuItem> items = new List<MenuItem>();
@@ -182,7 +274,7 @@ namespace FSClient
 		public override void Initialize()
 		{
 			LoadDatabase(ref number_to_alias);
-	
+			LoadXFERDatabase(ref number_to_xfer);
 			refresh_search_box();
 		}
 		protected void refresh_search_box(){

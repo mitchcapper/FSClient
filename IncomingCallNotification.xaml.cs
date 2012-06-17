@@ -26,6 +26,7 @@ namespace FSClient {
 			prop_changed = new System.ComponentModel.PropertyChangedEventHandler(call_PropertyChanged);
 			call.PropertyChanged += prop_changed;
 			btnSendVoicemail.Visibility = call.CanSendToVoicemail() ? Visibility.Visible : Visibility.Hidden;
+			btnTransfer.ContextMenu = Broker.get_instance().XFERContextMenu();
 		}
 
 		void call_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
