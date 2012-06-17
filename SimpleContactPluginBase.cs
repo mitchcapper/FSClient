@@ -92,7 +92,7 @@ namespace FSClient
 					sub_item.Header = "Edit Alias";
 					sub_item.DataContext = kvp;
 					item.Items.Add(sub_item);
-					if (CanDeleteContact()){
+					if (CanDeleteXFER()){
 						sub_item = new MenuItem();
 						sub_item.Click += del_xfer_click;
 						sub_item.Header = "Delete Alias";
