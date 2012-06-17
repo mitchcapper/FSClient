@@ -199,7 +199,7 @@ namespace FSClient {
 		public delegate void NumberResolved(String DisplayName);
 		public abstract void ResolveNumber(String number, NumberResolved on_resolved);
 		public abstract void CallRightClickMenu(Call call, ContextMenu menu);
-		public abstract void XFERRightClickMenu(Call call, ContextMenu menu);
+		public virtual void XFERRightClickMenu(Call call, ContextMenu menu){}
 		public abstract IEnumerable<MenuItem> ContactRightClickMenu();
 		public abstract bool HandleSearchBox(OurAutoCompleteBox box);
 
