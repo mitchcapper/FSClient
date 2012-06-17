@@ -19,8 +19,8 @@ namespace FSClient {
 				dll = data.dll;
 				enabled = data.enabled;
 			}
-			public PluginManagerBase.PluginData GetPluginData(){
-				return new PluginManagerBase.PluginData(){dll = dll, enabled = enabled};
+			public PluginManagerBase.PluginData GetPluginData() {
+				return new PluginManagerBase.PluginData() { dll = dll, enabled = enabled };
 			}
 		}
 		public SettingsPluginDataCollection() {
@@ -29,9 +29,9 @@ namespace FSClient {
 			data = (from p in plugins select new SettingsPluginData(p)).ToArray();
 		}
 	}
-		
+
 	public abstract class PluginManagerBase : IDisposable {
-		public class PluginData{
+		public class PluginData {
 			public string dll { get; set; }
 			public bool enabled { get; set; }
 			public enum PluginDataState { MISSING, SKIPPED, ERROR_LOADING, LOADED, DISABLED_ERROR };
@@ -39,11 +39,11 @@ namespace FSClient {
 			public string last_error;
 			[System.Xml.Serialization.XmlIgnoreAttribute]
 			public virtual IPlugin plugin { get; set; }
-			public PluginData(){
+			public PluginData() {
 				enabled = true;
 				state = PluginDataState.MISSING;
 			}
-			public PluginData(PluginData data){
+			public PluginData(PluginData data) {
 				dll = data.dll;
 				enabled = data.enabled;
 				state = data.state;
@@ -51,24 +51,66 @@ namespace FSClient {
 				last_error = data.last_error;
 			}
 		}
-		protected virtual void LoadSettings(SettingsPluginDataCollection settings){
+		protected virtual void LoadSettings(SettingsPluginDataCollection settings) {
 			SetPlugins(settings.data.Select(settings_data => settings_data.GetPluginData()).ToArray());
 		}
 
 		public abstract void LoadPlugins();
-		protected void LoadActualPlugins(Type plugin_type,  IEnumerable<PluginData> plugins){
+		private static List<PossiblePlugin> possible_plugins;
+		private class PossiblePlugin {
+			private IEnumerable<Type> _types;
+			public IEnumerable<Type> types {
+				get {
+					if (!loaded_types)
+						LoadTypes();
+					return _types;
+				}
+
+			}
+			public PossiblePlugin(String full_dll) {
+				this.full_dll = full_dll;
+				file_info = new FileInfo(full_dll);
+			}
+			private string full_dll { get; set; }
+			public FileInfo file_info;
+			private Assembly _asm;
+			private bool loaded_types = false;
+			public Assembly asm {
+				get {
+					if (!loaded_types)
+						LoadTypes();
+					return _asm;
+				}
+			}
+			private void LoadTypes() {
+				loaded_types = true;
+				_asm = Assembly.LoadFrom(full_dll);
+				if (asm == null)
+					return;
+				_types = asm.GetTypes();
+			}
+		}
+		private static void PluginScan() {
+			if (possible_plugins != null)
+				return;
+			possible_plugins = new List<PossiblePlugin>();
+
 			String plugin_dir = Utils.plugins_dir();
 			string[] dlls;
 			try {
 				dlls = Directory.GetFileSystemEntries(plugin_dir, "*.dll");
+				foreach (String full_dll in dlls)
+					possible_plugins.Add(new PossiblePlugin(full_dll));
 			}
 			catch (DirectoryNotFoundException) {
 				return;
 			}
-			foreach (String full_dll in dlls){
-				FileInfo file_info = new FileInfo(full_dll);
-				String dll = file_info.Name;
-				
+		}
+		protected void LoadActualPlugins(Type plugin_type, IEnumerable<PluginData> plugins) {
+			PluginScan();
+			foreach (PossiblePlugin pos_plug in possible_plugins) {
+				String dll = pos_plug.file_info.Name;
+
 				PluginData data = (from p in plugins where p.dll == dll select p).SingleOrDefault();
 				bool add_to_list = false;
 				if (data == null) {
@@ -81,10 +123,10 @@ namespace FSClient {
 					continue;
 				}
 				try {
-					Assembly asm = Assembly.LoadFrom(full_dll);
-					if (asm == null)
+					Assembly asm = pos_plug.asm;
+					if (asm == null || pos_plug.types == null)
 						continue;
-					foreach (Type type in asm.GetTypes()) {
+					foreach (Type type in pos_plug.types) {
 						if (type.IsAbstract)
 							continue;
 						if (!IsTypeOf(type, plugin_type))
@@ -99,13 +141,13 @@ namespace FSClient {
 						PluginLoadRegisterPlugin(data);
 					}
 				}
-				catch (ReflectionTypeLoadException ex){
+				catch (ReflectionTypeLoadException ex) {
 					HandlePluginLoadReflectionException(data, ex);
 				}
-				catch (Exception e){
+				catch (Exception e) {
 					HandlePluginLoadException(data, e);
 				}
-			}			
+			}
 		}
 
 		public abstract string PluginManagerName();
@@ -120,7 +162,7 @@ namespace FSClient {
 			data.state = PluginData.PluginDataState.ERROR_LOADING;
 			Utils.PluginLog(PluginManagerName(), err);
 		}
-		protected virtual void HandlePluginLoadException(PluginData data, Exception e){
+		protected virtual void HandlePluginLoadException(PluginData data, Exception e) {
 			String err = "Error creating plugin from dll \"" + data.dll + "\" of: " + e.Message;
 			data.last_error = err;
 			data.state = PluginData.PluginDataState.ERROR_LOADING;
@@ -133,13 +175,13 @@ namespace FSClient {
 				return true;
 			return IsTypeOf(to_check.BaseType, of);
 		}
-		public virtual SettingsPluginDataCollection GetSettings(){
+		public virtual SettingsPluginDataCollection GetSettings() {
 			return new SettingsPluginDataCollection(GetPlugins());
 		}
 		public abstract IEnumerable<PluginData> GetPlugins();
 		protected abstract void SetPlugins(IEnumerable<PluginData> plugins);
 
-		public virtual void SetPluginEnabled(bool enabled, PluginData plugin){
+		public virtual void SetPluginEnabled(bool enabled, PluginData plugin) {
 			plugin.enabled = enabled;
 		}
 		public abstract void Dispose();
