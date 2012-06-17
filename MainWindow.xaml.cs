@@ -282,6 +282,7 @@ namespace FSClient {
 			}
 			ResizeForm();
 			btnTransfer.ContextMenu = broker.XFERContextMenu();
+			borderTransfer.ContextMenu = broker.XFERContextMenu();
 		}
 
 		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e) {

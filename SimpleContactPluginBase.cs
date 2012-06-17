@@ -72,44 +72,50 @@ namespace FSClient
 		}
 		public override void XFERRightClickMenu(Call call, ContextMenu menu) {
 			MenuItem item;
+			bool on_call = call != null;
 			foreach (KeyValuePair<string, string> kvp in number_to_xfer) {
 				item = new MenuItem();
 				String num = kvp.Key;
-				item.MouseDoubleClick += (s, e) => { menu.IsOpen=false;call.Transfer(num); };
+				if (on_call){
+					item.Click += (s, e) =>{
+					              	menu.IsOpen = false;
+					              	call.Transfer(num);
+					              };
+				}
 				item.Header = kvp.Value + " (" + num + ")";
 				menu.Items.Add(item);
 				
+
 				MenuItem sub_item = new MenuItem();
-				sub_item.Click += (s, e) => call.Transfer(num);
-				sub_item.Header = "Transfer";
-				sub_item.DataContext = kvp;
-				item.Items.Add(sub_item);
-				sub_item = new MenuItem();
-				sub_item.Click += edit_xfer_click;
-				sub_item.Header = "Edit XFER";
-				sub_item.DataContext = kvp;
-				item.Items.Add(sub_item);
-				if (CanDeleteContact()) {
-					sub_item = new MenuItem();
-					sub_item.Click += del_xfer_click;
-					sub_item.Header = "Delete XFER";
+				if (!on_call){
+					sub_item.Click += edit_xfer_click;
+					sub_item.Header = "Edit Alias";
 					sub_item.DataContext = kvp;
 					item.Items.Add(sub_item);
+					if (CanDeleteContact()){
+						sub_item = new MenuItem();
+						sub_item.Click += del_xfer_click;
+						sub_item.Header = "Delete Alias";
+						sub_item.DataContext = kvp;
+						item.Items.Add(sub_item);
+					}
 				}
 			}
-			item = new MenuItem();
-			item.Click += add_xfer_click;
-			item.Header = "Add XFER";
-			menu.Items.Add(item);
+			if (!on_call){
+				item = new MenuItem();
+				item.Click += add_xfer_click;
+				item.Header = "Add Transfer Alias";
+				menu.Items.Add(item);
+			}
 			ModifyXFERRightClickMenu(call, menu);
 		}
 
 		private void add_xfer_click(object sender, RoutedEventArgs e){
-			String number = InputBox.GetInput("Adding XFER", "What number should the transfer go to?", "");
+			String number = InputBox.GetInput("Adding Transfer Alias", "What number should the transfer go to?", "");
 			number = IsValidXFERNumber(number);
 			if (String.IsNullOrWhiteSpace(number))
 				return;
-			String alias = InputBox.GetInput("Editing XFER", "Edit xfer alias for number: " + number, "");
+			String alias = InputBox.GetInput("Adding Transfer Alias", "Alias for transfer number: " + number, "");
 			alias = IsValidAlias(alias);
 			if (String.IsNullOrWhiteSpace(alias))
 				return;
@@ -131,7 +137,7 @@ namespace FSClient
 				return;
 			KeyValuePair<string, string> kvp = (KeyValuePair<string, string>)item.DataContext;
 			String number = kvp.Key;
-			String alias = InputBox.GetInput("Editing XFER", "Edit xfer alias for number: " + number, kvp.Value);
+			String alias = InputBox.GetInput("Editing XFER", "Edit transfer alias for number: " + number, kvp.Value);
 			alias = IsValidAlias(alias);
 			if (alias == null)
 				return;

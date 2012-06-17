@@ -112,7 +112,9 @@
 			<StackPanel x:Name="topButtons" Orientation="Horizontal"  Canvas.Left="8" Canvas.Top="93">
 				<Button Content="Talk" Height="20" x:Name="btnCall" Width="50" Click="btnCall_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FF4EFF00" FontWeight="Bold" />
 				<Button Content="Hold" FontWeight="Bold" Foreground="White" Height="20" IsEnabled="False" x:Name="btnHold" Style="{DynamicResource GlassButtonStyle}" Width="40" Click="btnHold_Click" Margin="5,0,0,0" />
+				<Border BorderThickness="0" Name="borderTransfer" >
 				<Button Content="XFER" FontWeight="Bold" Foreground="White" Height="20" Width="40" x:Name="btnTransfer" Style="{DynamicResource GlassButtonStyle}" IsEnabled="False" Margin="25,0,0,0" Click="btnTransfer_Click" />
+				</Border>
 				<Button Content="End" Height="20" HorizontalAlignment="Left" x:Name="btnHangup" Width="50" Click="btnHangup_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FFF50000" Background="{x:Null}" BorderBrush="{x:Null}" FontWeight="Bold" IsEnabled="False" Margin="5,0,0,0" />		
 			</StackPanel>
 		
