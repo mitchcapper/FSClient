@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlantronicsHeadset")]
+[assembly: AssemblyTitle("PlantronicsHeadsetPlugin")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("PlantronicsHeadset")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
+[assembly: AssemblyCompany("Mitch Capper")]
+[assembly: AssemblyProduct("PlantronicsHeadsetPlugin")]
+[assembly: AssemblyCopyright("Copyright © Mitch Capper")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

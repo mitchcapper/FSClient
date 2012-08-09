@@ -12,15 +12,14 @@ namespace FSClient {
 		private Broker broker;
 		public MainWindow() {
 			_instance = this;
-
 			InitializeComponent();
-
 			gridCalls.DataContext = Call.calls;
 
 
 			gridCalls.LoadingRow += gridCalls_LoadingRow;
 			gridAccounts.DataContext = Account.accounts;
-
+			borderConference.DataContext = Conference.instance;
+			borderConference.ContextMenu = Conference.instance.menu;
 			this.Loaded += MainWindow_Loaded;
 			CurrentStatusInfo.DataContext = account_status;
 
@@ -85,6 +84,7 @@ namespace FSClient {
 			Call c = e.Row.DataContext as Call;
 			if (c == null)
 				return;
+			e.Row.Visibility = c.visibility;
 			e.Row.ContextMenu = c.CallRightClickMenu();
 
 		}
@@ -112,7 +112,7 @@ namespace FSClient {
 		private void DNDChanged(object sender, bool data) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				btnDND.Foreground = data ? enabled_brush : disabled_brush;
-				Title = "FSClient " + (data ? " - DND" : "");
+				Title = "FSClient " + (data ? " - DND" : "") + " " + version_str;
 			}));
 		}
 		private void CallActiveChanged(object sender, bool data) {
@@ -256,13 +256,15 @@ namespace FSClient {
 			Account.accounts.CollectionChanged += accounts_CollectionChanged;
 			Broker.FreeswitchLoaded += FreeswitchLoaded;
 			broker = Broker.get_instance();
-
+			AccountDefaultConverter.normal_account_color = (SolidColorBrush)Resources["GridRowSpecialFGColor"];
+			AccountDefaultConverter.default_account_color = (SolidColorBrush)Resources["RowHighlightFGColor"];
 			broker.cur_dial_strChanged += DialStrChanged;
 			broker.call_activeChanged += CallActiveChanged;
 			broker.active_call_ringingChanged += CallRingingChanged;
 			broker.MutedChanged += MuteChanged;
 			broker.DNDChanged += DNDChanged;
 			broker.CanEndChanged += CanEndChanged;
+			broker.themeChanged += ThemeChanged;
 			broker.UseNumberOnlyInputChanged += UseNumberOnlyInputChanged;
 			UseNumberOnlyInputChanged(null, false);//trigger an update
 			broker.SpeakerphoneActiveChanged += SpeakerActiveChanged;
@@ -283,6 +285,12 @@ namespace FSClient {
 			ResizeForm();
 			btnTransfer.ContextMenu = broker.XFERContextMenu();
 			borderTransfer.ContextMenu = broker.XFERContextMenu();
+			if (broker.theme != "Steel")
+				ReloadTheme();
+		}
+
+		private void ThemeChanged(object sender, string data){
+			ReloadTheme();
 		}
 
 		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -303,11 +311,12 @@ namespace FSClient {
 		}
 
 
-
+		private String version_str = "";
 		private void FreeswitchLoaded(object sender, EventArgs e) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				busyAnimation.Visibility = Visibility.Hidden;
-				Title = "FSClient " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+				version_str = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+				Title = "FSClient " + version_str;
 			}));
 		}
 
@@ -350,6 +359,20 @@ namespace FSClient {
 
 		SolidColorBrush enabled_brush = new SolidColorBrush(Colors.Yellow);
 		SolidColorBrush disabled_brush = new SolidColorBrush(Colors.White);
+		private void ReloadTheme(){
+			String theme = broker.theme;
+			if (theme != "Black" && theme != "RoyalBlue" && theme != "White")
+				theme = "Steel";
+			var rDictionary = new ResourceDictionary();
+			rDictionary.Source = new Uri("/FSClient;component/Themes/" + theme + ".xaml", UriKind.Relative);
+			Resources.MergedDictionaries[1] = rDictionary;
+			AccountDefaultConverter.normal_account_color = (SolidColorBrush)Resources["GridRowSpecialFGColor"];
+			AccountDefaultConverter.default_account_color = (SolidColorBrush)Resources["RowHighlightFGColor"];
+			var arr = gridAccounts.Items.SortDescriptions.ToArray();
+			gridAccounts.Items.SortDescriptions.Clear();
+			foreach (var desc in arr)
+				gridAccounts.Items.SortDescriptions.Add(desc);
+		}
 		private void btnMute_Click(object sender, RoutedEventArgs e) {
 			broker.Muted = !broker.Muted;
 		}
@@ -496,7 +519,6 @@ namespace FSClient {
 			int accounts_left = 237;
 			int total_width = 243;
 			int body_left = 3;
-			int new_left = 0;
 			if (borderAccounts.Visibility == Visibility.Visible)
 				total_width += 196;
 			if (borderCalls.Visibility == Visibility.Visible){
@@ -566,6 +588,28 @@ namespace FSClient {
 
 		}
 
-		
+
+		private void btnClearAllCalls(object sender, RoutedEventArgs e){
+			Call.ClearCallsFromHistory();
+		}
+
+		private void borderConference_MouseDown(object sender, MouseButtonEventArgs e) {
+			if (e.ClickCount == 2){
+				Conference.instance.join_conference();
+			}
+		}
+
+		private void AccountReconnect_Click(object sender, RoutedEventArgs e) {
+			Account acct = gridAccounts.SelectedItem as Account;
+			if (acct == null)
+				return;
+			if (acct.enabled == false)
+				acct.enabled = true;
+			acct.ReloadAccount();
+		}
+
+		private void btnConferenceDoubleClick(object sender, MouseButtonEventArgs e) {
+			Conference.instance.join_conference();
+		}
 	}
 }

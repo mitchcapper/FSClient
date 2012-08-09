@@ -68,5 +68,8 @@
     <Setting Name="GuiStartup" Type="System.String" Scope="User">
       <Value Profile="(Default)">All</Value>
     </Setting>
+    <Setting Name="Theme" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Steel</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

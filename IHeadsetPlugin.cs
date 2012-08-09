@@ -299,7 +299,7 @@ namespace FSClient {
 		}
 
 		public override void LoadPlugins(){
-			LoadActualPlugins(typeof (IHeadsetPlugin),  plugins);
+			LoadActualPlugins("Headset",typeof (IHeadsetPlugin),  plugins);
 
 			if ((from p in plugins where p.enabled && p.state != PluginData.PluginDataState.ERROR_LOADING select true).Count() > 0){
 				broker.DevicesReadyChanged += BrokerDevicesReadyChanged;

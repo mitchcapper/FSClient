@@ -5,7 +5,7 @@ using System.Linq;
 using System.Timers;
 using FSClient;
 using JA = JabraTelephonyAPI;
-namespace JabraHeadset {
+namespace JabraHeadsetPlugin {
 	public class JabraHeadset : IHeadsetDevice {
 
 		//ake sure mic mute actually goes both ways
@@ -81,40 +81,42 @@ namespace JabraHeadset {
 		private bool muted = false;
 
 		private void OnButtonEvent(JA.IDevice device, JA.ButtonEvent button, bool value) {
-			switch (button) {
-				case JA.ButtonEvent.HookSwitch:
-					if (value) {
-						if (!hook_enabled)
-							StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Talk));
-						hook_enabled = true;
-					}
-					else {
-						if (hook_enabled) {
-							StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Hangup));
-							device.SetHookState(false);
+			try {
+				switch (button) {
+					case JA.ButtonEvent.HookSwitch:
+						if (value) {
+							if (!hook_enabled)
+								StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Talk));
+							hook_enabled = true;
 						}
-						hook_enabled = false;
-					}
-					break;
-				case JA.ButtonEvent.MicMute:
-					if (!ignore_next_mute)
-						StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.ToggleMute));
-					ignore_next_mute = false;
-					break;
-				case JA.ButtonEvent.Flash:
-					StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Flash));
-					break;
-				case JA.ButtonEvent.RejectCall:
-					StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Hangup));
-					break;
-				case JA.ButtonEvent.FireAlarm:
-					throw new Exception("WTF");
-				case JA.ButtonEvent.Redial:
-					StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Redial));
-					break;
+						else {
+							if (hook_enabled) {
+								StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Hangup));
+								device.SetHookState(false);
+							}
+							hook_enabled = false;
+						}
+						break;
+					case JA.ButtonEvent.MicMute:
+						if (!ignore_next_mute)
+							StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.ToggleMute));
+						ignore_next_mute = false;
+						break;
+					case JA.ButtonEvent.Flash:
+						StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Flash));
+						break;
+					case JA.ButtonEvent.RejectCall:
+						StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Hangup));
+						break;
+					case JA.ButtonEvent.FireAlarm:
+						throw new Exception("WTF");
+					case JA.ButtonEvent.Redial:
+						StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Redial));
+						break;
 
+				}
 			}
-
+			catch (Exception){}
 		}
 		private bool ignore_next_mute;
 		private void OnStateEvent(JA.IDevice device, JA.State state, bool value) {

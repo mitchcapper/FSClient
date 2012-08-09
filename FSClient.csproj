@@ -43,7 +43,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -95,6 +95,7 @@
     <Compile Include="Account.cs" />
     <Compile Include="Broker.cs" />
     <Compile Include="Call.cs" />
+    <Compile Include="Conference.cs" />
     <Compile Include="Controls\OurAutoCompleteBox.cs" />
     <Compile Include="Controls\PhonePadButton.xaml.cs">
       <DependentUpon>PhonePadButton.xaml</DependentUpon>
@@ -128,6 +129,14 @@
     <Compile Include="Utils.cs" />
     <Compile Include="Windows.cs" />
     <Compile Include="XmlUtils.cs" />
+    <Page Include="Themes\Base.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Black.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PhonePadButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,6 +171,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PluginOptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\RoyalBlue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Steel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\White.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -262,8 +283,10 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_silk.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_bv.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_isac.dll .\mod
+if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_conference.dll .\mod
 
 if not exist ".\conf" md conf
+copy ..\..\"external items"\Plantronics.Device.Common.dll .\plugins
 copy ..\..\"external items"\conf\freeswitch.xml .\conf
 copy ..\..\"external items"\fs_cli.exe .</PostBuildEvent>
   </PropertyGroup>

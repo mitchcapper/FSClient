@@ -80,7 +80,8 @@
         <ComponentRef Id="cmpB896C4672ADB1C3BAA362811356CADAC"/>
         <ComponentRef Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5"/>
 		<ComponentRef Id="cmpEF5CC6E154E049EFB9F49F3E6C17BC1C"/>
-		  
+		<ComponentRef Id="cmp65B4AD1208F64A08A71B741909852772"/>
+
 	  </ComponentGroup>
         <DirectoryRef Id="MODLOCATION">
             <Component Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6" Guid="*">
@@ -143,9 +144,17 @@
             <Component Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5" Guid="*">
                 <File Id="fil16EBD6FB1A5BBD319C4751C62500B2F0" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_tone_stream.dll" />
             </Component>
-        </DirectoryRef>
+			<Component Id="cmp65B4AD1208F64A08A71B741909852772" Guid="*">
+				<File Id="fil67FACD58465842AE84FCA4E06369A2F9" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_conference.dll" />
+			</Component>
+		</DirectoryRef>
     </Fragment>
     <Fragment>
+		<DirectoryRef Id="PLUGINLOCATION">
+			<Component Id="FSCorePluginComp" Guid="*">
+				<File Id="fil0C387239213C453093397F84643B1BB7" KeyPath="yes" Source="$(var.FSClient.TargetDir)\plugins\Plantronics.Device.Common.dll" />
+			</Component>
+		</DirectoryRef>
         <DirectoryRef Id="CONFLOCATION">
             <Component Id="FSCoreConfComp" Guid="*">
                 <File Id="filACB9609073827DA46E0C3B0A8AF51393" KeyPath="yes" Source="$(var.FSClient.TargetDir)\conf\freeswitch.xml" />

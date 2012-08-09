@@ -1,15 +1,46 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:ours="clr-namespace:FSClient.Controls" xmlns:local="clr-namespace:FSClient" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit" mc:Ignorable="d" x:Class="FSClient.MainWindow"
+		xmlns:ours="clr-namespace:FSClient.Controls" xmlns:local="clr-namespace:FSClient" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" mc:Ignorable="d" x:Class="FSClient.MainWindow"
         Title="FSClient" Height="345" Width="666"  WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" Closing="Window_Closing" Icon="phone.ico">
+		
 	<Window.Resources>
+		 <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="Themes/Base.xaml" />
+			<ResourceDictionary Source="Themes/Steel.xaml"/>
+			<ResourceDictionary>
 		<local:DurationTimeConverter x:Key="DurationTimeConverter"/>
 		<local:ShortDateTimeConverter x:Key="ShortDateTimeConverter"/>
 		<local:StateConverter x:Key="StateConverter" />
+		<local:ConfStateConverter x:Key="ConfStateConverter" />
 		<local:DirectionConverter x:Key="DirectionConverter" />
 		<local:AccountDefaultConverter x:Key="AccountDefaultConverter" />
 		<local:EnglishDirectionConverter x:Key="EnglishDirectionConverter" />
+		<ToolTip x:Key="ConferenceTooltip">
+			<StackPanel Orientation="Vertical">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Party Name" Width="125"  TextAlignment="Center" FontWeight="Bold" />
+					<TextBlock Text="State" Width="50" TextAlignment="Center" FontWeight="Bold"  />
+					<TextBlock Text="Duration" Width="50" TextAlignment="Center" FontWeight="Bold" />
+					<TextBlock Text="Number" Width="100" TextAlignment="Center" FontWeight="Bold" />
+				</StackPanel>
+				<ItemsControl ItemsSource="{Binding Path=users}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{Binding Path=party_name}" Width="125" TextAlignment="Center"/>
+								<TextBlock Text="{Binding Path=state, Converter={StaticResource ConfStateConverter}}" Width="50" TextAlignment="Center"/>
+								<TextBlock Text="{Binding duration, Converter={StaticResource DurationTimeConverter}}" Width="50"/>
+								<TextBlock Text="{Binding Path=party_number}" Width="100" TextAlignment="Center"/>
+								
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+				
+		</ToolTip>
 		<ToolTip x:Key="mainCallTooltip">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -51,17 +82,36 @@
 				
 			</Grid>
 		</ToolTip>
-
+		</ResourceDictionary>
+</ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
 	</Window.Resources>
-    <Canvas Background="#FF1A207E" x:Name="mainControl">
-		<Border x:Name="borderCalls" BorderThickness="2" BorderBrush="Black" Background="#FF000341" Height="297" Canvas.Left="4" Canvas.Top="12" Width="227" d:LayoutOverrides="VerticalAlignment">
-			<Grid d:IsLocked="True">
+    <Canvas Background="{DynamicResource BackgroundColor}" x:Name="mainControl">
+		<Border x:Name="borderCalls" BorderThickness="2" BorderBrush="{DynamicResource GridBorderColor}" Background="{DynamicResource GridTitleBGColor}" Height="297" Canvas.Left="4" Canvas.Top="12" Width="227" d:LayoutOverrides="VerticalAlignment">
+			<Grid>
 				<Grid.RowDefinitions>
-					<RowDefinition Height="20" />
+					<RowDefinition Height="24" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<TextBlock Foreground="White" Text="Calls" Margin="5,0,0,0" FontWeight="Bold" FontSize="13.333" />
-				<DataGrid Grid.Row="1" x:Name="gridCalls" AutoGenerateColumns="False"  ItemsSource="{Binding Mode=OneWay}" CanUserReorderColumns="False" SelectionMode="Single" MouseDoubleClick="gridCalls_MouseDoubleClick" IsReadOnly="True" Background="#FF5765B2" Foreground="Black" RowBackground="#FF6B77B6" AlternatingRowBackground="#FF919EE5" HeadersVisibility="None" GridLinesVisibility="None">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="50" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<TextBlock Foreground="{DynamicResource GridTitleFGColor}" Text="Calls" Margin="5,0,0,0" Grid.Column="0" FontWeight="Bold" FontSize="13.333" VerticalAlignment="Center" />
+					<Border x:Name="borderConference" BorderThickness="1" BorderBrush="{DynamicResource SpecialBorderColor}" Background="{DynamicResource GridRowBGColor}" ToolTip="{StaticResource ConferenceTooltip}" ToolTipService.ShowDuration="999999"  CornerRadius="2"  Grid.Column="1" HorizontalAlignment="Right" Margin="1" Padding="1,0,0,0" Visibility="{Binding conf_visible}" MouseDown="borderConference_MouseDown" Height="22"	 >
+						<StackPanel Orientation="Horizontal" Margin="5,2" >
+						<Button Width="15" Height="15"  Style="{DynamicResource GlassOrbStyle}" Background="{Binding conf_color}"  VerticalAlignment="Center" MouseDoubleClick="btnConferenceDoubleClick" Margin="0,0,5,0" />
+						<TextBlock Text="Conference"  Foreground="{DynamicResource RowFGColor}" HorizontalAlignment="Right"  VerticalAlignment="Center"/>
+					</StackPanel>
+					</Border>
+				</Grid>
+				<DataGrid Grid.Row="1" x:Name="gridCalls" AutoGenerateColumns="False"  ItemsSource="{Binding Mode=OneWay}" CanUserReorderColumns="False" SelectionMode="Single" MouseDoubleClick="gridCalls_MouseDoubleClick" IsReadOnly="True" Background="{DynamicResource GridBodyBGColor}" Foreground="{DynamicResource RowFGColor}" RowBackground="{DynamicResource GridRowBGColor}" AlternatingRowBackground="{DynamicResource GridAltRowBGColor}" HeadersVisibility="None" GridLinesVisibility="None" BorderBrush="{DynamicResource GridBorderColor}">
+					<DataGrid.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="Clear All History" Click="btnClearAllCalls" />
+						</ContextMenu>
+					</DataGrid.ContextMenu>
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="" Binding="{Binding is_outgoing, Converter={StaticResource DirectionConverter}}" ElementStyle="{DynamicResource CenterAlignStyle}" />
 						<DataGridTemplateColumn Header="">
@@ -76,20 +126,82 @@
 				</DataGrid>
 			</Grid>
 		</Border>
-		<Border x:Name="borderAccounts" BorderThickness="2" BorderBrush="Black" Background="#FF000341" Width="192" Height="297" Canvas.Left="465" Canvas.Top="12" >
-			<Grid d:IsLocked="True">
+		<Border x:Name="borderAccounts" BorderThickness="2" BorderBrush="{DynamicResource GridBorderColor}" Background="{DynamicResource GridTitleBGColor}" Width="192" Height="297" Canvas.Left="465" Canvas.Top="12" >
+			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="20" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
-				<TextBlock Grid.Row="0" Foreground="White" Text="Accounts" Margin="5,0,0,0" FontWeight="Bold" FontSize="13.333"/>
-				<DataGrid Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding Mode=OneWay}"  CanUserReorderColumns="False" SelectionMode="Single" x:Name="gridAccounts" HeadersVisibility="Column"  RowBackground="#FF6B77B6" AlternatingRowBackground="#FF919EE5"  Background="#FF5765B2" Foreground="Black" MouseUp="gridAccounts_MouseUp" ContextMenuOpening="gridAccounts_ContextMenuOpening">
+				<TextBlock Grid.Row="0" Foreground="{DynamicResource GridTitleFGColor}" Text="Accounts" Margin="5,0,0,0" FontWeight="Bold" FontSize="13.333" Background="{DynamicResource GridTitleBGColor}" />
+				<DataGrid Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding Mode=OneWay}"  CanUserReorderColumns="False" SelectionMode="Single" x:Name="gridAccounts" HeadersVisibility="Column"  RowBackground="{DynamicResource GridRowBGColor}" AlternatingRowBackground="{DynamicResource GridAltRowBGColor}"  Background="{DynamicResource GridBodyBGColor}" Foreground="{DynamicResource RowFGColor}" MouseUp="gridAccounts_MouseUp" ContextMenuOpening="gridAccounts_ContextMenuOpening" BorderBrush="{DynamicResource GridBorderColor}">
+					 <DataGrid.Resources> 
+        <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}"> 
+            <Setter Property="Width" Value="8"/> 
+            <Setter Property="Background" Value="Transparent"/> 
+            <Setter Property="Cursor" Value="SizeWE"/> 
+            <Setter Property="Template"> 
+                <Setter.Value> 
+                    <ControlTemplate TargetType="{x:Type Thumb}"> 
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"/> 
+                    </ControlTemplate> 
+                </Setter.Value> 
+            </Setter> 
+        </Style> 
+        <Style TargetType="{x:Type DataGridColumnHeader}"> 
+            <Setter Property="Background" Value="{DynamicResource GridHeaderBG}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource GridHeaderBorder}"/> 
+			<Setter Property="Foreground" Value="{DynamicResource GridHeaderFGColor}"/> 
+			<Setter Property="Padding" Value="5,2,0,2"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="Template"> 
+                <Setter.Value> 
+                    <ControlTemplate TargetType="{x:Type DataGridColumnHeader}"> 
+                        <Grid> 
+                            <Themes:DataGridHeaderBorder BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" IsClickable="{TemplateBinding CanUserSort}" IsPressed="{TemplateBinding IsPressed}" IsHovered="{TemplateBinding IsMouseOver}" Padding="{TemplateBinding Padding}" SortDirection="{TemplateBinding SortDirection}" SeparatorBrush="{TemplateBinding SeparatorBrush}" SeparatorVisibility="{TemplateBinding SeparatorVisibility}"> 
+                                <Grid> 
+                                    <Grid.ColumnDefinitions> 
+                                        <ColumnDefinition Width="Auto"/> 
+                                        <ColumnDefinition Width="*"/> 
+                                    </Grid.ColumnDefinitions> 
+                                    <ContentPresenter Grid.Column="0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/> 
+                                    <Path x:Name="SortArrow" 
+                                            Grid.Column="1" 
+                                            HorizontalAlignment="Right" VerticalAlignment="Center"                                            
+                                            Width="8" Height="6" Margin="2,0,5,0" 
+                                            Stretch="Fill" Opacity="0.5" Fill="White" 
+                                            RenderTransformOrigin="0.5,0.4" 
+                                            Visibility="Collapsed" 
+                                            Data="M0,0 L1,0 0.5,1 z" /> 
+                                </Grid> 
+                            </Themes:DataGridHeaderBorder> 
+                            <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" Style="{StaticResource ColumnHeaderGripperStyle}"/> 
+                            <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/> 
+                        </Grid> 
+                        <ControlTemplate.Triggers> 
+                            <Trigger Property="SortDirection" Value="Ascending"> 
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" /> 
+                                <Setter TargetName="SortArrow" Property="RenderTransform"> 
+                                    <Setter.Value> 
+                                        <RotateTransform Angle="180" /> 
+                                    </Setter.Value> 
+                                </Setter> 
+                            </Trigger> 
+                            <Trigger Property="SortDirection" Value="Descending"> 
+                                <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" /> 
+                            </Trigger> 
+                        </ControlTemplate.Triggers> 
+                    </ControlTemplate> 
+                </Setter.Value> 
+            </Setter> 
+        </Style> 
+    </DataGrid.Resources>
 					<DataGrid.ContextMenu>
 						<ContextMenu>
 							<MenuItem Header="Add Account" Click="AccountNew_Click" Name="menuAccountNew" />
 							<MenuItem Header="Set Default Account" Click="AccountSetDefault_Click" Name="menuAccountSetDefault" />
 							<MenuItem Header="Edit Account" Click="AccountEdit_Click" Name="menuAccountEdit" />
 							<MenuItem Header="Delete Account" Click="AccountDelete_Click" Name="menuAccountDelete" />
+							<MenuItem Header="ReConnect Account" Click="AccountReconnect_Click" Name="menuAccountReconnect" />
 						</ContextMenu>
 					</DataGrid.ContextMenu>
 
@@ -150,36 +262,27 @@
 				<Button Margin="2,0"  Content="DND" FontWeight="Bold" Foreground="White" Height="20" Width="44" x:Name="btnDND" Style="{DynamicResource GlassButtonStyle}" VerticalAlignment="Top" Click="btnDND_Click"  d:LayoutOverrides="HorizontalAlignment, Width" />
 				<Button Margin="2,0" Content="Speaker" FontWeight="Bold" Foreground="White" Height="20" x:Name="btnSpeaker" Style="{DynamicResource GlassButtonStyle}" VerticalAlignment="Top" Width="55" d:LayoutOverrides="HorizontalAlignment" Click="btnSpeaker_Click" />			
 			</StackPanel>
-			<TextBox Height="35" x:Name="txtNumber" Text="" Background="#FF5C60AB" IsReadOnly="True" Foreground="White" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Width="215" Canvas.Left="8" Canvas.Top="9" />
-			<Border BorderThickness="1" x:Name="CurrentCallInfo" Width="215" Canvas.Left="8" Canvas.Top="50">
-				<Border.Effect>
-					<DropShadowEffect/>
-				</Border.Effect>
-				<Border.BorderBrush>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-						<GradientStop Color="#FF00FFED" Offset="0"/>
-						<GradientStop Color="White" Offset="1"/>
-					</LinearGradientBrush>
-				</Border.BorderBrush>
+			<TextBox Height="35" x:Name="txtNumber" Text="" Background="{DynamicResource GridRowBGColor}" IsReadOnly="True" Foreground="{DynamicResource GridRowSpecialFGColor}" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" Width="215" Canvas.Left="8" Canvas.Top="9" />
+			<Border BorderThickness="1" x:Name="CurrentCallInfo" Width="215" Canvas.Left="8" Canvas.Top="50" BorderBrush="{DynamicResource SpecialBorderColor}">
 				<StackPanel  Orientation="Vertical" Margin="2" >
 					<StackPanel Orientation="Horizontal">
-						<TextBlock Foreground="White" FontSize="13" Text="{Binding state}" />
-						<TextBlock Foreground="White" FontSize="13" Margin="5,0,0,0" Text="{Binding is_outgoing, Converter={StaticResource EnglishDirectionConverter}}" />
-						<TextBlock Foreground="White" FontSize="13" Text=" Call - " />
-						<TextBlock Foreground="White" FontSize="13" Text="{Binding duration, Converter={StaticResource DurationTimeConverter}}"/>
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text="{Binding state}" />
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Margin="5,0,0,0" Text="{Binding is_outgoing, Converter={StaticResource EnglishDirectionConverter}}" />
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text=" Call - " />
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text="{Binding duration, Converter={StaticResource DurationTimeConverter}}"/>
 					</StackPanel>
 					<StackPanel Orientation="Horizontal">
-						<TextBlock Margin="0,0,0,0"  Foreground="White" FontSize="12" Text="{Binding other_party_name}" />
+						<TextBlock Margin="0,0,0,0"  Foreground="{DynamicResource BackgroundFGColor}" FontSize="12" Text="{Binding other_party_name}" />
 					</StackPanel>
 
 				</StackPanel>
 			</Border>
 			<StackPanel  Orientation="Vertical" Name="CurrentStatusInfo" Width="215" Canvas.Left="10" Canvas.Top="49" Height="40">
-					<TextBlock Foreground="White" FontSize="13" Text="{Binding primary_account}" />
+					<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text="{Binding primary_account}" />
 					<StackPanel Orientation="Horizontal">
-						<TextBlock Foreground="White" FontSize="13" Text="{Binding active_accounts}"/>
-						<TextBlock Foreground="White" FontSize="13" Text=" of " />
-						<TextBlock Foreground="White" FontSize="13" Text="{Binding total_accounts}"/>
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text="{Binding active_accounts}"/>
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text=" of " />
+						<TextBlock Foreground="{DynamicResource BackgroundFGColor}" FontSize="13" Text="{Binding total_accounts}"/>
 					</StackPanel>
 			</StackPanel>
 			<Button Content="Options" HorizontalAlignment="Left" x:Name="btnOptions" Width="50" Click="btnOptions_Click" Style="{DynamicResource GlassButtonStyle}" Height="20" Canvas.Left="175" Canvas.Top="290" d:LayoutOverrides="VerticalAlignment" />
@@ -190,8 +293,8 @@
 				<DataTemplate>
 
 					<TextBlock Text="{Binding}">
-						<TextBlock.ContextMenu>
-							<ContextMenu x:Name="contactSearchConextMenu" IsEnabled="true" Closed="contactSearchConextMenu_Closed" Loaded="contactSearchConextMenu_Loaded"  ItemsSource="{Binding Path=(local:ContactPluginManager.ContactMenuItems)}" />
+						<TextBlock.ContextMenu><!-- ItemsSource="{Binding Path=(local:ContactPluginManager.ContactMenuItems)}"-->
+							<ContextMenu x:Name="contactSearchConextMenu" IsEnabled="true" Closed="contactSearchConextMenu_Closed" Loaded="contactSearchConextMenu_Loaded"  />
 						</TextBlock.ContextMenu>
 					</TextBlock>
 				</DataTemplate>

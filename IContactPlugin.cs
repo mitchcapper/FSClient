@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -59,6 +60,8 @@ namespace FSClient {
 	
 		public ContactPluginManager(){
 			OurAutoCompleteBox box = Broker.get_instance().GetContactSearchBox();
+			if (Application.Current == null)
+				return;
 			Application.Current.Dispatcher.BeginInvoke((Action)(() => {
 				box.Visibility = Visibility.Collapsed;
 			}));
@@ -68,14 +71,30 @@ namespace FSClient {
 		private bool no_plugins_in_config;
 		public override void LoadPlugins(){
 			no_plugins_in_config = plugins.Count == 0;
-			LoadActualPlugins(typeof (IContactPlugin), plugins);
+			LoadActualPlugins("Contact",typeof (IContactPlugin), plugins);
 			
 
 			
 			if (active_plugin != null){
 				Call.calls.CollectionChanged += calls_CollectionChanged;
+				Conference.users.CollectionChanged += confusers_CollectionChanged;
 				Call.CallRightClickMenuShowing += calls_RightClickMenuShowing;
 				Broker.get_instance().XFERMenuOpenedHandler += broker_xferMenuOpened;
+			}
+		}
+
+		private void confusers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e){
+			if (e.NewItems == null || active_plugin == null)
+				return;
+			bgresolve_worker_init();
+			lock (pending_bg_queue.SyncRoot) {
+				foreach (ConferenceUser u in e.NewItems) {
+					if (bgResolveWorker.IsBusy || pending_bg_queue.Count > 0)
+						pending_bg_queue.Enqueue(u);
+					else
+						bgResolveWorker.RunWorkerAsync(u);
+				}
+
 			}
 		}
 
@@ -164,7 +183,13 @@ namespace FSClient {
 
 		private void bgResolveWorker_DoWork(object sender, DoWorkEventArgs e) {
 
-			Call c = (Call)e.Argument;
+			Call c = e.Argument as Call;
+			if (c == null){
+				ConferenceUser user = (ConferenceUser)e.Argument;
+				active_plugin.contact_plugin.ResolveNumber(user.party_number, alias => { if (user.party_name == user.party_number) user.party_name = alias; });
+				return;
+			}
+
 			active_plugin.contact_plugin.ResolveNumber(c.other_party_number, alias => { if (c.other_party_name == c.other_party_number) c.other_party_name = alias; });
 		}
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace FSClient {
@@ -98,7 +97,7 @@ namespace FSClient {
 			String plugin_dir = Utils.plugins_dir();
 			string[] dlls;
 			try {
-				dlls = Directory.GetFileSystemEntries(plugin_dir, "*.dll");
+				dlls = Directory.GetFileSystemEntries(plugin_dir, "*Plugin.dll");
 				foreach (String full_dll in dlls)
 					possible_plugins.Add(new PossiblePlugin(full_dll));
 			}
@@ -106,10 +105,13 @@ namespace FSClient {
 				return;
 			}
 		}
-		protected void LoadActualPlugins(Type plugin_type, IEnumerable<PluginData> plugins) {
+		protected void LoadActualPlugins(String file_end, Type plugin_type, IEnumerable<PluginData> plugins) {
 			PluginScan();
+			file_end += "Plugin.dll";
 			foreach (PossiblePlugin pos_plug in possible_plugins) {
 				String dll = pos_plug.file_info.Name;
+				if (!dll.EndsWith(file_end, StringComparison.CurrentCultureIgnoreCase))
+					continue;
 
 				PluginData data = (from p in plugins where p.dll == dll select p).SingleOrDefault();
 				bool add_to_list = false;

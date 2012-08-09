@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using FreeSWITCH.Native;
@@ -19,6 +20,8 @@ namespace FSClient {
 		public string sort_order {
 			get {
 				string ret = call_ended ? "0" : "1";
+				if (is_conference_call)
+					ret = " "+ret;
 				switch (state) {
 					case CALL_STATE.Answered:
 						ret += "6";
@@ -116,6 +119,17 @@ namespace FSClient {
 			}
 		}
 		private string _note;
+
+		public bool is_conference_call {
+			get { return _is_conference_call; }
+			set {
+				if (_is_conference_call == value)
+					return;
+				_is_conference_call = value;
+				RaisePropertyChanged("is_conference_call");
+			}
+		}
+		private bool _is_conference_call;
 
 
 		public bool is_outgoing {
@@ -235,6 +249,7 @@ namespace FSClient {
 				else if (broker.recordings_folder != null)
 					menu.Items.Add(CreateMenuItem("Record Call", RecordCall));
 				menu.Items.Add(CreateMenuItem("Transfer", TransferPrompt));
+				menu.Items.Add(CreateMenuItem("Conference", ConferenceAdd));
 				item = new MenuItem() { Header = "Their Volume" };
 				for (int x = -4; x <= 4; x++) {
 					int val = x;
@@ -255,6 +270,11 @@ namespace FSClient {
 			if (CallRightClickMenuShowing != null) {
 				CallRightClickMenuShowing(this, new CallRightClickEventArgs { call = this, menu = menu });
 			}
+		}
+
+		private void ConferenceAdd(){
+			Conference.instance.join_conference();
+			Utils.bgapi_exec("uuid_transfer", leg_b_uuid + " fsc_conference xml default");
 		}
 
 		private void StopRecordCall(){
@@ -305,7 +325,9 @@ namespace FSClient {
 					HandleHangupCompleteEvent(evt, uuid);
 					break;
 				case switch_event_types_t.SWITCH_EVENT_CHANNEL_ANSWER:
-					HandleChannelAnswerEvent(evt, uuid);
+					String dest = "Caller-Destination-Number";
+					if (dest != "fsc_conference")
+						HandleChannelAnswerEvent(evt, uuid);
 					break;
 				case switch_event_types_t.SWITCH_EVENT_CUSTOM:
 					HandleCustomEvent(evt, uuid);
@@ -321,7 +343,7 @@ namespace FSClient {
 
 		private static void HandleDTMFEvent(FSEvent evt, string uuid) {
 			String digit = evt.get_header("DTMF-Digit");
-			var call = (from c in calls where c.leg_a_uuid == uuid || c.leg_b_uuid == uuid select c).SingleOrDefault();
+			var call = (from c in calls where (c.leg_a_uuid == uuid || c.leg_b_uuid == uuid) && c.call_ended==false select c).SingleOrDefault();
 			if (call.state == CALL_STATE.Answered && digit.Length == 1)
 				PortAudio.PlayDTMF(digit[0], call.leg_a_uuid);
 
@@ -329,14 +351,14 @@ namespace FSClient {
 		public static void HandleOutgoingEvent(FSEvent evt, String uuid) //capture an outgoing call the other leg
 		{
 			String other_leg = evt.get_header("Other-Leg-Unique-ID");
-			Call call = (from c in calls where c.leg_a_uuid == other_leg select c).SingleOrDefault();
+			Call call = (from c in calls where c.leg_a_uuid == other_leg && c.call_ended == false select c).SingleOrDefault();
 			if (call == null || !call.is_outgoing)
 				return;
 			call.leg_b_uuid = uuid;
 		}
 		public static void HandleHangupCompleteEvent(FSEvent evt, String uuid) {
 			Utils.DebugEventDump(evt);
-			Call call = (from c in calls where c.leg_a_uuid == uuid || c.leg_b_uuid == uuid select c).SingleOrDefault();
+			Call call = (from c in calls where c.call_ended == false && (c.leg_a_uuid == uuid || c.leg_b_uuid == uuid) select c).SingleOrDefault();
 			if (call == null || call.call_ended)
 				return;
 
@@ -378,7 +400,7 @@ namespace FSClient {
 		private static void HandleCustomEvent(FSEvent evt, string uuid) {
 			if (evt.subclass_name == "portaudio::ringing") {
 				Utils.DebugEventDump(evt);
-				if ((from c in calls where c._leg_a_uuid == uuid select c).Count() > 0)//only care about first ring
+				if ((from c in calls where c._leg_a_uuid == uuid && c.call_ended == false select c).Count() > 0)//only care about first ring
 					return;
 				Call call = new Call();
 				call.SetCallInfoFromEvent(evt);
@@ -396,15 +418,20 @@ namespace FSClient {
 				Call call = new Call();
 				call.is_outgoing = true;
 				call.SetCallInfoFromEvent(evt);
+				if (call.other_party_number == "fsc_conference"){
+					call.visibility = Visibility.Collapsed;
+					Conference.instance.our_conference_call = call;
+					call.is_conference_call = true;
+				}
 				calls.Add(call);
-				call.UpdateCallState(CALL_STATE.Ringing, call);
+				call.UpdateCallState(call.is_conference_call ? CALL_STATE.Answered : CALL_STATE.Ringing, call);
 			}
 			else if (evt.subclass_name == "portaudio::callheld" || evt.subclass_name == "portaudio::callresumed") {
 				String paid_str = evt.get_header("variable_pa_call_id");
 				if (String.IsNullOrEmpty(paid_str))
 					return;
 				int portaudio_id = Int32.Parse(paid_str);
-				Call call = (from c in calls where c.portaudio_id == portaudio_id select c).SingleOrDefault();
+				Call call = (from c in calls where c.portaudio_id == portaudio_id && c.call_ended == false select c).SingleOrDefault();
 				if (call == null)
 					return;
 				if (evt.subclass_name == "portaudio::callresumed")
@@ -415,12 +442,23 @@ namespace FSClient {
 		}
 
 		private static void HandleChannelAnswerEvent(FSEvent evt, String uuid) {
-			Call call = (from c in calls where c.leg_b_uuid == uuid select c).SingleOrDefault();
-			if (call == null || call.state == CALL_STATE.Answered)
+			Call call = (from c in calls where c.leg_b_uuid == uuid && c.call_ended == false select c).SingleOrDefault();
+			if (call == null){
+				String orig_dest = evt.get_header("Other-Leg-Destination-Number");
+				if (orig_dest != "auto_answer")
+					return;
+				call = new Call();
+				call.SetCallInfoFromEvent(evt);
+				String gw_id = (from c in channels where c.Key == call.leg_b_uuid select c.Value.gateway_id).SingleOrDefault();
+				call.account = (from a in Account.accounts where a.gateway_id == gw_id select a).SingleOrDefault();
+				calls.Add(call);
+				call.UpdateCallState(CALL_STATE.Ringing, call);
+			}
+			if (call.state == CALL_STATE.Answered)
 				return;
 
 			if (call.state == CALL_STATE.Ringing || (call.state == CALL_STATE.Hold_Ringing && !call.is_outgoing))
-				call.UpdateCallState(CALL_STATE.Answered, call.is_outgoing ? active_call : call);
+				call.UpdateCallState(CALL_STATE.Answered, call.is_outgoing ? active_call : active_call);
 			else if (call.state == CALL_STATE.Hold_Ringing)
 				call.UpdateCallState(CALL_STATE.Hold, active_call);
 			else
@@ -437,7 +475,21 @@ namespace FSClient {
 				duration_timer = new System.Threading.Timer(DurationTimerFired, null, 1000, 1000);
 			if (broker == null)
 				broker = Broker.get_instance();
+			visibility = Visibility.Visible;
 		}
+
+		public Visibility visibility {
+			get { return _visibility; }
+			set {
+				if (_visibility == value)
+					return;
+				_visibility = value;
+				RaisePropertyChanged("visibility");
+			}
+		}
+		private Visibility _visibility;
+
+
 		private static void DurationTimerFired(object obj) {
 			if (Application.Current != null)
 				Application.Current.Dispatcher.BeginInvoke((Action)(UpdateDurations));
@@ -457,7 +509,7 @@ namespace FSClient {
 			bool actually_update_state = state != new_state;
 			bool set_call_ended = new_state != CALL_STATE.Answered && new_state != CALL_STATE.Ringing && new_state != CALL_STATE.Hold && new_state != CALL_STATE.Hold_Ringing && call_ended == false;
 			ActiveCallChangedArgs args = null;
-
+			
 			if (actually_update_state)
 				_state = new_state;
 			if (actually_make_active) {
@@ -511,7 +563,10 @@ namespace FSClient {
 			if (calls.Contains(this))
 				calls.Remove(this);
 		}
-
+		public static void ClearCallsFromHistory(){
+			foreach (var call in calls.ToArray())
+				call.RemoveCallFromHistory();
+		}
 
 		private static Regex DestNumberRegex;
 		private static Regex DestSipRegex;
@@ -578,6 +633,10 @@ namespace FSClient {
 		public void Transfer(String number) {
 			if (String.IsNullOrEmpty(number) || call_ended)
 				return;
+			if (is_conference_call){
+				MessageBox.Show("Cannot transfer the conference");
+				return;
+			}
 			if (String.IsNullOrEmpty(note))
 				note = "Call transferred to: " + number;
 			Utils.bgapi_exec("uuid_deflect", leg_b_uuid + " " + number);

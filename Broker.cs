@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,14 +16,17 @@ using Timer = System.Timers.Timer;
 
 namespace FSClient {
 	class Broker : IDisposable {
+		private DateTime start_time;
 		private Broker() {
+			start_time = DateTime.Now;
 			_instance = this;
 			upgrade_settings();
 			Utils.PluginLog("", "");//clear file
 			headset_plugin_manager = new HeadsetPluginManager();
-
+			conference = Conference.instance;
 			NewEvent += Call.NewFSEvent;
 			NewEvent += Account.NewEvent;
+			NewEvent += conference.NewFSEvent;
 
 			Call.CallStateChanged += CallStateChangedHandler;
 			Call.ActiveCallChanged += ActiveCallChanged;
@@ -83,6 +87,20 @@ namespace FSClient {
 					MessageBox.Show("conf/freeswitch.xml is not found, without it we must quit.", "Missing Base Configuration File", MessageBoxButton.OK, MessageBoxImage.Error);
 					Environment.Exit(-1);
 				}
+				try{
+					XmlTextReader r = new XmlTextReader(new StreamReader("conf/freeswitch.xml"));
+					try {
+						while (r.Read()) {
+						}
+					}
+					finally {
+						r.Close();
+					} 
+
+				}catch(Exception e){
+					MessageBox.Show("Bailing out as conf/freeswitch.xml is not a valid xml document error: " + e.Message);
+					Environment.Exit(-1);
+				}
 				if (System.IO.File.Exists("log/freeswitch.log")) {
 					try {
 						System.IO.File.WriteAllText("log/freeswitch.log", "");
@@ -97,6 +115,7 @@ namespace FSClient {
 				Account.LoadSettings();
 
 				recordings_folder = Properties.Settings.Default.RecordingPath;
+				theme = Properties.Settings.Default.Theme;
 				IncomingBalloons = Properties.Settings.Default.IncomingBalloons;
 				IncomingTopMost = Properties.Settings.Default.FrontOnIncoming;
 				ClearDTMFS = Properties.Settings.Default.ClearDTMFS;
@@ -115,7 +134,6 @@ namespace FSClient {
 					headset_plugin_manager = HeadsetPluginManager.GetPluginManager(Properties.Settings.Default.HeadsetPlugins);
 				else
 					headset_plugin_manager = new HeadsetPluginManager();
-				headset_plugin_manager.LoadPlugins();
 
 				if (Properties.Settings.Default.EventSocket != null)
 					event_socket = Properties.Settings.Default.EventSocket.GetEventSocket();
@@ -130,7 +148,10 @@ namespace FSClient {
 				if (res != MessageBoxResult.Yes)
 					Environment.Exit(-1);
 			}
-			Thread t = new Thread(init_freeswitch);
+			Thread t = new Thread(headset_plugin_manager.LoadPlugins);
+			t.IsBackground = true;
+			t.Start();
+			t = new Thread(init_freeswitch);
 			t.IsBackground = true;
 			t.Start();
 			t = new Thread(VersionCheck);
@@ -147,6 +168,7 @@ namespace FSClient {
 				if (FreeswitchLoaded != null)
 					FreeswitchLoaded(this, null);
 				fully_loaded = true;
+				Debug.WriteLine("Startup time: " + (DateTime.Now - start_time).TotalSeconds);
 			}
 			catch (Exception e) {
 				while (e.InnerException != null)
@@ -208,6 +230,7 @@ namespace FSClient {
 		public PortAudio.AudioDevice HeadsetOutDev { get; private set; }
 		public PortAudio.AudioDevice RingDev { get; private set; }
 		public PortAudio.AudioDevice[] audio_devices;
+		private Conference conference;
 		public IEnumerable<PluginManagerBase.PluginData> contact_plugins {
 			get { return contact_plugin_manager.GetPlugins(); }
 		}
@@ -398,6 +421,7 @@ namespace FSClient {
 				Properties.Settings.Default.DirectSipDial = DirectSipDial;
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
 				Properties.Settings.Default.RecordingPath = recordings_folder;
+				Properties.Settings.Default.Theme = theme;
 				Properties.Settings.Default.Sofia = new SettingsSofia(sofia);
 				Properties.Settings.Default.ContactPlugins = contact_plugin_manager.GetSettings();
 				Properties.Settings.Default.HeadsetPlugins = headset_plugin_manager.GetSettings();
@@ -499,6 +523,7 @@ namespace FSClient {
 		public bool IncomingTopMost;
 		public string CheckForUpdates;
 		public string GUIStartup;
+
 
 		private void VersionCheck() {
 			if (CheckForUpdates == "Never")
@@ -718,6 +743,18 @@ namespace FSClient {
 		}
 		private string _recordings_folder;
 		public Utils.ObjectEventHandler<string> recordings_folderChanged = null;
+		public string theme {
+			get { return _theme; }
+			set {
+				if (value == _theme)
+					return;
+				_theme = value;
+				if (themeChanged != null)
+					themeChanged(this, value);
+			}
+		}
+		private string _theme;
+		public Utils.ObjectEventHandler<string> themeChanged = null;
 		#endregion
 
 

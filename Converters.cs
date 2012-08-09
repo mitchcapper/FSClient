@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -7,6 +8,30 @@ using System.Windows.Data;
 using System.Windows.Media;
 
 namespace FSClient {
+	public class ConfStateConverter : IValueConverter{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture){
+			if (value == null)
+				return "";
+			ConferenceUser.USER_STATE state = (ConferenceUser.USER_STATE)value;
+			return StateConvert(state);
+		}
+		public static String StateConvert(ConferenceUser.USER_STATE state){
+			String ret = "";
+
+			if (ConferenceUser.StateTest(state,ConferenceUser.USER_STATE.DEAF))
+				ret += "D ";
+			if (ConferenceUser.StateTest(state, ConferenceUser.USER_STATE.FLOOR))
+				ret += "F ";
+			if (ConferenceUser.StateTest(state, ConferenceUser.USER_STATE.MUTE))
+				ret += "M ";
+			if (ConferenceUser.StateTest(state, ConferenceUser.USER_STATE.TALK))
+				ret += "T ";
+			return ret;
+		}
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture){
+			throw new NotImplementedException();
+		}
+	}
 	public class StateConverter : IValueConverter {
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 
@@ -45,11 +70,14 @@ namespace FSClient {
 		}
 	}
 	public class AccountDefaultConverter : IValueConverter {
+		public static SolidColorBrush default_account_color;
+		public static SolidColorBrush normal_account_color;
+
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			if (value == null)
-				return Colors.White.ToString();
+				return normal_account_color;
 			bool is_default = (bool)value;
-			return is_default ? "#FF00FFE2" : Colors.White.ToString();
+			return is_default ? default_account_color : normal_account_color;
 		}
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			throw new NotImplementedException();

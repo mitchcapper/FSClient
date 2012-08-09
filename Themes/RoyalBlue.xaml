@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<SolidColorBrush Color="#FF1A207E" x:Key="BackgroundColor" />
+	<SolidColorBrush Color="#FF000341" x:Key="GridTitleBGColor" />
+	<SolidColorBrush Color="#FF6B77B6" x:Key="GridRowBGColor" />
+	<SolidColorBrush Color="#FF919EE5" x:Key="GridAltRowBGColor" />
+	<SolidColorBrush Color="#FF5765B2" x:Key="GridBodyBGColor" />
+	<SolidColorBrush Color="#FFFFFFFF" x:Key="BackgroundFGColor" />
+	<SolidColorBrush Color="#FF00FFE2" x:Key="RowHighlightFGColor" />
+	<SolidColorBrush Color="#FFFFFFFF" x:Key="GridRowSpecialFGColor" />
+
+</ResourceDictionary>

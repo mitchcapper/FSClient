@@ -13,7 +13,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	 xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
               xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.0.1.0" Manufacturer="FreeSWITCH" UpgradeCode="7668FAEF-2AB3-4079-A986-07A33739B42E">
+	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.2.0.0" Manufacturer="FreeSWITCH" UpgradeCode="7668FAEF-2AB3-4079-A986-07A33739B42E">
 		<Package InstallerVersion="300" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -30,11 +30,11 @@
 					<!-- <Component Id="ProductComponent" Guid="594203af-235a-4a7d-aff8-045997f872ec"> -->
 						<!-- TODO: Insert files, registry keys, and other resources here. -->
 					<!-- </Component> -->
-          <Directory Id="MODLOCATION" Name="Mod">
+          <Directory Id="MODLOCATION" Name="mod">
           </Directory>
-          <Directory Id="CONFLOCATION" Name="Conf">
+          <Directory Id="CONFLOCATION" Name="conf">
           </Directory>
-          <Directory Id="PLUGINLOCATION" Name="Plugins">
+          <Directory Id="PLUGINLOCATION" Name="plugins">
           </Directory>
 				</Directory>
 			</Directory>
@@ -81,6 +81,7 @@
       <!-- <ComponentRef Id="ProductComponent" /> -->
       <ComponentGroupRef Id="FSCoreComp"/>
       <ComponentGroupRef Id="FSCoreModComp"/>
+	   <ComponentRef Id="FSCorePluginComp"/>
       <ComponentRef Id="FSCoreConfComp"/>
       <ComponentGroupRef Id="FSClientComp"/>
       <ComponentRef Id="ApplicationShortcut" />

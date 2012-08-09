@@ -69,8 +69,11 @@ namespace SimpleXmlContactPlugin {
 		{
 			number_to_alias_ref = new XmlDictionary<string, string>();
 			try{
-				using (FileStream ReadFileStream = new FileStream(Utils.GetUserDataPath() + "\\SimpleXmlContacts.xml", FileMode.Open, FileAccess.Read, FileShare.Read)) {
-					number_to_alias_ref = (XmlDictionary<string, string>)SerializerObj.Deserialize(ReadFileStream);
+				String contacts_file = Utils.GetUserDataPath() + "\\SimpleXmlContacts.xml";
+				if (File.Exists(contacts_file)){
+					using (FileStream ReadFileStream = new FileStream(contacts_file, FileMode.Open,FileAccess.Read, FileShare.Read)){
+						number_to_alias_ref = (XmlDictionary<string, string>) SerializerObj.Deserialize(ReadFileStream);
+					}
 				}
 			}catch{}
 			number_to_alias_db = number_to_alias_ref;
@@ -79,8 +82,11 @@ namespace SimpleXmlContactPlugin {
 		protected override void LoadXFERDatabase(ref Dictionary<string, string> number_to_xfer_db){
 			number_to_xfer_ref = new XmlDictionary<string, string>();
 			try {
-				using (FileStream ReadFileStream = new FileStream(Utils.GetUserDataPath() + "\\SimpleXmlContactsXFER.xml", FileMode.Open, FileAccess.Read, FileShare.Read)) {
-					number_to_xfer_ref = (XmlDictionary<string, string>)SerializerObj.Deserialize(ReadFileStream);
+				String xfer_file = Utils.GetUserDataPath() + "\\SimpleXmlContactsXFER.xml";
+				if (File.Exists(xfer_file)){
+					using (FileStream ReadFileStream = new FileStream(xfer_file, FileMode.Open, FileAccess.Read, FileShare.Read)){
+						number_to_xfer_ref = (XmlDictionary<string, string>) SerializerObj.Deserialize(ReadFileStream);
+					}
 				}
 			}
 			catch { }

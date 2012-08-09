@@ -5,15 +5,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5E156019-7D68-402D-9109-7F7F1E55EA8A}</ProjectGuid>
+    <ProjectGuid>{084B8F8C-1E32-4545-B865-FA7274BD8054}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlantronicsHeadset</RootNamespace>
-    <AssemblyName>PlantronicsHeadset</AssemblyName>
+    <RootNamespace>JabraHeadsetPlugin</RootNamespace>
+    <AssemblyName>JabraHeadsetPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile />
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -38,10 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Plantronics.Device.Common, Version=2.1.39537.0, Culture=neutral, PublicKeyToken=a8048bce41894b6e, processorArchitecture=x86">
+    <Reference Include="JabraTelephonyAPI, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8f966dc7fd80e1d9, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\External Items\Plantronics.Device.Common.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\External Items\JabraTelephonyAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlantronicsProvider.cs" />
+    <Compile Include="JabraProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

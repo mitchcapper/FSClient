@@ -39,21 +39,19 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLLOCATION</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\JabraHeadset\JabraHeadset.csproj">
-      <Name>JabraHeadset</Name>
+    <ProjectReference Include="..\JabraHeadset\JabraHeadsetPlugin.csproj">
+      <Name>JabraHeadsetPlugin</Name>
       <Project>{084b8f8c-1e32-4545-b865-fa7274bd8054}</Project>
       <Private>True</Private>
-      <DoNotHarvest>
-      </DoNotHarvest>
+      <DoNotHarvest></DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>PLUGINLOCATION</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\PlantronicsHeadset\PlantronicsHeadset.csproj">
-      <Name>PlantronicsHeadset</Name>
+    <ProjectReference Include="..\PlantronicsHeadset\PlantronicsHeadsetPlugin.csproj">
+      <Name>PlantronicsHeadsetPlugin</Name>
       <Project>{5e156019-7d68-402d-9109-7f7f1e55ea8a}</Project>
       <Private>True</Private>
-      <DoNotHarvest>
-      </DoNotHarvest>
+      <DoNotHarvest></DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>PLUGINLOCATION</RefTargetDir>
     </ProjectReference>

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using FSClient;
 using PL = Plantronics.Device.Common;
-namespace PlantronicsHeadset {
+namespace PlantronicsHeadsetPlugin {
 
 	public class PlantronicsHeadset : IHeadsetDevice {
 		private PL.IDevice device;

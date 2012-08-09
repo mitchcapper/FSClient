@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<SolidColorBrush Color="#FF000000" x:Key="BackgroundColor" />
+	<SolidColorBrush Color="#FFFFFFFF" x:Key="BackgroundFGColor" />
+	<SolidColorBrush Color="#FF000000" x:Key="GridTitleBGColor" />
+	<SolidColorBrush Color="#FF2B2B2B" x:Key="GridBodyBGColor" />
+	<SolidColorBrush Color="#FF1D1D1D" x:Key="GridRowBGColor" />
+	<SolidColorBrush Color="#FF393737" x:Key="GridAltRowBGColor" />
+	<SolidColorBrush Color="White" x:Key="RowFGColor" />
+	<SolidColorBrush Color="#FFFDFF00" x:Key="RowHighlightFGColor" />
+	<SolidColorBrush Color="#FFFFFFFF" x:Key="GridRowSpecialFGColor" />
+	<SolidColorBrush Color="White" x:Key="GridHeaderBorder" />
+	<SolidColorBrush Color="White" x:Key="GridHeaderFGColor" />
+	<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" x:Key="SpecialBorderColor" >
+						<GradientStop Color="#FF8B8B8B" Offset="0"/>
+						<GradientStop Color="White" Offset="1"/>
+					</LinearGradientBrush>
+	<LinearGradientBrush x:Key="GridHeaderBG" StartPoint="0,0" EndPoint="0,1">
+               <GradientStop Color="#999" Offset="0" />
+               <GradientStop Color="#FF141010" Offset="1" />
+          </LinearGradientBrush>
+	
+</ResourceDictionary>
