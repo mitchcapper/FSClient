@@ -344,7 +344,7 @@ namespace FSClient {
 		private static void HandleDTMFEvent(FSEvent evt, string uuid) {
 			String digit = evt.get_header("DTMF-Digit");
 			var call = (from c in calls where (c.leg_a_uuid == uuid || c.leg_b_uuid == uuid) && c.call_ended==false select c).SingleOrDefault();
-			if (call.state == CALL_STATE.Answered && digit.Length == 1)
+			if (call != null && call.state == CALL_STATE.Answered && digit.Length == 1)
 				PortAudio.PlayDTMF(digit[0], call.leg_a_uuid);
 
 		}
