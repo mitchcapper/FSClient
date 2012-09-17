@@ -12,6 +12,8 @@ namespace FSClient.Controls {
 			if (the_textbox != null)
 				return;
 			the_textbox = Template.FindName("Text", this) as TextBox;
+			if (the_textbox != null)
+				the_textbox.TabIndex = TabIndex;
 		}
 		public TextBox GetActualTextbox() {
 			find_textbox();

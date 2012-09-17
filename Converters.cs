@@ -88,7 +88,10 @@ namespace FSClient {
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			if (value == null)
 				return "";
-			bool is_outgoing = (bool)value;
+			return EnglishDirectionConverter.Convert((bool)value);
+			
+		}
+		public static String Convert(bool is_outgoing) {
 			return is_outgoing ? "Outgoing" : "Incoming";
 		}
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
@@ -110,7 +113,9 @@ namespace FSClient {
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			if (value == null)
 				return "";
-			TimeSpan duration = (TimeSpan)value;
+			return Convert((TimeSpan)value);
+		}
+		public static string Convert(TimeSpan duration) {
 			return duration.Minutes + ":" + duration.Seconds.ToString("00");
 		}
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {

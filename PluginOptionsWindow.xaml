@@ -18,17 +18,24 @@
 		</Grid.ColumnDefinitions>
 		<TextBlock Text="Contact Plugin" TextAlignment="Center"  FontWeight="Bold" />
 		<TextBlock Text="Headset Plugins" Grid.Column="1" TextAlignment="Center" FontWeight="Bold" />
-		<ComboBox HorizontalAlignment="Center"  Name="comboContact" VerticalAlignment="Top" Width="220" Grid.Row="1" />
-		<ListBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Height="100" HorizontalAlignment="Center" Name="listHeadset" VerticalAlignment="Top" Width="220" SelectionMode="Multiple" />
+		<ComboBox HorizontalAlignment="Center"  Name="comboContact" VerticalAlignment="Top" Width="220" Grid.Row="1" AutomationProperties.Name="Contact Plugin Enabled" />
+		<ListBox Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Height="100" HorizontalAlignment="Center" Name="listHeadset" VerticalAlignment="Top" Width="220" SelectionMode="Multiple" AutomationProperties.Name="Headset Plugins" />
 		<TextBlock Text="Enabled Plugins" Grid.Row="2" Grid.ColumnSpan="2" FontWeight="Bold" TextAlignment="Center" />
 		
 		
-		<ItemsControl  Grid.Row="3" Grid.ColumnSpan="2" Name="itemscontrolEnabledPlugins">
+		<ItemsControl  Grid.Row="3" Grid.ColumnSpan="2" Name="itemscontrolEnabledPlugins" AutomationProperties.Name="Plugin Options">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Border BorderBrush="Black" BorderThickness="1" Margin="0,3" Width="500">
 					<StackPanel Orientation="Horizontal" Margin="5">
-							<Button Content="Options" Visibility="{Binding has_options_button, Converter={StaticResource BoolToVisibilityConverter}}" Click="btn_PluginOptions_Click" />
+							<Button Content="Options" Visibility="{Binding has_options_button, Converter={StaticResource BoolToVisibilityConverter}}" Click="btn_PluginOptions_Click">
+								<AutomationProperties.Name>
+									<MultiBinding StringFormat="Plugin {0} Options - {1}">
+										<Binding Path="name" />
+										<Binding Path="error_msg" />
+									</MultiBinding>
+								</AutomationProperties.Name>
+							</Button>
 							<Image Source="warning.png" Margin="10,0" Visibility="{Binding error_exists, Converter={StaticResource BoolToVisibilityConverter}}" ToolTip="{Binding error_msg}" Height="20" />
 						<TextBlock Text="{Binding name}" VerticalAlignment="Center" />
 					</StackPanel>
@@ -36,7 +43,7 @@
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		<Button Content="Save" Grid.Row="4" Height="22" Width="50" Name="btnSave" Click="btnSave_Click" />
-		<Button Content="Cancel" Grid.Row="4" Height="22" Width="50" Grid.Column="1" Name="btnCancel" Click="btnCancel_Click" />
+		<Button Content="Save" Grid.Row="4" Height="22" Width="50" Name="btnSave" Click="btnSave_Click" IsDefault="True" />
+		<Button Content="Cancel" Grid.Row="4" Height="22" Width="50" Grid.Column="1" Name="btnCancel" Click="btnCancel_Click" IsCancel="True" />
 	</Grid>
 </Window>

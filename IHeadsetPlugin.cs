@@ -235,11 +235,11 @@ namespace FSClient {
 					broker.Muted = false;
 					break;
 				case IHeadsetDevice.HEADSET_EVENT_TYPE.Redial:
-					broker.RedialPressed();
+					//broker.RedialPressed();
 					break;
 
 				case IHeadsetDevice.HEADSET_EVENT_TYPE.Flash:
-					broker.FlashPressed();
+					//broker.FlashPressed();
 					break;
 			}
 

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Xml;
 namespace FSClient {
 	public class PortAudio {
@@ -116,7 +118,14 @@ namespace FSClient {
 			foreach (InternalAudioDevice device in _devices)
 				device.is_alive = false;
 			Utils.api_exec("pa", "rescan");
-			XmlDocument doc = XmlUtils.GetDocument(Utils.api_exec("pa", "devlist xml"));
+			XmlDocument doc=null;
+			try{
+				doc = XmlUtils.GetDocument(Utils.api_exec("pa", "devlist xml"));
+			}catch(KeyNotFoundException){
+				MessageBox.Show("Portaudio did not return a device list most likely because it cannot find an active microphone or speaker it can use, FSClient will now exit.", "Missing Device List", MessageBoxButton.OK, MessageBoxImage.Error);
+				Environment.Exit(-1);
+				return;
+			}
 			XmlNode node = XmlUtils.GetNode(doc, "devices", 0);
 			foreach (XmlNode child in node.ChildNodes) {
 				AudioDevice dev = new AudioDevice(

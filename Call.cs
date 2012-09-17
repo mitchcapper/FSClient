@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -193,7 +194,7 @@ namespace FSClient {
 				RaisePropertyChanged("dtmfs");
 			}
 		}
-		private string _dtmfs;
+		private string _dtmfs="";
 
 		#endregion
 
@@ -253,13 +254,13 @@ namespace FSClient {
 				item = new MenuItem() { Header = "Their Volume" };
 				for (int x = -4; x <= 4; x++) {
 					int val = x;
-					item.Items.Add(CreateMenuItem("Level " + x, () => SetOtherPartyAudioLevel(val)));
+					item.Items.Add(CreateMenuItem("Level " + x + (other_audio_level == x ? "*" : ""), () => SetOtherPartyAudioLevel(val)));
 				}
 				menu.Items.Add(item);
 				item = new MenuItem() { Header = "Your Volume" };
 				for (int x = -4; x <= 4; x++) {
 					int val = x;
-					item.Items.Add(CreateMenuItem("Level " + x, () => SetOurAudioLevel(val)));
+					item.Items.Add(CreateMenuItem("Level " + x + (our_audio_level == x ? "*" : ""), () => SetOurAudioLevel(val)));
 				}
 				menu.Items.Add(item);
 				menu.Items.Add(CreateMenuItem("End Call", hangup));
@@ -346,7 +347,6 @@ namespace FSClient {
 			var call = (from c in calls where (c.leg_a_uuid == uuid || c.leg_b_uuid == uuid) && c.call_ended==false select c).SingleOrDefault();
 			if (call != null && call.state == CALL_STATE.Answered && digit.Length == 1)
 				PortAudio.PlayDTMF(digit[0], call.leg_a_uuid);
-
 		}
 		public static void HandleOutgoingEvent(FSEvent evt, String uuid) //capture an outgoing call the other leg
 		{
@@ -458,7 +458,7 @@ namespace FSClient {
 				return;
 
 			if (call.state == CALL_STATE.Ringing || (call.state == CALL_STATE.Hold_Ringing && !call.is_outgoing))
-				call.UpdateCallState(CALL_STATE.Answered, call.is_outgoing ? active_call : active_call);
+				call.UpdateCallState(CALL_STATE.Answered, (call.is_outgoing || call.is_conference_call) ? active_call : call);
 			else if (call.state == CALL_STATE.Hold_Ringing)
 				call.UpdateCallState(CALL_STATE.Hold, active_call);
 			else
@@ -538,23 +538,31 @@ namespace FSClient {
 			item.Click += (o, args) => action();
 			return item;
 		}
-		public ContextMenu CallRightClickMenu() {
-			ContextMenu menu = new ContextMenu();
-			menu.Opened += call_ContextMenuOpened;
-		
-			return menu;
+        private ContextMenu _CallRightClickMenu;
+		public ContextMenu CallRightClickMenu {
+            get{
+                if (_CallRightClickMenu == null){
+                    _CallRightClickMenu = new ContextMenu();
+                    _CallRightClickMenu.Opened += call_ContextMenuOpened;
+                }
+                return _CallRightClickMenu;
+            }
 		}
 
 
 		private static Broker broker;
+		private int our_audio_level;
 		public void SetOurAudioLevel(int level){
 			if (level > 4 || level < -4)
 				return;
+			our_audio_level = level;
 			Utils.bgapi_exec("uuid_audio", leg_b_uuid + " start write level " + level);
 		}
+		private int other_audio_level;
 		public void SetOtherPartyAudioLevel(int level){
 			if (level > 4 || level < -4)
 				return;
+			other_audio_level = level;
 			Utils.bgapi_exec("uuid_audio", leg_b_uuid + " start read level " + level);
 		}
 		public void RemoveCallFromHistory(){

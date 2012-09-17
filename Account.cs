@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -383,10 +384,19 @@ namespace FSClient {
 		public bool edit() {
 			current_editing_account = this;
 			GenericEditor editor = new GenericEditor();
-			editor.Init("Editing Account", values);
+			List<FieldValue> vals = new List<FieldValue>(values);
+			var enabled_field = new Field(Field.FIELD_TYPE.Bool, "Account Enabled","enabled","",enabled ? "true" : "false","");
+			var enabled_val = enabled_field.GetDefaultValue();
+			vals.Insert(0, enabled_val);
+			editor.Init("Editing Account", vals);
 			editor.ShowDialog();
-			if (editor.DialogResult == true)
+			if (editor.DialogResult == true){
+				if (enabled_val.value == "true")
+					enabled = true;
+				else
+					enabled = false;
 				ReloadAccount();
+			}
 			else
 				return false;
 			return true;

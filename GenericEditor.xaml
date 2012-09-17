@@ -10,8 +10,8 @@
 		<TabControl Margin="8,44,14,53" Name="tabControlMain">
 			
 		</TabControl>
-		<Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,82,17.04" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" />
-		<Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="57,0,0,17.04" VerticalAlignment="Bottom" Width="75" Click="btnSave_Click" />
+		<Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,82,17.04" VerticalAlignment="Bottom" Width="75" Click="btnCancel_Click" IsCancel="True" />
+		<Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="57,0,0,17.04" VerticalAlignment="Bottom" Width="75" Click="btnSave_Click" IsDefault="True" />
 		<TextBlock Height="29" Margin="8,9,14,0" Name="txtTitle" Text="Title Here" VerticalAlignment="Top" FontSize="20" FontWeight="Bold" TextAlignment="Center" />
 	</Grid>
 </Window>

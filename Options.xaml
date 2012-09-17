@@ -18,7 +18,7 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition />
-			<RowDefinition Height="130" />
+			<RowDefinition Height="110" />
 			<RowDefinition Height="30" />
 		</Grid.RowDefinitions>
 		<Grid Grid.ColumnSpan="2">
@@ -37,49 +37,51 @@
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 			<StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
-				<Button Content="Reload Devices"  Height="23"  Name="btnReloadDevices"  Width="100" Click="btnReloadDevices_Click" />
-				<Button Content="Sofia Settings" Height="23" Name="btnSofiaSettings" Width="100" Margin="10,0,0,0" Click="btnSofiaSettings_Click" />
-				<Button Content="Event Socket Settings" Height="23" Name="btnEventSocketSettings" Width="125" Margin="10,0,0,0" Click="btnEventSocketSettings_Click" />
-				<Button Content="Plugin Settings" Height="23" Name="btnPluginSettings" Width="100" Margin="10,0,0,0" Click="btnPluginSettings_Click" />
+				<Button Content="Reload Devices"  Height="23"  Name="btnReloadDevices"  Width="100" Click="btnReloadDevices_Click" TabIndex="50" />
+				<Button Content="Sofia Settings" Height="23" Name="btnSofiaSettings" Width="100" Margin="10,0,0,0" Click="btnSofiaSettings_Click" TabIndex="51" />
+				<Button Content="Event Socket Settings" Height="23" Name="btnEventSocketSettings" Width="125" Margin="10,0,0,0" Click="btnEventSocketSettings_Click" TabIndex="52" />
+				<Button Content="Plugin Settings" Height="23" Name="btnPluginSettings" Width="100" Margin="10,0,0,0" Click="btnPluginSettings_Click" TabIndex="53" />
 			</StackPanel>
-			<TextBlock Grid.Row="1" Text="Headset Device:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="1" Grid.Column="1" Name="comboHeadsetDevice" Width="340" />
+			<TextBlock Grid.Row="1" Text="Headset Extras:" Style="{DynamicResource OptionHeaderStyle}" />
+			<ComboBox Height="23" Grid.Row="1" Grid.Column="1" Name="comboHeadsetDevice" Width="340" TabIndex="1" />
 
 			<TextBlock Grid.Row="2" Text="Main Input:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="2" Grid.Column="1" Name="comboHeadsetInput" Width="340" />
+			<ComboBox Height="23" Grid.Row="2" Grid.Column="1" Name="comboHeadsetInput" Width="340" TabIndex="2" />
 
 			<TextBlock Grid.Row="3" Text="Main Output:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="3" Grid.Column="1" Name="comboHeadsetOutput" Width="340" />
+			<ComboBox Height="23" Grid.Row="3" Grid.Column="1" Name="comboHeadsetOutput" Width="340" TabIndex="3" />
 
 			<TextBlock Grid.Row="4" Text="Speakerphone Input:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="4" Grid.Column="1" Name="comboSpeakerInput" Width="340" />
+			<ComboBox Height="23" Grid.Row="4" Grid.Column="1" Name="comboSpeakerInput" Width="340" TabIndex="4" />
 			<TextBlock Grid.Row="5" Text="Speakerphone Output:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="5" Grid.Column="1" Name="comboSpeakerOutput" Width="340" />
+			<ComboBox Height="23" Grid.Row="5" Grid.Column="1" Name="comboSpeakerOutput" Width="340" TabIndex="5" />
 			<TextBlock Grid.Row="6" Text="Ring Device:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="6" Grid.Column="1" Name="comboRingDevice" Width="340" />
-			<TextBlock Grid.Row="7" Text="Startup Layout:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="7" Grid.Column="1" Name="comboGUIStartup" Width="340" />
-			<TextBlock Grid.Row="8" Text="Theme:" Style="{DynamicResource OptionHeaderStyle}" />
-			<ComboBox Height="23" Grid.Row="8" Grid.Column="1" Name="comboTheme" Width="340" />
-			<TextBlock Grid.Row="9" Text="Recording Path:" Style="{DynamicResource OptionHeaderStyle}" />
-			<StackPanel Orientation="Horizontal" Grid.Row="9" Grid.Column="1">
-				<TextBox Height="23" Name="txtRecordingPath" Width="286" Margin="10,0" />
-				<Button Name="btnPathBrowse" Content="Browse" Height="25" Click="btnPathBrowse_Click" />
+			<ComboBox Height="23" Grid.Row="6" Grid.Column="1" Name="comboRingDevice" Width="340" TabIndex="6" />
+			<TextBlock Grid.Row="7" Text="On Incoming Call:" Style="{DynamicResource OptionHeaderStyle}" />
+			<ComboBox Height="23" Grid.Row="7" Grid.Column="1" Name="comboOnIncomingCall" Width="340" TabIndex="6" />
+			<TextBlock Grid.Row="8" Text="Startup Layout:" Style="{DynamicResource OptionHeaderStyle}" />
+			<ComboBox Height="23" Grid.Row="8" Grid.Column="1" Name="comboGUIStartup" Width="340" TabIndex="15" />
+			<TextBlock Grid.Row="9" Text="Theme:" Style="{DynamicResource OptionHeaderStyle}" />
+			<ComboBox Height="23" Grid.Row="9" Grid.Column="1" Name="comboTheme" Width="340" TabIndex="16" />
+			<TextBlock Grid.Row="10" Text="Recording Path:" Style="{DynamicResource OptionHeaderStyle}" />
+			<StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
+				<TextBox Height="23" Name="txtRecordingPath" Width="286" Margin="10,0" AutomationProperties.Name="Path to store recordings in" TabIndex="17" />
+				<Button Name="btnPathBrowse" Content="Browse" Height="25" Click="btnPathBrowse_Click"  AutomationProperties.Name="Browse for folder to store recordings in" TabIndex="18" />
 			</StackPanel>
 		</Grid>
 		<StackPanel Grid.Row="1" Grid.Column="1">
-			<CheckBox x:Name="chkIncomingFront"  Content="Bring To Front On Incoming Calls" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkIncomingBalloons" Content="Show Incoming Call Notification Balloons" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkClearDTMFS" Content="Clear Key Presses In Call Stats On Disconnect" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkUseNumbers" Content="Only Allow Numerical Input While Dialing" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkUpdatesOnStart" Content="Check for Updates on Startup"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkNAT" Content="UPNP NAT Startup Check(slows startup 5-10s)"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
-			<CheckBox x:Name="chkDirectSip" Content="Direct SIP: Dialing"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" />
+			<CheckBox x:Name="chkIncomingBalloons" Content="Show Incoming Call Notification Balloons" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="26" />
+			<CheckBox x:Name="chkClearDTMFS" Content="Clear Key Presses In Call Stats On Disconnect" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="27" />
+			<CheckBox x:Name="chkUseNumbers" Content="Only Allow Numerical Input While Dialing" VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="28" />
+			<CheckBox x:Name="chkUpdatesOnStart" Content="Check for Updates on Startup"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="29" />
+			<CheckBox x:Name="chkNAT" Content="UPNP NAT Startup Check(slows startup 5-10s)"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="30" />
+			<CheckBox x:Name="chkDirectSip" Content="Direct SIP: Dialing"  VerticalAlignment="Center" FontWeight="Bold" FontSize="13.333" TabIndex="31" />
 		</StackPanel>
-		<Button Content="Save" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="101,0,0,0" Name="btnSave" VerticalAlignment="Center" Width="75" Grid.ColumnSpan="2" Click="btnSave_Click" />
-		<Button Content="Cancel"  Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="172,0,0,0" Name="btnCancel" VerticalAlignment="Center" Width="75" Click="btnCancel_Click" />
+		<Button Content="Save" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="101,0,0,0" Name="btnSave" VerticalAlignment="Center" Width="75" Grid.ColumnSpan="2" Click="btnSave_Click" TabIndex="40" IsDefault="True" />
+		<Button Content="Cancel"  Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Margin="172,0,0,0" Name="btnCancel" VerticalAlignment="Center" Width="75" Click="btnCancel_Click" TabIndex="41" IsCancel="True" />
 
 
 	</Grid>

@@ -27,6 +27,13 @@ namespace FSClient {
 			themes.Add(new ComboOption { key = "Black", name = "Black" });
 			themes.Add(new ComboOption { key = "White", name = "White" });
 			comboTheme.ItemsSource = themes;
+
+			IncomingCallOptions = new List<ComboOption>();
+			IncomingCallOptions.Add(new ComboOption { key = "None", name = "Do Nothing" });
+			IncomingCallOptions.Add(new ComboOption { key = "Front", name = "Bring To Front" });
+			IncomingCallOptions.Add(new ComboOption { key = "FrontKeyboard", name = "Bring To Front & Keyboard Focus" });
+			comboOnIncomingCall.ItemsSource = IncomingCallOptions;
+
 			load_devices(true);
 
 		}
@@ -39,6 +46,7 @@ namespace FSClient {
 		}
 		private List<ComboOption> GuiOptions;
 		private List<ComboOption> themes;
+		private List<ComboOption> IncomingCallOptions;
 		private void load_devices(bool from_settings) {
 			PortAudio.AudioDevice[] devices = broker.audio_devices;
 			comboSpeakerInput.ItemsSource = comboHeadsetInput.ItemsSource = (from d in devices where d.inputs > 0 select d).ToArray();
@@ -56,7 +64,12 @@ namespace FSClient {
 				comboSpeakerOutput.SelectedItem = broker.SpeakerOutDev;
 				comboRingDevice.SelectedItem = broker.RingDev;
 				chkIncomingBalloons.IsChecked = broker.IncomingBalloons;
-				chkIncomingFront.IsChecked = broker.IncomingTopMost;
+				string incoming_key = "None";
+				if (broker.IncomingTopMost)
+					incoming_key = broker.IncomingKeyboardFocus ? "FrontKeyboard" : "Front";
+				comboOnIncomingCall.SelectedItem = (from g in IncomingCallOptions where g.key == incoming_key select g).FirstOrDefault();
+				if (comboOnIncomingCall.SelectedIndex == -1)
+					comboOnIncomingCall.SelectedIndex = 1;
 				chkClearDTMFS.IsChecked = broker.ClearDTMFS;
 				chkUseNumbers.IsChecked = broker.UseNumberOnlyInput;
 				chkUpdatesOnStart.IsChecked = broker.CheckForUpdates != "Never";
@@ -85,7 +98,13 @@ namespace FSClient {
 			outdev = comboRingDevice.SelectedItem as PortAudio.AudioDevice;
 			broker.SetRingDev(outdev == null ? "" : outdev.name);
 			broker.IncomingBalloons = chkIncomingBalloons.IsChecked == true;
-			broker.IncomingTopMost = chkIncomingFront.IsChecked == true;
+			string incoming_key = (comboOnIncomingCall.SelectedItem as ComboOption).key;
+			if (incoming_key == "None")
+				broker.IncomingKeyboardFocus = broker.IncomingTopMost = false;
+			else{
+				broker.IncomingTopMost = true;
+				broker.IncomingKeyboardFocus = (incoming_key == "FrontKeyboard");
+			}
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
 			broker.UPNPNAT = chkNAT.IsChecked == true;
 			broker.DirectSipDial = chkDirectSip.IsChecked == true;

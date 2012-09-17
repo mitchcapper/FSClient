@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Timers;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using FSClient.Controls;
@@ -13,37 +17,33 @@ namespace FSClient {
 		public MainWindow() {
 			_instance = this;
 			InitializeComponent();
-			gridCalls.DataContext = Call.calls;
-
-
-			gridCalls.LoadingRow += gridCalls_LoadingRow;
-			gridAccounts.DataContext = Account.accounts;
+			listCalls.DataContext = Call.calls;
+			itemsAccounts.ItemsSource = Account.accounts;
 			borderConference.DataContext = Conference.instance;
 			borderConference.ContextMenu = Conference.instance.menu;
-			this.Loaded += MainWindow_Loaded;
-			CurrentStatusInfo.DataContext = account_status;
-
+			Loaded += MainWindow_Loaded;
 		}
 
 		private void ActiveCallChanged(object sender, Call.ActiveCallChangedArgs e) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				CurrentCallInfo.DataContext = Call.active_call;
+				status.dial_str = Call.active_call != null ? Call.active_call.dtmfs : "";
 				if (Call.active_call == null) {
 					CurrentCallInfo.Visibility = Visibility.Hidden;
 					CurrentStatusInfo.Visibility = Visibility.Visible;
 				}
-				else{
+				else {
 					CurrentStatusInfo.Visibility = Visibility.Hidden;
 					CurrentCallInfo.Visibility = Visibility.Visible;
 				}
-			                                }));
+			}));
 		}
 		private void CallStateChanged(object sender, Call.CallPropertyEventArgs e) {
-			gridCalls.Items.SortDescriptions.Clear();
-			gridCalls.Items.SortDescriptions.Add(new SortDescription("sort_order", ListSortDirection.Descending));
+			listCalls.Items.SortDescriptions.Clear();
+			listCalls.Items.SortDescriptions.Add(new SortDescription("sort_order", ListSortDirection.Descending));
 		}
 		void accounts_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
-			if (e.OldItems != null){
+			if (e.OldItems != null) {
 				RefreshStatusDefaultAccount();
 				RefreshStatusAccountTotals();
 			}
@@ -55,43 +55,26 @@ namespace FSClient {
 			RefreshStatusDefaultAccount();
 			RefreshStatusAccountTotals();
 		}
-		private void RefreshStatusAccountTotals(){
-			account_status.total_accounts = (from a in Account.accounts where a.enabled == true select a).Count();
-			account_status.active_accounts = (from a in Account.accounts where a.state == "REGED" select a).Count();
+		private void RefreshStatusAccountTotals() {
+			status.total_accounts = (from a in Account.accounts where a.enabled == true select a).Count();
+			status.active_accounts = (from a in Account.accounts where a.state == "REGED" select a).Count();
 		}
-		private void RefreshStatusDefaultAccount(){
+		private void RefreshStatusDefaultAccount() {
 			Account primary = (from a in Account.accounts where a.is_default_account == true select a).FirstOrDefault();
-			account_status.primary_account = primary == null ? "" : primary.ToString();
+			status.primary_account = primary == null ? "" : primary.ToString();
 		}
 		void acct_PropertyChanged(object sender, PropertyChangedEventArgs e) {
 			if (e.PropertyName == "gateway_id") {
-				gridAccounts.Items.SortDescriptions.Clear();
-				gridAccounts.Items.SortDescriptions.Add(new SortDescription("gateway_id", ListSortDirection.Ascending));
+				itemsAccounts.Items.SortDescriptions.Clear();
+				itemsAccounts.Items.SortDescriptions.Add(new SortDescription("gateway_id", ListSortDirection.Ascending));
 			}
-			else if (e.PropertyName == "is_default_account"){
+			else if (e.PropertyName == "is_default_account") {
 				RefreshStatusDefaultAccount();
-			}else if (e.PropertyName == "state" || e.PropertyName=="enabled"){
+			}
+			else if (e.PropertyName == "state" || e.PropertyName == "enabled") {
 				RefreshStatusAccountTotals();
 			}
 
-		}
-
-
-
-
-		void gridCalls_LoadingRow(object sender, DataGridRowEventArgs e) {
-			e.Row.SetResourceReference(ToolTipProperty, "mainCallTooltip");
-			Call c = e.Row.DataContext as Call;
-			if (c == null)
-				return;
-			e.Row.Visibility = c.visibility;
-			e.Row.ContextMenu = c.CallRightClickMenu();
-
-		}
-		public void SetDialStr(string str) {
-			Dispatcher.BeginInvoke((Action)(() => {
-				txtNumber.Text = str;
-			}));
 		}
 
 		private void CanEndChanged(object sender, bool data) {
@@ -102,23 +85,27 @@ namespace FSClient {
 		private void SpeakerActiveChanged(object sender, bool data) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				btnSpeaker.Foreground = data ? enabled_brush : disabled_brush;
+				AutomationProperties.SetName(btnDND, data ? "Disable Speakerphone" : "Enable Speakerphone");
 			}));
 		}
 		private void MuteChanged(object sender, bool data) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				btnMute.Foreground = data ? enabled_brush : disabled_brush;
+				AutomationProperties.SetName(btnMute, data ? "Disable Mute" : "Enable Mute");
 			}));
 		}
 		private void DNDChanged(object sender, bool data) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				btnDND.Foreground = data ? enabled_brush : disabled_brush;
 				Title = "FSClient " + (data ? " - DND" : "") + " " + version_str;
+				AutomationProperties.SetName(btnDND, data ? "Disable DND" : "Enable DND");
 			}));
 		}
 		private void CallActiveChanged(object sender, bool data) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				btnHold.IsEnabled = broker.call_active;
 				btnTransfer.IsEnabled = broker.call_active;
+				txtNumber.IsReadOnly = broker.call_active;
 			}));
 
 		}
@@ -128,71 +115,110 @@ namespace FSClient {
 		#region TextInput
 
 		private enum TEXT_INPUT_MODE { NUMBERS_ONLY, FULL };
+		private void handle_key_action(char key) {
+			if (txtNumber.IsReadOnly == false && txtNumber.IsKeyboardFocused) {
+				int ind = txtNumber.CaretIndex;
+				if (txtNumber.SelectionStart >= 0)
+					status.dial_str = status.dial_str.Remove(txtNumber.SelectionStart, txtNumber.SelectionLength);
+				status.dial_str = status.dial_str.Insert(ind, key.ToString());
+				txtNumber.CaretIndex = ind + 1;
+			}
+			else
+				status.dial_str += key;
+			//status.dial_str += key;
+			if (key != '*' && key != '#' && (key < '0' || key > '9') && (key < 'A' || key > 'D'))
+				return;
 
+			if (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered)
+				Call.active_call.send_dtmf(key.ToString());
+			else {
+#if ! NO_FS
+				PortAudio.PlayDTMF(key, null, true);
+				DelayedFunction.DelayedCall("PortAudioLastDigitHitStreamClose", close_streams, 5000);
+#endif
+			}
+		}
+		private void close_streams() {
+			if (broker.active_calls == 0)
+				PortAudio.CloseStreams();
+		}
+		public void TalkPressed(){
+			if (Call.active_call != null) {
+				if (Call.active_call.state == Call.CALL_STATE.Ringing && Call.active_call.is_outgoing == false)
+					Call.active_call.answer();
+			}
+			else {
+				if (! String.IsNullOrEmpty(status.dial_str)){
+					broker.DialString(status.dial_str);
+					status.dial_str = "";
+				}
+			}
+		}
 		private TEXT_INPUT_MODE text_mode = TEXT_INPUT_MODE.NUMBERS_ONLY;
 		private void simple_text_mode_char_convert(char c) {
 			if (c == '*' || c == '#' || (c >= '0' && c <= '9')) {
-				broker.handle_key_action(c);
+				handle_key_action(c);
 				return;
 			}
 			switch (Char.ToUpper(c)) {
 				case 'A':
 				case 'B':
 				case 'C':
-					broker.handle_key_action('2');
+					handle_key_action('2');
 					break;
 				case 'D':
 				case 'E':
 				case 'F':
-					broker.handle_key_action('3');
+					handle_key_action('3');
 					break;
 				case 'G':
 				case 'H':
 				case 'I':
-					broker.handle_key_action('4');
+					handle_key_action('4');
 					break;
 				case 'J':
 				case 'K':
 				case 'L':
-					broker.handle_key_action('5');
+					handle_key_action('5');
 					break;
 				case 'M':
 				case 'N':
 				case 'O':
-					broker.handle_key_action('6');
+					handle_key_action('6');
 					break;
 				case 'P':
 				case 'Q':
 				case 'R':
 				case 'S':
-					broker.handle_key_action('7');
+					handle_key_action('7');
 					break;
 				case 'T':
 				case 'U':
 				case 'V':
-					broker.handle_key_action('8');
+					handle_key_action('8');
 					break;
 				case 'W':
 				case 'X':
 				case 'Y':
 				case 'Z':
-					broker.handle_key_action('9');
+					handle_key_action('9');
 					break;
 			}
 		}
 
 		private bool text_interception_enabled = true;
-		private bool HandleTextInput(String text){
+		private bool text_interception_but_enter = false;
+		private bool HandleTextInput(String text) {
 			char[] chars = text.ToCharArray();
 			bool handled = false;
 			foreach (Char c in chars) {
-				if (c > 32 && c < 127) {
+				if (c >= 32 && c < 127) {
 					if (text_mode == TEXT_INPUT_MODE.NUMBERS_ONLY || (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered))
 						simple_text_mode_char_convert(c);
 					else
-						broker.handle_key_action(c);
+						handle_key_action(c);
 					handled = true;
-				}			
+				}
 			}
 			return handled;
 		}
@@ -204,39 +230,229 @@ namespace FSClient {
 				return;
 			}
 			e.Handled = HandleTextInput(e.Text);
+			if (e.Handled)
+				KeyInputFocusMove();
 
+		}
+		public static T GetVisualChild<T>(Visual parent) where T : Visual {
+			T child = default(T);
+			int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
+			for (int i = 0; i < numVisuals; i++) {
+				Visual v = (Visual)VisualTreeHelper.GetChild(parent, i);
+				child = v as T;
+				if (child == null) {
+					child = GetVisualChild<T>(v);
+				}
+				if (child != null) {
+					break;
+				}
+			}
+			return child;
+		}
+		private ToolTip last_tooltip_open;
+		private Timer tooltip_auto_close = new Timer(1000 * 20);
+		private void CloseOpenTooltip() {
+			if (last_tooltip_open != null && last_tooltip_open.IsOpen)
+				last_tooltip_open.IsOpen = false;
+			last_tooltip_open = null;
+		}
+		private void KeyboardControlLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs keyboardFocusChangedEventArgs) {
+			Control cntrl = sender as Control;
+			if (cntrl == null)
+				return;
+			cntrl.LostKeyboardFocus -= KeyboardControlLostKeyboardFocus;
+			CloseOpenTooltip();
+		}
+		private void ForceFocus(UIElement element){
+			if (element.IsKeyboardFocused)
+				DoNothingButton.Focus();
+			element.Focus();
+		}
+		private void ConferenceMessageBox(Conference c) {
+			String conf_members="";
+			foreach (var u in Conference.users) {
+				if (u.is_us)
+					continue;
+				String num_add = u.party_name != u.party_number ? " - " + u.party_number : "";
+				String state = ConfStateConverter.StateConvert(u.state);
+				if (!string.IsNullOrWhiteSpace(state))
+					state = " (" + state + ")";
+				conf_members += "Member " + u.party_name + state + num_add + "\n";
+			}
+			MessageBox.Show(conf_members, "Conference with " + Conference.users.Where(u => !u.is_us).Count() + " others");
+		}
+		private void CallMessageBox(Call c) {
+			MessageBox.Show(
+					"Number: " + c.other_party_number + 
+					"\nStart Time: " + ShortDateTimeConverter.Convert(c.start_time) +
+					"\nEnd Time: " + ShortDateTimeConverter.Convert(c.end_time) +
+					"\nDuration: " + DurationTimeConverter.Convert(c.duration) + 
+					"\nAccount: " + c.account + 
+					"\nNote: " + c.note +
+					"\nKeys: " + c.dtmfs
+
+					
+				, c.state + " " + EnglishDirectionConverter.Convert(c.is_outgoing) + " Call " + c.other_party_name);
+		}
+		private void TryShowTooltip(Control orig_cntrl) {
+			if (tooltip_auto_close == null) {
+				tooltip_auto_close = new Timer(1000 * 20);
+				tooltip_auto_close.Elapsed += (o, evt) => CloseOpenTooltip();
+				tooltip_auto_close.AutoReset = false;
+			}
+			if (orig_cntrl == null || orig_cntrl.ToolTip == null)
+				return;
+			ToolTip tt = (ToolTip)orig_cntrl.ToolTip;
+			if (tt == last_tooltip_open && tt.IsOpen) {
+				CloseOpenTooltip();
+				return;
+			}
+			CloseOpenTooltip();
+			tt.PlacementTarget = orig_cntrl;
+			tt.Placement = PlacementMode.Right;
+			tt.PlacementRectangle = new Rect(0, orig_cntrl.ActualHeight, 0, 0);
+			tt.IsOpen = orig_cntrl.IsKeyboardFocusWithin;
+			last_tooltip_open = tt;
+			orig_cntrl.LostKeyboardFocus += KeyboardControlLostKeyboardFocus;
+			tooltip_auto_close.Start();
+		}
+		private bool HandleShortcutKey(KeyEventArgs e) {
+			bool handled = true;
+			UIElement focus_element = null;
+			switch (e.Key) {
+				case Key.M:
+					btnMute_Click(null, null);
+					break;
+				case Key.E:
+					btnHangup_Click(null, null);
+					break;
+				case Key.D1:
+				case Key.D2:
+				case Key.D3:
+				case Key.D4:
+				case Key.D5:
+				case Key.D6:
+				case Key.D7:
+				case Key.D8:
+				case Key.D9:
+				case Key.D0:
+				case Key.NumPad0:
+				case Key.NumPad1:
+				case Key.NumPad2:
+				case Key.NumPad3:
+				case Key.NumPad4:
+				case Key.NumPad5:
+				case Key.NumPad6:
+				case Key.NumPad7:
+				case Key.NumPad8:
+				case Key.NumPad9:
+				case Key.L:
+					if (e.Key != Key.L){
+						String parse = e.Key.ToString();
+						int selected_item = Int32.Parse(parse.Substring(parse.Length-1)) - 1;
+						if (selected_item == -1)
+							selected_item = 9;
+						if (selected_item < listCalls.Items.Count)
+							listCalls.SelectedIndex = selected_item;
+					}
+					if (listCalls.SelectedItem == null && listCalls.Items.Count > 0)
+						listCalls.SelectedIndex = 0;
+					if (listCalls.SelectedItem != null)
+						focus_element = ((ListBoxItem)listCalls.ItemContainerGenerator.ContainerFromItem(listCalls.SelectedItem));
+					else
+						focus_element = listCalls;
+					break;
+				case Key.D:
+					focus_element = btnKeypadOne;
+					break;
+				case Key.OemQuestion:
+					Control corig_cntrl = e.OriginalSource as Control;
+					if (corig_cntrl == null)
+						break;
+					Conference conf = corig_cntrl.DataContext as Conference;
+					if (conf != null) {
+						ConferenceMessageBox(conf);
+						break;
+					}
+					Call c = corig_cntrl.DataContext as Call;
+					if (c == null)
+						break;
+					CallMessageBox(c);
+					break;
+				case Key.H:
+					TryShowTooltip(e.OriginalSource as Control);
+					break;
+				case Key.F:
+					if (txtSearchBox.GetActualTextbox().IsKeyboardFocused)
+						txtSearchBox.GetActualTextbox().SelectAll();
+					else
+						focus_element = txtSearchBox.GetActualTextbox();
+					break;
+				case Key.A:
+					if (itemsAccounts.Items.Count > 0)
+						focus_element = GetVisualChild<CheckBox>(((UIElement)itemsAccounts.ItemContainerGenerator.ContainerFromItem(itemsAccounts.Items[0])));
+					else
+						focus_element = itemsAccounts;
+					break;
+				default:
+					handled = false;
+					break;
+			}
+			if (focus_element != null)
+				ForceFocus(focus_element);
+			e.Handled = handled;
+			return e.Handled;
 		}
 		void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e) {
 			if (!broker.fully_loaded)
 				return;
+			bool cntrl_pressed = (System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control;
+			if (cntrl_pressed) {
+				if (HandleShortcutKey(e)){
+					return;
+				}
+
+			}
+
 			if (!text_interception_enabled) {
 				e.Handled = false;
 				return;
 			}
-			bool cntrl_pressed = (System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control;
-			if (e.Key == Key.Return)
-				broker.handle_special_action(Broker.KEYBOARD_ACTION.Enter);
-			else if (e.Key == Key.Back)
-				broker.handle_special_action(Broker.KEYBOARD_ACTION.Backspace);
+			if (e.Key == Key.Return) {
+				if (text_interception_but_enter) {
+					e.Handled = false;
+					return;
+				}
+				TalkPressed();
+			}
+			else if (e.Key == Key.Back){
+				KeyInputFocusMove();
+//				if (status.dial_str.Length > 0 && (Call.active_call == null || Call.active_call.state != Call.CALL_STATE.Answered))
+	//				status.dial_str = status.dial_str.Remove(status.dial_str.Length - 1,1);
+				return;
+			}
 			else if (e.Key == Key.Escape)
-				broker.handle_special_action(Broker.KEYBOARD_ACTION.Escape);
-			else if (e.Key == Key.V && cntrl_pressed)
+				HangupPressed();
+			else if (e.Key == Key.V && cntrl_pressed) {
+				KeyInputFocusMove();
 				HandleTextInput(Clipboard.GetText());
-			else if (e.Key == Key.F && cntrl_pressed)
-				txtSearchBox.TextBoxFocus();
+			}
 			else
 				return;
 			e.Handled = true;
 		}
+		private void KeyInputFocusMove(){
+			if (!broker.call_active)
+				txtNumber.Focus();
+		}
+
+
 		#endregion
 		private static MainWindow _instance;
 		public static MainWindow get_instance() {
 			return _instance;
 		}
 
-		private void DialStrChanged(object sender, string data) {
-			SetDialStr(broker.cur_dial_str);
-		}
 		private void CallRingingChanged(object sender, bool data) {
 			Dispatcher.Invoke((Action)(() => {
 				if (data && Call.active_call != null && Call.active_call.CanSendToVoicemail())
@@ -247,7 +463,8 @@ namespace FSClient {
 		}
 		void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 			PreviewTextInput += MainWindow_PreviewTextInput;
-			txtNumber.PreviewTextInput += MainWindow_PreviewTextInput;
+			txtNumber.PreviewKeyDown += txtNumber_PreviewKeyDown;
+			//txtNumber.PreviewTextInput += MainWindow_PreviewTextInput;
 			PreviewKeyDown += MainWindow_PreviewKeyDown; //return must be handled seperately as buttons are triggered on down it seems
 			MouseUp += MainWindow_MouseUp;
 
@@ -256,9 +473,9 @@ namespace FSClient {
 			Account.accounts.CollectionChanged += accounts_CollectionChanged;
 			Broker.FreeswitchLoaded += FreeswitchLoaded;
 			broker = Broker.get_instance();
+			DataContext = status;
 			AccountDefaultConverter.normal_account_color = (SolidColorBrush)Resources["GridRowSpecialFGColor"];
 			AccountDefaultConverter.default_account_color = (SolidColorBrush)Resources["RowHighlightFGColor"];
-			broker.cur_dial_strChanged += DialStrChanged;
 			broker.call_activeChanged += CallActiveChanged;
 			broker.active_call_ringingChanged += CallRingingChanged;
 			broker.MutedChanged += MuteChanged;
@@ -270,7 +487,7 @@ namespace FSClient {
 			broker.SpeakerphoneActiveChanged += SpeakerActiveChanged;
 			CurrentCallInfo.Visibility = Visibility.Hidden;
 			Windows.systray_icon_setup();
-			switch (broker.GUIStartup){
+			switch (broker.GUIStartup) {
 				case "Calls":
 					borderAccounts.Visibility = Visibility.Hidden;
 					break;
@@ -287,16 +504,28 @@ namespace FSClient {
 			borderTransfer.ContextMenu = broker.XFERContextMenu();
 			if (broker.theme != "Steel")
 				ReloadTheme();
+
+			AcceptEnterForDoubleClick(btnConferenceCall, btnConferenceDoubleClick);
+			SpeakerActiveChanged(null, false);
+			MuteChanged(null, false);
+			DNDChanged(null, false);
 		}
 
-		private void ThemeChanged(object sender, string data){
+		void txtNumber_PreviewKeyDown(object sender, KeyEventArgs e) {
+			if (e.Key == Key.Space){
+				HandleTextInput(" ");
+				e.Handled = true;
+			}
+		}
+
+		private void ThemeChanged(object sender, string data) {
 			ReloadTheme();
 		}
 
 		void MainWindow_MouseUp(object sender, MouseButtonEventArgs e) {
-			if (txtSearchBox.TextBoxHasFocus()){
+			if (txtSearchBox.TextBoxHasFocus()) {
 				DependencyObject parent = e.OriginalSource as UIElement;
-				while (parent != null && !(parent is OurAutoCompleteBox)) 
+				while (parent != null && !(parent is OurAutoCompleteBox))
 					parent = VisualTreeHelper.GetParent(parent);
 				if (parent == null)
 					RemoveFocus();
@@ -304,8 +533,8 @@ namespace FSClient {
 
 		}
 
-		public void RemoveFocus(bool ResetContactSearchText=false){
-			btnMute.Focus(); //should really divert focus a better way
+		public void RemoveFocus(bool ResetContactSearchText = false) {
+			txtNumber.Focus(); //should really divert focus a better way
 			if (ResetContactSearchText)
 				ResetContactSearchStr();
 		}
@@ -334,7 +563,7 @@ namespace FSClient {
 			Topmost = false;
 		}
 		private void btnCall_Click(object sender, RoutedEventArgs e) {
-			broker.TalkPressed();
+			TalkPressed();
 
 		}
 
@@ -346,9 +575,8 @@ namespace FSClient {
 		private void btnHangup_Click(object sender, RoutedEventArgs e) {
 			broker.HangupPressed();
 		}
-
-		private void gridCalls_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-			FrameworkElement elem = e.OriginalSource as FrameworkElement;
+		private void listCalls_DoubleClick(object sender, object original_source) {
+			FrameworkElement elem = original_source as FrameworkElement;
 			if (elem == null)
 				return;
 			Call call = elem.DataContext as Call;
@@ -356,10 +584,13 @@ namespace FSClient {
 				return;
 			call.DefaultAction();
 		}
+		private void listCalls_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+			listCalls_DoubleClick(sender, e.OriginalSource);
+		}
 
 		SolidColorBrush enabled_brush = new SolidColorBrush(Colors.Yellow);
 		SolidColorBrush disabled_brush = new SolidColorBrush(Colors.White);
-		private void ReloadTheme(){
+		private void ReloadTheme() {
 			String theme = broker.theme;
 			if (theme != "Black" && theme != "RoyalBlue" && theme != "White")
 				theme = "Steel";
@@ -368,37 +599,19 @@ namespace FSClient {
 			Resources.MergedDictionaries[1] = rDictionary;
 			AccountDefaultConverter.normal_account_color = (SolidColorBrush)Resources["GridRowSpecialFGColor"];
 			AccountDefaultConverter.default_account_color = (SolidColorBrush)Resources["RowHighlightFGColor"];
-			var arr = gridAccounts.Items.SortDescriptions.ToArray();
-			gridAccounts.Items.SortDescriptions.Clear();
+			var arr = itemsAccounts.Items.SortDescriptions.ToArray();
+			itemsAccounts.Items.SortDescriptions.Clear();
 			foreach (var desc in arr)
-				gridAccounts.Items.SortDescriptions.Add(desc);
+				itemsAccounts.Items.SortDescriptions.Add(desc);
 		}
 		private void btnMute_Click(object sender, RoutedEventArgs e) {
 			broker.Muted = !broker.Muted;
+			ForceFocus(btnMute);
 		}
 
 		private void btnDND_Click(object sender, RoutedEventArgs e) {
 			broker.DND = !broker.DND;
-		}
-		private void gridAccounts_MouseUp(object sender, MouseButtonEventArgs e) {
-			FrameworkElement elem = e.OriginalSource as FrameworkElement;
-			if (elem == null)
-				return;
-			Account account = elem.DataContext as Account;
-			if (account == null)
-				return;
-			DependencyObject dep = elem;
-			while (dep != null && !(dep is DataGridCell)) {
-				dep = VisualTreeHelper.GetParent(dep);
-			}
-			DataGridCell cell = dep as DataGridCell;
-			if (cell == null)
-				return;
-
-			if (cell.Column.SortMemberPath == "enabled") {
-				account.enabled = !account.enabled;
-				account.ReloadAccount();
-			}
+			ForceFocus(btnDND);
 		}
 
 		private void Window_Closing(object sender, CancelEventArgs e) {
@@ -406,11 +619,12 @@ namespace FSClient {
 				Windows.systray_icon_remove();
 				broker.Dispose();
 			}
-			catch{ }
+			catch { }
 		}
 
 		private void btnSpeaker_Click(object sender, RoutedEventArgs e) {
 			broker.SpeakerphoneActive = !broker.SpeakerphoneActive;
+			ForceFocus(btnSpeaker);
 		}
 
 
@@ -423,38 +637,35 @@ namespace FSClient {
 		}
 
 		private void AccountEdit_Click(object sender, RoutedEventArgs e) {
-			Account acct = gridAccounts.SelectedItem as Account;
+			Account acct = ((FrameworkElement)e.OriginalSource).DataContext as Account;
 			if (acct == null)
 				return;
 			acct.edit();
 		}
 
 		private void AccountSetDefault_Click(object sender, RoutedEventArgs e) {
-			Account acct = gridAccounts.SelectedItem as Account;
+			Account acct = ((FrameworkElement)e.OriginalSource).DataContext as Account;
 			if (acct == null)
 				return;
 			acct.is_default_account = true;
 		}
 
 		private void AccountDelete_Click(object sender, RoutedEventArgs e) {
-			Account acct = gridAccounts.SelectedItem as Account;
+			Account acct = ((FrameworkElement)e.OriginalSource).DataContext as Account;
 			if (acct == null)
 				return;
 			Account.RemoveAccount(acct);
 		}
 
 
-		private void gridAccounts_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
-			menuAccountDelete.IsEnabled = menuAccountEdit.IsEnabled = menuAccountSetDefault.IsEnabled = gridAccounts.SelectedItem != null;
-		}
 
 		private void btnDialpad_Click(object sender, RoutedEventArgs e) {
 			Button btn = sender as Button;
 			if (btn != null)
-				broker.handle_key_action(btn.Content.ToString()[0]);
+				handle_key_action(btn.Content.ToString()[0]);
 			PhonePadButton btn2 = sender as PhonePadButton;
 			if (btn2 != null)
-				broker.handle_key_action(btn2.Number[0]);
+				handle_key_action(btn2.Number[0]);
 
 		}
 
@@ -494,7 +705,7 @@ namespace FSClient {
 			if (String.IsNullOrWhiteSpace(txtSearchBox.Text))
 				ResetContactSearchStr();
 		}
-		public void ResetContactSearchStr(){
+		public void ResetContactSearchStr() {
 			txtSearchBox.Text = contact_search_text;
 		}
 
@@ -513,26 +724,37 @@ namespace FSClient {
 				e.Cancel = true;
 		}
 		#endregion
-		private bool border_calls_was_visible=true;
-		private void ResizeForm(){
+		private bool border_calls_was_visible = true;
+		private void ResizeForm() {
 			int border_calls_width = 228;
 			int accounts_left = 237;
 			int total_width = 243;
 			int body_left = 3;
-			if (borderAccounts.Visibility == Visibility.Visible)
+			if (borderAccounts.Visibility == Visibility.Visible) {
 				total_width += 196;
-			if (borderCalls.Visibility == Visibility.Visible){
+				AutomationProperties.SetName(btnAccountsTab, "Accounts Pane Hide");
+			}
+			else {
+				AutomationProperties.SetName(btnAccountsTab, "Accounts Pane Show");
+			}
+			if (borderCalls.Visibility == Visibility.Visible) {
 				total_width += border_calls_width;
 				body_left += border_calls_width;
 				accounts_left += border_calls_width;
-				if (! border_calls_was_visible){
+				if (!border_calls_was_visible) {
 					border_calls_was_visible = true;
 					Left -= border_calls_width;
 				}
-			} else if (border_calls_was_visible){
+				AutomationProperties.SetName(btnCallsTab, "Calls Pane Hide");
+			}
+			else if (border_calls_was_visible) {
 				border_calls_was_visible = false;
 				Left += border_calls_width;
+				AutomationProperties.SetName(btnCallsTab, "Calls Pane Show");
 			}
+			else
+				AutomationProperties.SetName(btnCallsTab, "Calls Pane Show");
+
 			Canvas.SetLeft(canvasPhoneBody, body_left);
 			Canvas.SetLeft(borderAccounts, accounts_left);
 			Width = total_width;
@@ -543,6 +765,7 @@ namespace FSClient {
 			else
 				borderCalls.Visibility = Visibility.Visible;
 			ResizeForm();
+			ForceFocus(btnCallsTab);
 		}
 		private void btnAccountsTab_Click(object sender, RoutedEventArgs e) {
 			if (borderAccounts.Visibility == Visibility.Visible)
@@ -550,9 +773,21 @@ namespace FSClient {
 			else
 				borderAccounts.Visibility = Visibility.Visible;
 			ResizeForm();
+			ForceFocus(btnAccountsTab);
 		}
-		AccountStatusInfo account_status = new AccountStatusInfo();
-		private class AccountStatusInfo : ObservableClass{
+		StatusInfo status = new StatusInfo();
+		private class StatusInfo : ObservableClass {
+			public string dial_str {
+				get { return _dial_str; }
+				set {
+					if (_dial_str == value)
+						return;
+					_dial_str = value;
+					RaisePropertyChanged("dial_str");
+				}
+			}
+			private string _dial_str="";
+
 			public string primary_account {
 				get { return _primary_account; }
 				set {
@@ -589,18 +824,18 @@ namespace FSClient {
 		}
 
 
-		private void btnClearAllCalls(object sender, RoutedEventArgs e){
+		private void btnClearAllCalls(object sender, RoutedEventArgs e) {
 			Call.ClearCallsFromHistory();
 		}
 
 		private void borderConference_MouseDown(object sender, MouseButtonEventArgs e) {
-			if (e.ClickCount == 2){
+			if (e.ClickCount == 2) {
 				Conference.instance.join_conference();
 			}
 		}
 
 		private void AccountReconnect_Click(object sender, RoutedEventArgs e) {
-			Account acct = gridAccounts.SelectedItem as Account;
+			Account acct = ((FrameworkElement)e.OriginalSource).DataContext as Account;
 			if (acct == null)
 				return;
 			if (acct.enabled == false)
@@ -610,6 +845,65 @@ namespace FSClient {
 
 		private void btnConferenceDoubleClick(object sender, MouseButtonEventArgs e) {
 			Conference.instance.join_conference();
+		}
+		private void AcceptEnterForDoubleClick(UIElement element, Action<object, MouseButtonEventArgs> double_click_handler) {
+			element.KeyDown += (sender, args) => {
+				if (args.Key != Key.Enter && args.Key != Key.Return) return;
+				args.Handled = true;
+				double_click_handler(sender, null);
+			};
+		}
+
+		private void listCalls_OnGotFocus(object sender, RoutedEventArgs e) {
+			text_interception_but_enter = true;
+		}
+
+		private void listCalls_OnLostFocus(object sender, RoutedEventArgs e) {
+			text_interception_but_enter = false;
+		}
+
+		private void listCalls_PreviewKeyDown(object sender, KeyEventArgs e) {
+			if (e.Key != Key.Enter && e.Key != Key.Return)
+				return;
+			e.Handled = true;
+			listCalls_DoubleClick(sender, e.OriginalSource);
+		}
+
+		private void btnAccountAdd_Click(object sender, RoutedEventArgs e) {
+			AccountNew_Click(null, null);
+		}
+
+		private void ContactSearchConextMenu_OnOpened(object sender, RoutedEventArgs e) {
+			ContextMenu menu = sender as ContextMenu;
+			menu.Items.Clear();
+			foreach (var item in ContactPluginManager.ContactMenuItems)
+				menu.Items.Add(item);
+
+
+		}
+
+		public void HangupPressed(){
+			if (Call.active_call != null) {
+				if (Call.active_call.state == Call.CALL_STATE.Ringing) {
+					Call.active_call.hangup(Call.active_call.is_outgoing ? "User Cancelled" : "User Ignored Call");
+				}
+				else
+					Call.active_call.hangup("User Ended");
+			}
+			else
+				status.dial_str = "";
+		}
+
+		private void txtNumber_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+			txtNumber.CaretIndex = txtNumber.Text.Length;
+		}
+
+		private void AccountCheckBox_Checked(object sender, RoutedEventArgs e) {
+			if (!broker.fully_loaded)
+				return;
+			Account account = ((FrameworkElement)e.OriginalSource).DataContext as Account;
+			account.enabled = !account.enabled;
+			account.ReloadAccount();
 		}
 	}
 }

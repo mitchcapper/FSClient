@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -37,12 +39,15 @@ namespace FSClient.Controls
 		public string Number
 		{
 			get { return lblNumber.Text; }
-			set { lblNumber.Text = value; }
+			set { lblNumber.Text = value; AutomationProperties.SetName(btn, value); AutomationProperties.SetName(this, value);  AutomationProperties.SetItemType(this,"Button"); }
 		}
 		public string Letters
 		{
 			get { return lblLetters.Text; }
 			set { lblLetters.Text = value; }
+		}
+		protected AutomationControlType GetAutomationControlTypeCore() {
+			return AutomationControlType.Button;
 		}
 
 	}

@@ -25,9 +25,9 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 		<TextBlock Name="lblCaller" HorizontalAlignment="Left" TextWrapping="Wrap" Text="800-ComCasT" VerticalAlignment="Top" Grid.ColumnSpan="3"/>
-		<Button Content="Answer" Height="20" x:Name="btnCall" Width="50" Click="btnCall_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FF4EFF00" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1" Margin="2,0,0,2" />
-		<Button Content="End" Height="20" HorizontalAlignment="Right" x:Name="btnHangup" Width="50" Click="btnHangup_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FFF50000" FontWeight="Bold" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="2" Margin="0,0,2,2" />
-		<Button Content="Send To Voicemail" FontWeight="Bold" Foreground="#FFF5E200" Grid.RowSpan="2" Height="20" HorizontalAlignment="Stretch" Margin="20,18,20,0" Name="btnSendVoicemail" Style="{DynamicResource GlassButtonStyle}" VerticalAlignment="Top" Grid.ColumnSpan="3" Click="btnSendVoicemail_Click" />
-		<Button Content="XFER" FontWeight="Bold" Foreground="Blue" Height="20"  Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,2,2" Name="btnTransfer" Style="{DynamicResource GlassButtonStyle}" Width="40" Click="btnTransfer_Click" />
+        <Button Content="Answer" Height="20" x:Name="btnCall" Width="50" Click="btnCall_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FF4EFF00" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Row="1" Margin="2,0,0,2" AutomationProperties.Name="Answer Call" TabIndex="1" IsDefault="True" />
+        <Button Content="End" Height="20" HorizontalAlignment="Right" x:Name="btnHangup" Width="50" Click="btnHangup_Click" Style="{DynamicResource GlassButtonStyle}" Foreground="#FFF50000" FontWeight="Bold" VerticalAlignment="Bottom" Grid.Row="1" Grid.Column="2" Margin="0,0,2,2" AutomationProperties.Name="End Call" TabIndex="3" />
+        <Button Content="Send To Voicemail" FontWeight="Bold" Foreground="#FFF5E200" Grid.RowSpan="2" Height="20" HorizontalAlignment="Stretch" Margin="20,18,20,0" Name="btnSendVoicemail" Style="{DynamicResource GlassButtonStyle}" VerticalAlignment="Top" Grid.ColumnSpan="3" Click="btnSendVoicemail_Click" AutomationProperties.Name="Send To Voicemail" TabIndex="4" />
+		<Button Content="XFER" FontWeight="Bold" Foreground="Blue" Height="20"  Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,2,2" Name="btnTransfer" Style="{DynamicResource GlassButtonStyle}" Width="40" Click="btnTransfer_Click" AutomationProperties.Name="Transfer" TabIndex="2" />
 	</Grid>
 </Window>

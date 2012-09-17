@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Input;
 
 namespace FSClient {
@@ -20,6 +21,7 @@ namespace FSClient {
 			InputBox box = new InputBox();
 			box.lblDesc.Content = desc;
 			box.Title = title;
+			AutomationProperties.SetName(box.txtInput, desc);
 			box.txtInput.Text = default_value;
 			if (box.ShowDialog() != true)
 				return null;
@@ -36,9 +38,5 @@ namespace FSClient {
 			Close();
 		}
 
-		private void txtInput_KeyUp(object sender, KeyEventArgs e) {
-			if (e.Key == Key.Return)
-				btnOk_Click(null, null);
-		}
 	}
 }

@@ -29,7 +29,6 @@ namespace FSClient {
 			NewEvent += conference.NewFSEvent;
 
 			Call.CallStateChanged += CallStateChangedHandler;
-			Call.ActiveCallChanged += ActiveCallChanged;
 
 			init_us();
 			DelayedFunction.DelayedCall("LoadContactManager", initContactManager, 1000);
@@ -118,6 +117,7 @@ namespace FSClient {
 				theme = Properties.Settings.Default.Theme;
 				IncomingBalloons = Properties.Settings.Default.IncomingBalloons;
 				IncomingTopMost = Properties.Settings.Default.FrontOnIncoming;
+				IncomingKeyboardFocus = Properties.Settings.Default.KeyboardFocusIncomingCall;
 				ClearDTMFS = Properties.Settings.Default.ClearDTMFS;
 				UPNPNAT = Properties.Settings.Default.UPNPNAT;
 				DirectSipDial = Properties.Settings.Default.DirectSipDial;
@@ -187,41 +187,7 @@ namespace FSClient {
 		#region Text Input
 
 
-		public enum KEYBOARD_ACTION { Backspace, Erase, Enter, Escape };
-		public void handle_special_action(KEYBOARD_ACTION action) {
-			switch (action) {
-				case KEYBOARD_ACTION.Backspace:
-					if (cur_dial_str.Length > 0 && (Call.active_call == null || Call.active_call.state != Call.CALL_STATE.Answered))
-						cur_dial_str = cur_dial_str.Remove(cur_dial_str.Length - 1);
-					break;
-				case KEYBOARD_ACTION.Escape:
-					HangupPressed();
-					break;
-				case KEYBOARD_ACTION.Enter:
-					TalkPressed();
-					break;
 
-			}
-
-		}
-		public void handle_key_action(char key) {
-			cur_dial_str += key;
-			if (key != '*' && key != '#' && (key < '0' || key > '9'))
-				return;
-
-			if (Call.active_call != null && Call.active_call.state == Call.CALL_STATE.Answered)
-				Call.active_call.send_dtmf(key.ToString());
-			else {
-#if ! NO_FS
-				PortAudio.PlayDTMF(key, null, true);
-				DelayedFunction.DelayedCall("PortAudioLastDigitHitStreamClose", close_streams, 5000);
-#endif
-			}
-		}
-		private void close_streams() {
-			if (active_calls == 0)
-				PortAudio.CloseStreams();
-		}
 		#endregion
 
 		public PortAudio.AudioDevice SpeakerInDev { get; private set; }
@@ -350,43 +316,16 @@ namespace FSClient {
 			account.CreateCall(str);
 		}
 		public void TalkPressed() {
-			if (Call.active_call != null) {
-				if (Call.active_call.state == Call.CALL_STATE.Ringing && Call.active_call.is_outgoing == false)
-					Call.active_call.answer();
-				else
-					DialTone();
-			}
-			else {
-				if (String.IsNullOrEmpty(cur_dial_str))
-					DialTone();
-				else {
-					DialString(cur_dial_str);
-					cur_dial_str = "";
-				}
-			}
+			Application.Current.Dispatcher.BeginInvoke((Action)(() => MainWindow.get_instance().TalkPressed()));
 		}
 		public void HangupPressed() {
-			if (Call.active_call != null) {
-				if (Call.active_call.state == Call.CALL_STATE.Ringing) {
-					Call.active_call.hangup(Call.active_call.is_outgoing ? "User Cancelled" : "User Ignored Call");
-				}
-				else
-					Call.active_call.hangup("User Ended");
-			}
-			else
-				cur_dial_str = "";
-		}
-		public void FlashPressed() {
-			throw new NotImplementedException();
+			Application.Current.Dispatcher.BeginInvoke((Action)(() => MainWindow.get_instance().HangupPressed()));
 		}
 		public void TalkTogglePressed() {
 			if (Call.active_call != null && (Call.active_call.state != Call.CALL_STATE.Ringing || Call.active_call.is_outgoing))
 				HangupPressed();
 			else
 				TalkPressed();
-		}
-		public void RedialPressed() {
-			throw new NotImplementedException();
 		}
 
 
@@ -416,6 +355,7 @@ namespace FSClient {
 				Properties.Settings.Default.CheckForUpdates = CheckForUpdates;
 				Properties.Settings.Default.GuiStartup = GUIStartup;
 				Properties.Settings.Default.FrontOnIncoming = IncomingTopMost;
+				Properties.Settings.Default.KeyboardFocusIncomingCall = IncomingKeyboardFocus;
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UPNPNAT = UPNPNAT;
 				Properties.Settings.Default.DirectSipDial = DirectSipDial;
@@ -474,12 +414,6 @@ namespace FSClient {
 				call_answeredChanged(this, is_call_answered);
 
 		}
-		private void ActiveCallChanged(object sender, Call.ActiveCallChangedArgs e) {
-			if (Call.active_call != null)
-				cur_dial_str = Call.active_call.dtmfs;
-			else
-				cur_dial_str = "";
-		}
 		private void HandleCallWaiting(Timer timer, Call c) {
 			if (c.state != Call.CALL_STATE.Ringing || Call.active_call == c) {
 				if (timer != null) {
@@ -509,6 +443,8 @@ namespace FSClient {
 					if (Call.active_call != args.call && Call.active_call != null)
 						HandleCallWaiting(null, args.call);
 				}
+				else if (IncomingKeyboardFocus)
+					Utils.SetForegroundWindow(MainWindow.get_instance());
 			}
 			if (DND && args.call != null && args.call.is_outgoing == false && args.call.state == Call.CALL_STATE.Ringing)
 				args.call.hangup("Call ignored due to DND");
@@ -521,6 +457,7 @@ namespace FSClient {
 
 		public bool IncomingBalloons;
 		public bool IncomingTopMost;
+		public bool IncomingKeyboardFocus;
 		public string CheckForUpdates;
 		public string GUIStartup;
 
@@ -712,19 +649,6 @@ namespace FSClient {
 		}
 		private bool _DND;
 		public Utils.ObjectEventHandler<bool> DNDChanged;
-
-		public string cur_dial_str {
-			get { return _cur_dial_str; }
-			set {
-				if (value == _cur_dial_str)
-					return;
-				_cur_dial_str = value;
-				if (cur_dial_strChanged != null)
-					cur_dial_strChanged(this, value);
-			}
-		}
-		private string _cur_dial_str;
-		public Utils.ObjectEventHandler<string> cur_dial_strChanged;
 
 		public string recordings_folder {
 			get { return _recordings_folder; }

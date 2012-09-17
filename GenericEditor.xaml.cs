@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 
 namespace FSClient {
@@ -15,7 +16,7 @@ namespace FSClient {
 		}
 		private Dictionary<FieldValue, UIElement> elements_to_ui = new Dictionary<FieldValue, UIElement>();
 		private Dictionary<FieldValue, TabItem> element_to_page = new Dictionary<FieldValue, TabItem>();
-		public void Init(String title, FieldValue[] values) {
+		public void Init(String title, IEnumerable<FieldValue> values) {
 			txtTitle.Text = title;
 			Title = title;
 			Dictionary<string, StackPanel> tabs = new Dictionary<string, StackPanel>();
@@ -108,6 +109,7 @@ namespace FSClient {
 					ret = comboBox;
 					break;
 			}
+			AutomationProperties.SetName(ret, value.field.display_name);
 			return ret;
 		}
 		private void btnCancel_Click(object sender, RoutedEventArgs e) {

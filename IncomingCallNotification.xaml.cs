@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Forms;
 
 namespace FSClient {
@@ -23,12 +24,19 @@ namespace FSClient {
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
 			PositionWindows();
 			lblCaller.Text = call.other_party_name + " - " + call.other_party_number;
+			Title = "FSClient Incoming Call " + lblCaller.Text;
 			prop_changed = new System.ComponentModel.PropertyChangedEventHandler(call_PropertyChanged);
 			call.PropertyChanged += prop_changed;
 			btnSendVoicemail.Visibility = call.CanSendToVoicemail() ? Visibility.Visible : Visibility.Hidden;
 			btnTransfer.ContextMenu = Broker.get_instance().XFERContextMenu();
+			if (Broker.get_instance().IncomingKeyboardFocus)
+				DelayedFunction.DelayedCall("BubbleTop", MakeUsTop, 500);
+			Show();
+			Topmost = true;
 		}
-
+		private void MakeUsTop(){
+			Dispatcher.BeginInvoke((Action)(() => Utils.SetForegroundWindow(this)));
+		}
 		void call_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
 			if (e.PropertyName == "state") {
 				if (call.state != Call.CALL_STATE.Ringing)

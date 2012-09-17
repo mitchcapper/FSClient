@@ -1,8 +1,11 @@
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
+using System.Windows.Interop;
 using System.Xml;
 using FreeSWITCH.Native;
 using System.IO;
@@ -134,6 +137,39 @@ namespace FSClient {
 			}
 			DebugWrite(event_dump + "\n");
 #endif
+		}
+
+		[DllImport("user32")]
+		public static extern IntPtr GetForegroundWindow();
+		[DllImport("user32")]
+		public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+		[DllImport("kernel32.dll")]
+		public static extern uint GetCurrentThreadId();
+		[DllImport("user32.dll", SetLastError = true)]
+		public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+		[DllImport("user32.dll")]
+		public static extern bool ShowWindowAsync(IntPtr hWnd, uint nCmdShow);
+		[DllImport("user32")]
+		public static extern bool SetForegroundWindow(IntPtr hWnd);
+		private static uint GetProcessId(IntPtr hwnd, out uint thread_id) {
+			uint pid = 0;
+			thread_id = GetWindowThreadProcessId(hwnd, out pid);
+			return pid;
+		}
+		public const uint SW_SHOW = 0x05;
+		public static void SetForegroundWindow(Window to_foreground){
+			IntPtr hWnd = new WindowInteropHelper(to_foreground).Handle;
+			uint thread_id;
+			IntPtr foregroundHwnd = GetForegroundWindow();
+			GetProcessId(foregroundHwnd, out thread_id);
+			uint our_id = GetCurrentThreadId();
+			SetForegroundWindow(hWnd);
+			ShowWindowAsync(hWnd, SW_SHOW);
+			if (!AttachThreadInput(thread_id, our_id, true))
+				return;
+			SetForegroundWindow(hWnd);
+			ShowWindowAsync(hWnd, SW_SHOW);
+			AttachThreadInput(thread_id, our_id, false);
 		}
 	}
 }
