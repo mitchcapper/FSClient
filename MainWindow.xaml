@@ -166,7 +166,7 @@
 				</Grid.RowDefinitions>
 				<TextBlock Grid.Row="0" Foreground="{DynamicResource GridTitleFGColor}" Text="Accounts" Margin="5,0,0,0" FontWeight="Bold" FontSize="13.333" Background="{DynamicResource GridTitleBGColor}" />
 				<Button x:Name="btnAccountAdd" Grid.Row="0" Content="Add" HorizontalAlignment="Right" Height="18" AutomationProperties.Name="Add New Account" TabIndex="80" Click="btnAccountAdd_Click" FontSize="11" />
-                <ItemsControl Name="itemsAccounts" Grid.Row="1" Background="{DynamicResource GridBodyBGColor}" Foreground="{DynamicResource RowFGColor}"  BorderBrush="{DynamicResource GridBorderColor}" AlternationCount="2" AutomationProperties.Name="Accounts List" TabIndex="100">
+                <ItemsControl Name="itemsAccounts" Grid.Row="1" Background="{DynamicResource GridBodyBGColor}" Foreground="{DynamicResource RowFGColor}"  BorderBrush="{DynamicResource GridBorderColor}" AlternationCount="2" AutomationProperties.Name="Accounts List" TabIndex="100" IsTabStop="False">
                     <ItemsControl.ContextMenu>
                         <ContextMenu> 
                             <MenuItem Header="Add Account" Click="AccountNew_Click" Name="menuAccountNew" />
@@ -184,7 +184,7 @@
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
                                 <TextBlock Text="{Binding gateway_id}" Width="10" Margin="2,2" />
-                                <CheckBox IsChecked="{Binding enabled, Mode=OneWay}"  Margin="2,2" Name="AccountCheckBox" Checked="AccountCheckBox_Checked" Unchecked="AccountCheckBox_Checked">
+                                <CheckBox IsChecked="{Binding enabled, Mode=TwoWay}"  Margin="2,2" Name="AccountCheckBox" Checked="AccountCheckBox_Checked" Unchecked="AccountCheckBox_Checked">
                                     <AutomationProperties.Name>
                                         <MultiBinding StringFormat="Account {0} State: {1}">
                                             <Binding Path="name" />

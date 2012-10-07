@@ -902,7 +902,6 @@ namespace FSClient {
 			if (!broker.fully_loaded)
 				return;
 			Account account = ((FrameworkElement)e.OriginalSource).DataContext as Account;
-			account.enabled = !account.enabled;
 			account.ReloadAccount();
 		}
 	}
