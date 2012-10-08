@@ -321,7 +321,7 @@ namespace FSClient {
 				menu.Items.Add(UserMenu(user));
 		}
 
-		private void EndConference() {
+		public void EndConference() {
 			ConferenceAction("kick all");
 		}
 
