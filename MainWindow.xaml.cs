@@ -615,12 +615,14 @@ namespace FSClient {
 		}
 
 		private void Window_Closing(object sender, CancelEventArgs e) {
-			try {
+			try{
 				Windows.systray_icon_remove();
 				Conference.instance.EndConference();
 				foreach (var call in Call.calls)
 					if (!call.call_ended)
 						call.hangup();
+			}catch{}
+			try{
 				broker.Dispose();
 			}
 			catch { }
