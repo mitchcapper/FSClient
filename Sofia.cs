@@ -175,7 +175,7 @@ namespace FSClient {
 				var message_res = MessageBox.Show("Warning the master sofia profile was not able to load and the phone will most likely _not_ work, make sure the local bind port (" + FieldValue.GetByName(values, "sip-port").value + ")" + tls_port_msg + " is free(set under the Advanced tab of in the sofia settings) and FSClient is allowed through your firewall, otherwise check the freeswitch.log for more details. This can sometimes happen when you lose network connection. You can try reloading the sofia profile by editing the sofia settings and clicking save to see if fixed.   Do you want to try and reload sofia now?","Sofia Profile Not Loaded",MessageBoxButton.YesNo);
 				master_profile_ok = false;
 				if (message_res == MessageBoxResult.Yes)
-					reload_config(RELOAD_CONFIG_MODE.HARD);
+					reload_config(RELOAD_CONFIG_MODE.MODULE);
 				return false;
 			}
 			if (res.Contains("<context>public</context>") == false){
