@@ -72,9 +72,10 @@ namespace FSClient {
 
 		private void XFERContextMenuOpened(object sender, RoutedEventArgs e){
 			ContextMenu menu = sender as ContextMenu;
+			Call call = menu.DataContext as Call;
 			menu.Items.Clear();
 			if (XFERMenuOpenedHandler != null)
-				XFERMenuOpenedHandler(Call.active_call, menu);
+				XFERMenuOpenedHandler(call == null ? Call.active_call : call, menu);
 		}
 
 		private void init_us() {

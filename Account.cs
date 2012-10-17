@@ -199,6 +199,14 @@ namespace FSClient {
 			state = "NOREG";
 		}
 		private static Regex sip_regex;
+		public void CheckVoicemail(){
+			String url = getCheckVoicemailURL();
+			if (String.IsNullOrWhiteSpace(url)){
+				MessageBox.Show("No url specified to check voicemail, edit account first.");
+				return;
+			}
+			CreateCall(getCheckVoicemailURL());
+		}
 		public void CreateCall(String number) {
 			if (!enabled)
 				return;

@@ -922,5 +922,12 @@ namespace FSClient {
 			Account account = ((FrameworkElement)e.OriginalSource).DataContext as Account;
 			account.ReloadAccount();
 		}
+
+		private void AccountCheckVoicemail_Click(object sender, RoutedEventArgs e) {
+			if (!broker.fully_loaded)
+				return;
+			Account account = ((FrameworkElement)e.OriginalSource).DataContext as Account;
+			account.CheckVoicemail();
+		}
 	}
 }

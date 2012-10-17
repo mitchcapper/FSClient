@@ -29,6 +29,7 @@ namespace FSClient {
 			call.PropertyChanged += prop_changed;
 			btnSendVoicemail.Visibility = call.CanSendToVoicemail() ? Visibility.Visible : Visibility.Hidden;
 			btnTransfer.ContextMenu = Broker.get_instance().XFERContextMenu();
+			btnTransfer.DataContext = call;
 			if (Broker.get_instance().IncomingKeyboardFocus)
 				DelayedFunction.DelayedCall("BubbleTop", MakeUsTop, 500);
 			Show();

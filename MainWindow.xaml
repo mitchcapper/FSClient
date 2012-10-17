@@ -177,6 +177,7 @@
                             <StackPanel Orientation="Horizontal" Name="AccountStackPanel" Margin="2,1">
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
+										<MenuItem Header="Check Voicemail" Click="AccountCheckVoicemail_Click"/>
                                     <MenuItem Header="Set Default Account" Click="AccountSetDefault_Click"/>
                                     <MenuItem Header="Edit Account" Click="AccountEdit_Click"/>
                                     <MenuItem Header="Delete Account" Click="AccountDelete_Click"/>
