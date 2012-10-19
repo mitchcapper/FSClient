@@ -429,7 +429,7 @@ namespace FSClient {
 			}
 			if (e.Key == Key.Return) {
 
-				if (text_interception_but_enter && IsItAChild(e.OriginalSource as FrameworkElement, listCalls)) //if we lost focus to another app we will not get the lost focus event so lets double check
+				if (text_interception_but_enter && ! IsItAChild(e.OriginalSource as FrameworkElement, listCalls)) //if we lost focus to another app we will not get the lost focus event so lets double check
 					text_interception_but_enter = false;
 				if (text_interception_but_enter) {
 					e.Handled = false;
