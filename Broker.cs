@@ -771,6 +771,8 @@ namespace FSClient {
 			String err = "";
 			freeswitch.switch_core_set_globals();
 			uint flags = UPNPNAT ? (uint)(switch_core_flag_enum_t.SCF_USE_AUTO_NAT) : 0;
+			if (! String.IsNullOrWhiteSpace(Environment.CommandLine) && Environment.CommandLine.Contains("--sql"))
+				flags |= (uint)switch_core_flag_enum_t.SCF_USE_SQL;
 			switch_status_t res = freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, ref err);
 			search_bind = FreeSWITCH.SwitchXmlSearchBinding.Bind(xml_search, switch_xml_section_enum_t.SWITCH_XML_SECTION_CONFIG);
 			event_bind = FreeSWITCH.EventBinding.Bind("FSClient", switch_event_types_t.SWITCH_EVENT_ALL, null, event_handler, true);
