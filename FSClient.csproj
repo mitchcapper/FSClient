@@ -291,7 +291,8 @@ copy ..\..\"external items"\conf\freeswitch.xml .\conf
 copy ..\..\"external items"\fs_cli.exe .</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>if exist "%25FREESWITCH_SRC_LOCATION%25" copy  "%25FREESWITCH_SRC_LOCATION%25"\Win32\$(ConfigurationName)\mod\FreeSWITCH.Managed.dll ..\..\"external items\release\"</PreBuildEvent>
+    <PreBuildEvent>if not exist ..\..\"external items\$(Configuration)\" md ..\..\"external items\$(Configuration)\"
+if exist "%25FREESWITCH_SRC_LOCATION%25" copy  "%25FREESWITCH_SRC_LOCATION%25"\Win32\$(ConfigurationName)\mod\FreeSWITCH.Managed.dll ..\..\"external items\$(Configuration)\"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
