@@ -29,7 +29,7 @@ namespace FSClient {
 		public static Field[] fields = {
 
 										   /*Default*/
-											new Field(Field.FIELD_TYPE.MultiItem,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i","G729","isac"),
+											new Field(Field.FIELD_TYPE.MultiItemSort,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i","G729","isac"),
 											new Field(Field.FIELD_TYPE.Combo,"Inbound Codec Negotiation","inbound-codec-negotiation","inbound-codec-negotiation","generous","","generous","greedy","scrooge"),
 											new Field(Field.FIELD_TYPE.String,"External RTP IP","ext-rtp-ip","ext-rtp-ip","auto-nat",""),
 											new Field(Field.FIELD_TYPE.String,"External SIP IP","ext-sip-ip","ext-sip-ip","auto-nat",""),

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace FSClient {
 	/// <summary>
@@ -54,6 +55,53 @@ namespace FSClient {
 
 			}
 		}
+		private void CreateSortableContextMenu(ListBox box){
+			ContextMenu menu = new ContextMenu();
+			var item = new MenuItem() { Header = "Move Up" };
+			item.Click += (s,e) => SortableContextMenuMove(box,-1,s,e);
+			menu.Items.Add(item);
+			item = new MenuItem() { Header = "Move Down" };
+			item.Click += (s, e) => SortableContextMenuMove(box, 1, s, e);
+			menu.Items.Add(item);
+			box.ContextMenu = menu;
+			box.ContextMenuOpening += (s,e) => SortableMenuOpening(box,menu,s,e);
+			box.PreviewMouseDown += box_MouseDown;
+			
+		}
+
+		void box_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+			if (e.RightButton == MouseButtonState.Pressed)
+				e.Handled = true;
+		}
+		
+
+						
+		private void SortableMenuOpening(ListBox box,ContextMenu menu,object sender, ContextMenuEventArgs e){
+			menu.DataContext = ((FrameworkElement)e.OriginalSource).DataContext;
+			object elem = menu.DataContext;
+		}
+
+
+		private void SortableContextMenuMove(ListBox box, int move_by, object sender, RoutedEventArgs e){
+			MenuItem item = (sender as MenuItem);
+			if (item == null || item.DataContext == null)
+				return;
+			object to_move = item.DataContext;
+			for (int pos = 0; pos < box.Items.Count; pos++){
+				if (box.Items[pos] == to_move){
+					if (pos + move_by < 0 || pos + move_by >= box.Items.Count)
+						return;
+					bool selected = box.SelectedItems.Contains(to_move);
+					box.Items.Remove(to_move);
+					box.Items.Insert(pos + move_by, to_move);
+					if (selected)
+						box.SelectedItems.Add(to_move);
+					return;
+				}	
+			}
+			
+		}
+
 		private UIElement CreateElementValuer(FieldValue value) {
 			Control ret = null;
 			switch (value.field.type) {
@@ -64,19 +112,27 @@ namespace FSClient {
 					ret = ibox;
 					break;
 				case Field.FIELD_TYPE.MultiItem:
+				case Field.FIELD_TYPE.MultiItemSort:
 					ListBox listBox = new ListBox();
 					listBox.SelectionMode = SelectionMode.Multiple;
+					if (value.field.type == Field.FIELD_TYPE.MultiItemSort)
+						CreateSortableContextMenu(listBox);
 					listBox.Height = 100;
 					listBox.Width = 190;
-					foreach (Field.FieldOption option in value.field.options) {
-						if (value.field.Validator == null || String.IsNullOrEmpty(value.field.Validator(option.value)))
-							listBox.Items.Add(option);
-					}
 					String[] vals = value.value.Split(',');
 					foreach (String val in vals) {
 						Field.FieldOption opt = Field.FieldOption.GetByValue(value.field.options, val);
-						if (opt != null)
+						if (opt != null){
+							listBox.Items.Add(opt);
 							listBox.SelectedItems.Add(opt);
+						}
+					}
+					foreach (Field.FieldOption option in value.field.options) {
+						if (value.field.Validator != null && !String.IsNullOrEmpty(value.field.Validator(option.value)))
+							continue;
+						if (listBox.Items.Contains(option))
+							continue;
+						listBox.Items.Add(option);
 					}
 					ret = listBox;
 					break;
@@ -153,9 +209,12 @@ namespace FSClient {
 			String val = null;
 			switch (value.field.type) {
 				case Field.FIELD_TYPE.MultiItem:
+				case Field.FIELD_TYPE.MultiItemSort:
 					ListBox listBox = (elem as ListBox);
 					val = "";
-					foreach (Object obj in listBox.SelectedItems) {
+					foreach (Object obj in listBox.Items) {
+						if (listBox.SelectedItems.Contains(obj) == false)
+							continue;
 						Field.FieldOption opt2 = obj as Field.FieldOption;
 						if (opt2 != null) {
 							if (!String.IsNullOrEmpty(val))

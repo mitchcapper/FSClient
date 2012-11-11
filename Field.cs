@@ -23,7 +23,7 @@ namespace FSClient {
 				return (from o in options where o.value == value select o).SingleOrDefault();
 			}
 		}
-		public enum FIELD_TYPE { String, Int, Bool, Combo, MultiItem, Password };
+		public enum FIELD_TYPE { String, Int, Bool, Combo, MultiItem, Password, MultiItemSort };
 		public FIELD_TYPE type;
 		public delegate string validate_field_del(String value);
 		public validate_field_del Validator;
