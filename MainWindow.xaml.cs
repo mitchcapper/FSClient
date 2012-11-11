@@ -894,8 +894,12 @@ namespace FSClient {
 		private void ContactSearchConextMenu_OnOpened(object sender, RoutedEventArgs e) {
 			ContextMenu menu = sender as ContextMenu;
 			menu.Items.Clear();
-			foreach (var item in ContactPluginManager.ContactMenuItems)
+			foreach (var item in ContactPluginManager.ContactMenuItems){
+				var old_menu = item.Parent as ContextMenu;
+				if (old_menu != null)
+					old_menu.Items.Remove(item);
 				menu.Items.Add(item);
+			}
 
 
 		}
