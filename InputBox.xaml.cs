@@ -28,6 +28,20 @@ namespace FSClient {
 
 			return box.txtInput.Text;
 		}
+		public static string[] GetTwoInput(String title, String desc, String label1, String default_value1, String label2, String default_value2) {
+			InputBox box = new InputBox();
+			box.lblDesc.Content = desc;
+			box.Title = title;
+			box.rowInput.Height = new GridLength(60);
+			box.Height = 170;
+			AutomationProperties.SetName(box.txtInput, desc);
+			box.txtInput.Text = default_value1;
+			box.txtInput2.Text = default_value2;
+			if(box.ShowDialog() != true)
+				return null;
+
+			return new[] { box.txtInput.Text, box.txtInput2.Text };
+		}
 		private void btnOk_Click(object sender, RoutedEventArgs e) {
 			DialogResult = true;
 			Close();
