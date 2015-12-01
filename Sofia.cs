@@ -29,7 +29,7 @@ namespace FSClient {
 		public static Field[] fields = {
 
 										   /*Default*/
-											new Field(Field.FIELD_TYPE.MultiItemSort,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i","G729","isac"),
+											new Field(Field.FIELD_TYPE.MultiItemSort,"Codec Preferences","codec-prefs","codec-prefs","CELT@48000h@10i,PCMU,PCMA,GSM","","CELT@32000h","CELT@48000h@10i","PCMA","PCMU","GSM","G722","G7221@16000h","G7221@32000h","AAL2-G726-16","AAL2-G726-24","AAL2-G726-32","AAL2-G726-40","BV16","BV32","DVI4@16000h@40i","DVI4@8000h@20i","G726-16","G726-24","G726-32","G726-40","L16","LPC","iLBC@30i","speex@16000h@20i","speex@32000h@20i","speex@8000h@20i","G729","isac","SILK"),
 											new Field(Field.FIELD_TYPE.Combo,"Inbound Codec Negotiation","inbound-codec-negotiation","inbound-codec-negotiation","generous","","generous","greedy","scrooge"),
 											new Field(Field.FIELD_TYPE.String,"External RTP IP","ext-rtp-ip","ext-rtp-ip","auto-nat",""),
 											new Field(Field.FIELD_TYPE.String,"External SIP IP","ext-sip-ip","ext-sip-ip","auto-nat",""),
@@ -48,7 +48,7 @@ namespace FSClient {
 											/*Security*/
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
 											new Field(Field.FIELD_TYPE.Bool,"TLS Only","tls-only","tls-only","false","Security"),
-											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Certs", value="all"},new Field.FieldOption{display_value="Certs & Hostnames", value="subjects_out|in"}),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Certs", value="all"},new Field.FieldOption{display_value="Certs & Hostnames", value="all_subjects"}),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","sslv23","Security","sslv23","tlsv1"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
