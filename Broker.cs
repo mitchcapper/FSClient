@@ -181,6 +181,11 @@ namespace FSClient {
 			}
 #if ! NO_FS
 			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia.sofia_profile_check, 100);
+
+			//Lets try to reload devices after FSClient has spun up just to make sure everything is inited.
+			DelayedFunction.DelayedCall("ReloadAudioDevices", quiet_reload_audio_devices, 2000);
+			DelayedFunction.DelayedCall("ReloadAudioDevices2", quiet_reload_audio_devices, 5000);
+			DelayedFunction.DelayedCall("ReloadAudioDevices3", quiet_reload_audio_devices, 20000);
 #endif
 		}
 
@@ -273,6 +278,11 @@ namespace FSClient {
 				if (!SpeakerphoneActive)
 					activateCurrentDevs();
 			}
+		}
+
+		private void quiet_reload_audio_devices(){
+			if (active_calls == 0)
+				reload_audio_devices(true,true);
 		}
 
 		public void reload_audio_devices(bool and_settings, bool no_save) {
@@ -773,7 +783,7 @@ namespace FSClient {
 			uint flags = UPNPNAT ? (uint)(switch_core_flag_enum_t.SCF_USE_AUTO_NAT) : 0;
 			if (! String.IsNullOrWhiteSpace(Environment.CommandLine) && Environment.CommandLine.Contains("--sql"))
 				flags |= (uint)switch_core_flag_enum_t.SCF_USE_SQL;
-			switch_status_t res = freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, ref err);
+			freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, ref err);
 			search_bind = FreeSWITCH.SwitchXmlSearchBinding.Bind(xml_search, switch_xml_section_enum_t.SWITCH_XML_SECTION_CONFIG);
 			event_bind = FreeSWITCH.EventBinding.Bind("FSClient", switch_event_types_t.SWITCH_EVENT_ALL, null, event_handler, true);
 			freeswitch.switch_core_init_and_modload(flags, switch_bool_t.SWITCH_FALSE, ref err);
