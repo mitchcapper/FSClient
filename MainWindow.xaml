@@ -277,7 +277,7 @@
 			<Button Content="Options" HorizontalAlignment="Left" x:Name="btnOptions" Width="50" Click="btnOptions_Click" Style="{DynamicResource GlassButtonStyle}" Height="20" Canvas.Left="175" Canvas.Top="290" d:LayoutOverrides="VerticalAlignment" AutomationProperties.Name="Options" TabIndex="34" />
 			<Button Canvas.Left="52" Canvas.Top="21" Content="Send To Voicemail" FontWeight="Bold" Foreground="#FFF5E200" Height="20" Name="btnSendVoicemail" Style="{DynamicResource GlassButtonStyle}" Width="120" Visibility="Hidden" Click="btnSendVoicemail_Click" />
 
-			<ours:OurAutoCompleteBox Canvas.Left="10" Text="Contact Search" Canvas.Top="289" Height="22" Width="161" Opacity="0.8" x:Name="txtSearchBox" FilterMode="Contains" GotKeyboardFocus="txtSearchBox_GotKeyboardFocus" LostKeyboardFocus="txtSearchBox_LostKeyboardFocus" DropDownClosing="txtSearchBox_DropDownClosing" FontSize="11" AutomationProperties.Name="Contactbook Search Box" AutomationProperties.HelpText="Type a name and hit down arrow to move through the results" TabIndex="33">
+			<ours:OurAutoCompleteBox Canvas.Left="10" MinimumPrefixLength="3" MinimumPopulateDelay="50"  Text="Contact Search" Canvas.Top="289" Height="22" Width="161" Opacity="0.8" x:Name="txtSearchBox" FilterMode="ContainsSplit"  GotKeyboardFocus="txtSearchBox_GotKeyboardFocus" LostKeyboardFocus="txtSearchBox_LostKeyboardFocus" DropDownClosing="txtSearchBox_DropDownClosing" FontSize="11" AutomationProperties.Name="Contactbook Search Box" AutomationProperties.HelpText="Type a name and hit down arrow to move through the results" TabIndex="33">
 				<ours:OurAutoCompleteBox.ItemTemplate>
 					<DataTemplate>
 
