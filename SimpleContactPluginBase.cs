@@ -225,7 +225,9 @@ namespace FSClient
 				Broker.get_instance().DialString(entry.number);
 
 		}
-
+		protected virtual string EditAlias(Call c, String number, String default_value) {
+			return InputBox.GetInput("Editing Contact", "Edit alias for number: " + number, default_value);
+		}
 		protected void item_Click(object sender, RoutedEventArgs e)
 		{
 			MenuItem item = sender as MenuItem;
@@ -250,7 +252,7 @@ namespace FSClient
 
 			String orig_number = number;
 			number = NormalizeNumber(number);
-			String alias = InputBox.GetInput("Editing Contact", "Edit alias for number: " + number, default_edit_value);
+			String alias = EditAlias(c, number, default_edit_value);
 			alias = IsValidAlias(alias);
 			if (alias == null)
 				return;
@@ -262,8 +264,11 @@ namespace FSClient
 				if (orig_number == call.other_party_number || number == call.other_party_number)
 					call.other_party_name = alias;
 			}
-
-			UpdateDatabase(number, alias);
+			try {
+				UpdateDatabase(number, alias);
+			}catch(Exception ex) {
+				MessageBox.Show("Unable to update alias due to: " + ex.Message);
+			}
 			refresh_search_box();
 		}
 		public override void ResolveNumber(string number, NumberResolved on_resolved)
