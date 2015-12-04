@@ -22,6 +22,7 @@ Table of Contents
    * [Accessibility](#accessibility)
    * [Keyboard Shortcuts](#keyboard-shortcuts)
    * [Compiling from Source](#compiling-from-source)
+   * [Troubleshooting](#troubleshooting)
    * [Configuration](#configuration)
      * [Standard Options](#standard-options)
      * [Account Options](#account-options)
@@ -270,6 +271,14 @@ conf folder, mod folder to your bin folder and build FSClient. Note: You
 risk not having the latest FS build, which might be a dependency in the
 current FSClient source.
 
+Troubleshooting
+-------------
+-	First if compiling from source try the FSClient binary to make sure its not something build or version related
+-	If FSClient crashes on startup or you get an XML error most likely you do not have an active speaker and microphone, this is required (note having a jack but not being plugged into it will not work, as FreeSWITCH (portaudio) will not see it as an active device)
+-	If FSClient crashes randomly when in use after extended periods of time, 99% of the time this is due to an audio device malfunctioning.  We have seen USB speakers that have stopped working, when a call comes in and FreeSWITCH (portaudio) tries to ring the device it cannot properly open the speaker and then crashes.   The USB speaker itself doesn't work unless unplugged and plugged back in.  So if this is happening make sure all your audio devices are working correctly at the time.
+-	FSClient uses freeswitch at the core, and that means you have the full logging and debugging features of FreeSWITCH.  In options you can configure the event socket settings, but by default it listens with the default password (ClueCon) and port of 8022.   Attach fs_cli to FSClient and set the loglevel to debug.  This can often help diagnose connection errors.  Tools like fs_logger.pl (https://github.com/mitchcapper/FSMisc) will also work.  You can also edit the freeswitch.xml its a very simple FS config.
+
+
 Configuration
 -------------
 
@@ -359,7 +368,7 @@ TODO
 -   Better configuration storage (option for in local folder for
     portable), maybe separate file for each configuration section
 -   Freeswitch working dir not app folder (so no writing is required to
-    local folder for proper vista/win7 apps)
+    local folder for proper vista+ apps)
 -   Export call history on exit, and reload on startup
 -   An option for a portable version (an option in the program to store
     the configuration in the working directory rather than User data
@@ -427,10 +436,9 @@ much thinking.
 Develoment/Contributing
 -----------------------
 
-If you want to work on FSClient please do! You can work on the code base
-itself or plugins, if you would like to work with us please feel free to
-contact us on IRC we are generally in the main channel (Try for
-MitchCapper if he is there).
+If you want to work on FSClient please do! Pull requests and bugs through GitHub are always welcome. 
+You can work on the code base itself or plugins, if you would like to work with us please feel free to
+contact us on IRC we are generally in the main channel (Try for MitchCapper if he is there). 
 
 ### Plugin Development
 
