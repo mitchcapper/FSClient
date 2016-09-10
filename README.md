@@ -2,7 +2,7 @@ FSClient Windows Softphone based on FreeSWITCH
 =================================
 OVERVIEW
 -----
-FSClient is a full Windows sip client that uses Embedded FreeSWITCH and is written in WPF/.NET 4.0. It supports external/internal contact books and full headset features through a plugin system (Plantronics/ Jabra full features for example). FSClient is meant to be a full featured SIP client including standard enterprise class client functionality. It can run installed or run standalone, with the only requirement being .NET 4.0 support. 
+FSClient is a full Windows sip client that uses Embedded FreeSWITCH and is written in WPF/.NET 4.0. It supports external/internal contact books and full headset features through a plugin system (Plantronics/ Jabra full features for example). FSClient is meant to be a full featured SIP client including standard enterprise class client functionality. It can run installed or run standalone, with the only requirement being .NET 4.5.2 support (vista or higher). 
 
 Table of Contents
 =================
@@ -183,13 +183,12 @@ Installation
 
 ### Requirements
 
--   .NET 4.0 (installer will install this if not found)
--   Windows XP SP3 or Later
+-   .NET 4.5.2 (installer will install this if not found)
+-   Windows Vista or Later
 
-To install FSClient use the installer found at:
-<http://files.freeswitch.org/windows/installer/x86/FSClient.zip> You can
-copy the installation folder to a USB drive for a portable version, just
-make sure .NET 4.0 is installed where you want to use it. Note config is
+To install FSClient use the installer found under releases <https://github.com/mitchcapper/FSClient/releases>.
+You can copy the installation folder to a USB drive for a portable version, just
+make sure .NET 4.5.2 is installed where you want to use it. Note config is
 not stored in the installation folder however if you copy your
 user.config into the app.config file it will read this locally and use
 this by default.
