@@ -3,6 +3,7 @@
         <X-PRE-PROCESS cmd="set" data="hold_music=local_stream://moh"/>
         <X-PRE-PROCESS cmd="set" data="console_loglevel=info"/>
         <X-PRE-PROCESS cmd="set" data="us-ring=v=0;%(2000,4000,440.0,480.0)"/>
+        <X-PRE-PROCESS cmd="set" data="media_mix_inbound_outbound_codecs=true"/>
 
         <section name="configuration" description="Various Configuration">
                 <configuration name="console.conf" description="Console Logger">
@@ -48,10 +49,8 @@
 								<load module="mod_spandsp"/>
                                 <load module="mod_ilbc"/>
 								<load module="mod_isac"/>
-                                <load module="mod_speex"/>
 								<load module="mod_siren"/>
 								<load module="mod_bv"/>
-                                <load module="mod_celt"/>
                                 <load module="mod_siren"/>
 								<load module="mod_silk"/>
                                 <load module="mod_sndfile"/>
@@ -62,23 +61,6 @@
 								<load module="mod_conference"/>
                         </modules>
                 </configuration>
-				<configuration name="conference.conf" description="Audio Conference">
-					<caller-controls>
-						<group name="default" />
-					</caller-controls>
-					<profiles>
-						<profile name="default">
-							<param name="member-flags" value="dist-dtmf"/>
-							<param name="rate" value="16000"/>
-							<param name="interval" value="20"/>
-							<param name="energy-level" value="300"/>
-							<param name="enter-sound" value="tone_stream://%(200,0,500,600,700)"/>
-							<param name="exit-sound" value="tone_stream://%(500,0,300,200,100,50,25)"/>
-							<param name="comfort-noise" value="true"/>
-						</profile>
-					</profiles>
-
-				</configuration>
 
                 <configuration name="portaudio.conf" description="Soundcard Endpoint">
                   <settings>

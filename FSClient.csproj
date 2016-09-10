@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,17 +10,23 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FSClient</RootNamespace>
     <AssemblyName>FSClient</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <Utf8Output>true</Utf8Output>
     <ExpressionBlendVersion>4.0.20421.0</ExpressionBlendVersion>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,7 +39,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -46,6 +51,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -55,6 +61,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>phone.ico</ApplicationIcon>
@@ -69,8 +76,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Controls.Input.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\WPF Toolkit\v3.5.50211.1\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+      <HintPath>packages\WPFToolkit.3.5.50211.1\lib\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\WPFToolkit.3.5.50211.1\lib\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -85,7 +96,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\WPFToolkit.3.5.50211.1\lib\WPFToolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -208,6 +222,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -264,7 +279,6 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if not exist ".\mod" md mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_managed.dll .
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_spandsp.dll .\mod
-if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_celt.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_commands.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_console.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_dialplan_xml.dll .\mod
@@ -278,7 +292,6 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_siren.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_sndfile.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_sofia.dll .\mod
-if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_speex.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_tone_stream.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_silk.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_bv.dll .\mod

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FSClient.InputBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="InputBox" Height="150" Width="269" ResizeMode="NoResize">
+        Title="InputBox" Height="170" Width="350" ResizeMode="NoResize">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition/>

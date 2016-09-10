@@ -13,6 +13,7 @@ namespace FSClient {
 
 		void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e) {
 			MessageBox.Show("Dispatcher exception of: " + e.Exception.Message, "Dispatcher Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+			e.Handled = true;
 		}
 	}
 }

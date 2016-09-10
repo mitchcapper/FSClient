@@ -22,7 +22,7 @@ namespace FSClient {
 		public delegate void ObjectEventHandler<T>(object sender, T data);
 		public static string api_exec(String cmd, String args) {
 			if (API == null)
-				API = new Api();
+				API = new Api(null);
 			return API.Execute(cmd, args);
 		}
 		private class BGArgs {
@@ -70,7 +70,7 @@ namespace FSClient {
 
 			current_exec = (BGArgs)e.Argument;
 			if (BGAPI == null)
-				BGAPI = new Api();
+				BGAPI = new Api(null);
 			e.Result = BGAPI.Execute(current_exec.cmd, current_exec.args);
 			current_exec = null;
 		}

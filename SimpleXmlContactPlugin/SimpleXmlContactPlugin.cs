@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,8 @@ namespace SimpleXmlContactPlugin {
 				var serializer = new XmlSerializer(typeof(List<Entry>));
 				reader.Read();
 				var list = (List<Entry>)serializer.Deserialize(reader);
-				foreach (var entry in list) Add(entry.Key, entry.Value);
+				foreach (var entry in list)
+					Add(entry.Key, entry.Value);
 				reader.ReadEndElement();
 			}
 

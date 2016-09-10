@@ -49,7 +49,7 @@ namespace FSClient {
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
 											new Field(Field.FIELD_TYPE.Bool,"TLS Only","tls-only","tls-only","false","Security"),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Certs", value="all"},new Field.FieldOption{display_value="Certs & Hostnames", value="all_subjects"}),
-											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","sslv23","Security","sslv23","tlsv1"),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","tlsv1","Security","tlsv1","sslv23"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
 											new Field(Field.FIELD_TYPE.String,"TLS Certificate Directory","tls-cert-dir","tls-cert-dir","conf/ssl","Security"),
@@ -104,6 +104,10 @@ namespace FSClient {
 				}
 
 				Utils.add_xml_param(settings, value.field.xml_name, param_value);
+				if (value.field.xml_name == "codec-prefs") {
+					Utils.add_xml_param(settings, "inbound-codec-prefs", param_value);
+					Utils.add_xml_param(settings, "outbound-codec-prefs", param_value);
+				}
 			}
 
 			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia_profile_check, 1000);

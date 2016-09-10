@@ -237,8 +237,7 @@ Compiling from Source
 
 The source code for FSClient can be found at <https://github.com/mitchcapper/FSClient> under.
 VS2010/VS2012-VS2015 project files and a solution are
-provided. Ensure you have WPF Toolkit installed (just some libs the
-quick installer can be found at <http://wpf.codeplex.com/> otherwise).
+provided.
 
 First get FreeSWITCH compiling properly on windows see
 [Installation\_for\_Windows](https://wiki.freeswitch.org/wiki/Installation_for_Windows) for details, the directory you compile it
@@ -474,7 +473,7 @@ support this.
 #### Contact Plugins
 
 Contact plugins can inherit either from IContactPlugin or the helper
-class SimpleContactPluginBase. SimpleContactPluginBase is the easiest to
+class SimpleContactPluginBase (ignore the Sync functions). SimpleContactPluginBase is the easiest to
 implement, and if you like the functionality of the built in
 SimpleXMLContactPlugin but just want a different datastore (either local
 or remote) it can be the way to go. SimpleContactPlugin has very low
@@ -487,7 +486,9 @@ bit more complex to implement but gives more flexibility, The contact
 search box does next to nothing for you out of the box, so you must
 implement whatever functionality you want (if you want to support the
 contact find box). See SimpleContactBase for how it behaves and if you
-can emulate its functions to give a consistent user experience.
+can emulate its functions to give a consistent user experience.  There is
+also a newer SimpleContactPluginBaseAsync.  It has Task based functions
+for those that may be async.
 
 ### General Class/File Layout
 

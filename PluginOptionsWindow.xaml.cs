@@ -74,9 +74,9 @@ namespace FSClient {
 		private class loaded_plugin_info{
 			private PluginManagerBase.PluginData plugin;
 			public string dll { get { return plugin.dll; } }
-			public string name { get { return plugin.plugin.ProviderName(); } }
+			public string name { get { return plugin.plugin?.ProviderName(); } }
 			public bool error_exists { get { return ! String.IsNullOrEmpty(plugin.last_error); } }
-			public bool has_options_button { get { return plugin.plugin.ShowOptionsButton(); } }
+			public bool has_options_button { get { return plugin.plugin?.ShowOptionsButton() ?? false; } }
 			public string error_msg { get { return plugin.last_error ?? ""; } }
 			public void ShowPluginOptions(){
 				plugin.plugin.EditOptions();

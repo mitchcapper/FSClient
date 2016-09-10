@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
@@ -31,7 +32,12 @@ namespace FSClient {
 			Call.CallStateChanged += CallStateChangedHandler;
 
 			init_us();
-			DelayedFunction.DelayedCall("LoadContactManager", initContactManager, 1000);
+			loaded();
+		}
+
+		private async void loaded() {
+			await Task.Delay(1000);
+			initContactManager();
 		}
 
 		public bool fully_loaded;
@@ -141,6 +147,8 @@ namespace FSClient {
 				else
 					event_socket = new EventSocket();
 
+				if (Properties.Settings.Default.Conference != null)
+					conference = Properties.Settings.Default.Conference.GetConference();
 			}
 			catch (Exception e) {
 				MessageBoxResult res = MessageBox.Show(
@@ -377,6 +385,7 @@ namespace FSClient {
 				Properties.Settings.Default.ContactPlugins = contact_plugin_manager.GetSettings();
 				Properties.Settings.Default.HeadsetPlugins = headset_plugin_manager.GetSettings();
 				Properties.Settings.Default.EventSocket = new SettingsEventSocket(event_socket);
+				Properties.Settings.Default.Conference = new SettingsConference(conference);
 				Properties.Settings.Default.Save();
 			}
 			catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
@@ -709,6 +718,9 @@ namespace FSClient {
 		public void edit_event_socket() {
 			event_socket.edit();
 		}
+		public void edit_conference() {
+			conference.edit();
+		}
 		public void edit_plugins() {
 			PluginOptionsWindow window = new PluginOptionsWindow();
 			window.ShowDialog();
@@ -766,6 +778,8 @@ namespace FSClient {
 					return generate_xml_config(args.KeyValue, "Sofia Endpoint", sofia.gen_config);
 				case "event_socket.conf":
 					return generate_xml_config(args.KeyValue, "Socket Client", event_socket.gen_config);
+				case "conference.conf":
+					return generate_xml_config(args.KeyValue, "Audio Conference", conference.gen_config);
 			}
 			return null;
 
@@ -783,10 +797,10 @@ namespace FSClient {
 			uint flags = UPNPNAT ? (uint)(switch_core_flag_enum_t.SCF_USE_AUTO_NAT) : 0;
 			if (! String.IsNullOrWhiteSpace(Environment.CommandLine) && Environment.CommandLine.Contains("--sql"))
 				flags |= (uint)switch_core_flag_enum_t.SCF_USE_SQL;
-			freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, ref err);
+			freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, out err);
 			search_bind = FreeSWITCH.SwitchXmlSearchBinding.Bind(xml_search, switch_xml_section_enum_t.SWITCH_XML_SECTION_CONFIG);
 			event_bind = FreeSWITCH.EventBinding.Bind("FSClient", switch_event_types_t.SWITCH_EVENT_ALL, null, event_handler, true);
-			freeswitch.switch_core_init_and_modload(flags, switch_bool_t.SWITCH_FALSE, ref err);
+			freeswitch.switch_core_init_and_modload(flags, switch_bool_t.SWITCH_FALSE, out err);
 			reload_audio_devices(true, true);
 		}
 

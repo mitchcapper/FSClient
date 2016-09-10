@@ -744,9 +744,9 @@ namespace FSClient {
 		#endregion
 		private bool border_calls_was_visible = true;
 		private void ResizeForm() {
-			int border_calls_width = 228;
+			int border_calls_width = 238;
 			int accounts_left = 237;
-			int total_width = 243;
+			int total_width = 253;
 			int body_left = 3;
 			if (borderAccounts.Visibility == Visibility.Visible) {
 				total_width += 196;

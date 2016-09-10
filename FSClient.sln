@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSClient", "FSClient.csproj", "{A2D2A785-3B79-4042-9C3D-97B1CD9A804E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantronicsHeadsetPlugin", "PlantronicsHeadset\PlantronicsHeadsetPlugin.csproj", "{5E156019-7D68-402D-9109-7F7F1E55EA8A}"
@@ -23,21 +25,6 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{80D26E64-EECF-47F2-8132-804F087C27BA}"
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 6
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = FSClient.csproj
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = SimpleXmlContactPlugin\\SimpleXmlContactPlugin.csproj
-		SccLocalPath2 = SimpleXmlContactPlugin
-		SccProjectUniqueName3 = Setup\\Setup.wixproj
-		SccLocalPath3 = .
-		SccProjectFilePathRelativizedFromConnection3 = Setup\\
-		SccProjectUniqueName4 = JabraHeadset\\JabraHeadsetPlugin.csproj
-		SccLocalPath4 = JabraHeadset
-		SccProjectUniqueName5 = PlantronicsHeadset\\PlantronicsHeadsetPlugin.csproj
-		SccLocalPath5 = PlantronicsHeadset
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms

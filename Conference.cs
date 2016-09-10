@@ -4,14 +4,35 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml;
+using System.Xml.Serialization;
 using FreeSWITCH.Native;
 
 namespace FSClient {
+	[XmlRoot("settingsConference")]
+	public class SettingsConference {
+		public SettingsField[] fields { get; set; }
+		public Conference GetConference() {
+			var socket = Conference.instance;
+			foreach (SettingsField field in fields) {
+				FieldValue val = FieldValue.GetByName(socket.values, field.name);
+				if (val != null)
+					val.value = field.value;
+			}
+			return socket;
+		}
+		public SettingsConference() {
+		}
+		public SettingsConference(Conference socket) {
+			fields = (from fv in socket.values select new SettingsField(fv)).ToArray();
+		}
+	}
+
 	public class ConferenceUser : ObservableClass {
-		
+
 		[Flags]
-		public enum USER_STATE{
-			TALK=1, FLOOR=2, MUTE=4, DEAF=8
+		public enum USER_STATE {
+			TALK = 1, FLOOR = 2, MUTE = 4, DEAF = 8
 		};
 
 		public static bool StateTest(USER_STATE state, USER_STATE test) {
@@ -185,7 +206,52 @@ namespace FSClient {
 		}
 
 	}
-	class Conference : ObservableClass {
+
+	public class Conference : ObservableClass {
+		public static Field[] fields = {
+										   new Field(Field.FIELD_TYPE.String, "Enter Sound","enter-sound","enter-sound","tone_stream://%(200,0,500,600,700)",""),
+										   new Field(Field.FIELD_TYPE.String, "Exit Sound","exit-sound","exit-sound","tone_stream://%(500,0,300,200,100,50,25)",""),
+										new Field(Field.FIELD_TYPE.Int,"Min Energy Level","energy-level","energy-level","300",""),
+										new Field(Field.FIELD_TYPE.Bool,"Comfort Noise","comfort-noise","comfort-noise","true",""),
+										new Field(Field.FIELD_TYPE.Combo,"Audio Sample Rate","rate","rate","16000","",new Field.FieldOption{display_value="8000", value="8000"},new Field.FieldOption{display_value="12000", value="12000"},new Field.FieldOption{display_value="16000", value="16000"},new Field.FieldOption{display_value="24000", value="24000"},new Field.FieldOption{display_value="32000", value="32000"},new Field.FieldOption{display_value="44100", value="44100"},new Field.FieldOption{display_value="48000", value="48000"},new Field.FieldOption{display_value="First Member Rate(auto)", value="auto"}),
+										new Field(Field.FIELD_TYPE.Combo,"Audio Frame Interval","interval","interval","20","",new Field.FieldOption{display_value="10", value="10"},new Field.FieldOption{display_value="20", value="20"},new Field.FieldOption{display_value="30", value="30"},new Field.FieldOption{display_value="40", value="40"},new Field.FieldOption{display_value="50", value="50"},new Field.FieldOption{display_value="60", value="60"},new Field.FieldOption{display_value="70", value="70"},new Field.FieldOption{display_value="80", value="80"},new Field.FieldOption{display_value="90", value="90"},new Field.FieldOption{display_value="110", value="110"},new Field.FieldOption{display_value="120", value="120"},new Field.FieldOption{display_value="First Member Rate(auto)", value="auto"}),
+										new Field(Field.FIELD_TYPE.MultiItemSort,"Default Member Flags","member-flags","member-flags","dist-dtmf","","dist-dtmf","mute","deaf","mute-detect","moderator","nomoh","endconf","mintwo","ghost"),
+
+	};
+		private static string[] AllowedEmptyFields = new[] { "enter-sound", "exit-sound" };
+		public FieldValue[] values = FieldValue.FieldValues(fields);
+		public void gen_config(XmlNode config_node) {
+			var controls = XmlUtils.AddNodeNode(config_node, "caller-controls");
+			var control_group = XmlUtils.AddNodeNode(controls, "group");
+			XmlUtils.AddNodeAttrib(control_group, "name", "default");
+			var profiles = XmlUtils.AddNodeNode(config_node, "profiles");
+			var profile = XmlUtils.AddNodeNode(profiles, "profile");
+			XmlUtils.AddNodeAttrib(profile, "name", "default");
+			foreach (FieldValue value in values) {
+				if (String.IsNullOrEmpty(value.field.xml_name))
+					continue;
+				if (String.IsNullOrWhiteSpace(value.value) && !AllowedEmptyFields.Contains(value.field.name))
+					continue;
+				Utils.add_xml_param(profile, value.field.xml_name, value.value);
+			}
+			File.WriteAllText(@"c:\temp\conf.xml",config_node.OuterXml);
+		}
+		public void reload_config() {
+			Utils.bgapi_exec("reload", "mod_conference");
+
+		}
+		public void edit() {
+			GenericEditor editor = new GenericEditor();
+			editor.Init("Editing Conference Settings", values);
+			editor.ShowDialog();
+			if (editor.DialogResult == true) {
+				MessageBoxResult mres = MessageBox.Show("Do you want to reload the conference settings now, if there is an active conference this will do nothing?", "Reload Module Warning", MessageBoxButton.YesNo);
+				if (mres != MessageBoxResult.Yes)
+					return;
+				reload_config();
+			}
+		}
+
 		private System.Threading.Timer duration_timer;
 
 
@@ -201,11 +267,11 @@ namespace FSClient {
 		}
 
 		void _our_conference_call_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
-			if (! our_conference_call.call_ended && our_conference_call.state == Call.CALL_STATE.Answered)
+			if (!our_conference_call.call_ended && our_conference_call.state == Call.CALL_STATE.Answered)
 				conf_color = "#FF4EFF00";
 			else
 				conf_color = "#FFF1FF00";
-				
+
 		}
 		private Call _our_conference_call;
 
@@ -230,11 +296,11 @@ namespace FSClient {
 		void users_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
 			conf_visible = users.Count > 0 ? Visibility.Visible : Visibility.Hidden;
 			if (am_recording_file != null && users.Count == 0)
-				am_recording_file=null;
-			DelayedFunction.DelayedCall("ConferenceOnlyUsLeft", only_us_left_check, 2000);			
+				am_recording_file = null;
+			DelayedFunction.DelayedCall("ConferenceOnlyUsLeft", only_us_left_check, 2000);
 		}
 
-		private void only_us_left_check(){
+		private void only_us_left_check() {
 			if (users.Count != 1)
 				return;
 			var first_user = users.FirstOrDefault();
@@ -303,7 +369,7 @@ namespace FSClient {
 				main.Items.Add(CreateMenuItem("UnDeaf", () => user.Deaf(true)));
 			else
 				main.Items.Add(CreateMenuItem("Deaf", () => user.Deaf()));
-			if (! user.is_us)
+			if (!user.is_us)
 				main.Items.Add(CreateMenuItem("Split Out", user.Split));
 			main.Items.Add(CreateMenuItem("Drop From Conference", user.Drop));
 			return main;
@@ -386,7 +452,7 @@ namespace FSClient {
 					String source = evt.get_header("Caller-Source");
 					String direction = evt.get_header("Call-Direction");
 					user = new ConferenceUser { id = member_id, uuid = uuid, party_name = evt.get_header("Caller-Caller-ID-Name"), party_number = evt.get_header("Caller-Caller-ID-Number") };
-					if (source == "mod_portaudio" && direction == "inbound"){
+					if (source == "mod_portaudio" && direction == "inbound") {
 						user.party_number = user.party_name = "You";
 						user.is_us = true;
 					}
@@ -422,12 +488,11 @@ namespace FSClient {
 			}
 		}
 
-		public void join_conference(){
-			if (our_conference_call != null && our_conference_call.call_ended == false){
+		public void join_conference() {
+			if (our_conference_call != null && our_conference_call.call_ended == false) {
 				if (our_conference_call.state != Call.CALL_STATE.Answered)
 					our_conference_call.switch_to();
-			}
-			else
+			} else
 				broker.DialString("fsc_conference");
 		}
 	}

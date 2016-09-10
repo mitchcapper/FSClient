@@ -97,9 +97,11 @@ namespace FSClient {
 			String plugin_dir = Utils.plugins_dir();
 			string[] dlls;
 			try {
-				dlls = Directory.GetFileSystemEntries(plugin_dir, "*Plugin.dll");
-				foreach (String full_dll in dlls)
-					possible_plugins.Add(new PossiblePlugin(full_dll));
+				if (Directory.Exists(plugin_dir)) {
+					dlls = Directory.GetFileSystemEntries(plugin_dir, "*Plugin.dll");
+					foreach (String full_dll in dlls)
+						possible_plugins.Add(new PossiblePlugin(full_dll));
+				}
 			}
 			catch (DirectoryNotFoundException) {
 				return;
