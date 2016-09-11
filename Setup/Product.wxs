@@ -13,14 +13,14 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	 xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
               xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.2.0.0" Manufacturer="FreeSWITCH" UpgradeCode="7668FAEF-2AB3-4079-A986-07A33739B42E">
+	<Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.4.0.0" Manufacturer="FreeSWITCH" UpgradeCode="7668FAEF-2AB3-4079-A986-07A33739B42E">
 		<Package InstallerVersion="300" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-    <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
-    <Condition Message="This application requires .NET Framework 4.0 Client. Please run Setup">
-      <![CDATA[Installed OR NETFRAMEWORK40CLIENT]]>
+    <PropertyRef Id="NetFx452Web"/>
+    <Condition Message="This application requires .NET Framework 4.5.2. Please run Setup">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
     </Condition>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -64,7 +64,7 @@
 							 WorkingDirectory="INSTALLLOCATION"/>
 				<util:InternetShortcut Id="OnlineDocumentationShortcut"
 									Name="Online Documentation"
-									Target="http://wiki.freeswitch.com/wiki/FSClient"/>
+									Target="https://github.com/mitchcapper/FSClient"/>
 				<Shortcut Id="UninstallProduct"
 									  Name="Uninstall FSClient"
 									  Target="[SystemFolder]msiexec.exe"

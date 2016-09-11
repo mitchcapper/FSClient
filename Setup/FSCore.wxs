@@ -61,7 +61,6 @@
     <Fragment>
       <ComponentGroup Id="FSCoreModComp">
         <ComponentRef Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6"/>
-        <ComponentRef Id="cmp62D3CE444BA755B9A20CE51AFFBF220C"/>
         <ComponentRef Id="cmp878AF2DB5CACA43FAB0F4D9127D2C9BC"/>
         <ComponentRef Id="cmp859560B8766FA7BA6F697CB0C52AAAEA"/>
         <ComponentRef Id="cmp7F1E9A4820D7ABC50BB56176F1C5C203"/>
@@ -77,7 +76,6 @@
         <ComponentRef Id="cmp5190EA36FEC2468D9C2F42E88FD69418"/>
         <ComponentRef Id="cmp2800471D874294B5AD88F7A6BFBBBD04"/>
         <ComponentRef Id="cmp91B3DE0582A7BC591025241179545460"/>
-        <ComponentRef Id="cmpB896C4672ADB1C3BAA362811356CADAC"/>
         <ComponentRef Id="cmpA454DD837CEB3EBF437FFC2F6642A3B5"/>
 		<ComponentRef Id="cmpEF5CC6E154E049EFB9F49F3E6C17BC1C"/>
 		<ComponentRef Id="cmp65B4AD1208F64A08A71B741909852772"/>
@@ -86,9 +84,6 @@
         <DirectoryRef Id="MODLOCATION">
             <Component Id="cmp2F7FF03E8DFD4C2E9F0F6422B3C08EA6" Guid="*">
               <File Id="fil7C529E485AFB44229053672D51A187AA" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_spandsp.dll" />
-            </Component>
-            <Component Id="cmp62D3CE444BA755B9A20CE51AFFBF220C" Guid="*">
-                <File Id="filA9CCEA1A30D390B311A9C777F02B5BEE" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_celt.dll" />
             </Component>
             <Component Id="cmp878AF2DB5CACA43FAB0F4D9127D2C9BC" Guid="*">
                 <File Id="filC85EC4B61F3280D77463E7409331F783" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_commands.dll" />
@@ -134,9 +129,6 @@
             </Component>
             <Component Id="cmp91B3DE0582A7BC591025241179545460" Guid="*">
                 <File Id="fil8088426710A2AA65BC31323DDA6BF8F7" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_sofia.dll" />
-            </Component>
-            <Component Id="cmpB896C4672ADB1C3BAA362811356CADAC" Guid="*">
-                <File Id="fil73C98378C5F9DA18EE1999B19D808D6E" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_speex.dll" />
             </Component>
 			<Component Id="cmpEF5CC6E154E049EFB9F49F3E6C17BC1C" Guid="*">
 				<File Id="fil1A554A6DC0954F50851207370BA4FA63" KeyPath="yes" Source="$(var.FSClient.TargetDir)\mod\mod_isac.dll" />

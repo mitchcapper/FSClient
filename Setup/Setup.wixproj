@@ -10,10 +10,10 @@
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName></SccProjectName>
+    <SccLocalPath></SccLocalPath>
+    <SccAuxPath></SccAuxPath>
+    <SccProvider></SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -66,11 +66,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperFile Include=".NETFramework,Version=v4.0,Profile=Client">
-      <ProductName>.NET Framework 4.0</ProductName>
+    <BootstrapperFile Include=".NETFramework,Version=v4.5.2">
+      <ProductName>.NET Framework 4.5.2</ProductName>
     </BootstrapperFile>
-    <BootstrapperFile Include="Microsoft.Windows.Installer.3.1">
-      <ProductName>Windows Installer 3.1</ProductName>
+    <BootstrapperFile Include="Microsoft.Windows.Installer.4.5">
+      <ProductName>Windows Installer 4.5</ProductName>
     </BootstrapperFile>
   </ItemGroup>
   <ItemGroup>

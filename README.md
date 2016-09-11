@@ -2,7 +2,7 @@ FSClient Windows Softphone based on FreeSWITCH
 =================================
 OVERVIEW
 -----
-FSClient is a full Windows sip client that uses Embedded FreeSWITCH and is written in WPF/.NET 4.0. It supports external/internal contact books and full headset features through a plugin system (Plantronics/ Jabra full features for example). FSClient is meant to be a full featured SIP client including standard enterprise class client functionality. It can run installed or run standalone, with the only requirement being .NET 4.5.2 support (vista or higher). 
+FSClient is a full Windows sip client that uses Embedded FreeSWITCH and is written in WPF/.NET 4.5. It supports external/internal contact books and full headset features through a plugin system (Plantronics/ Jabra full features for example). FSClient is meant to be a full featured SIP client including standard enterprise class client functionality. It can run installed or run standalone, with the only requirement being .NET 4.5.2 support (vista or higher).  You can use the older FSClient 1.2 release if you need Windows XP/.net 4.0.
 
 Table of Contents
 =================
@@ -48,11 +48,11 @@ Description
 ------------
 
 FSClient is a full Windows sip client that uses [Embedded FreeSWITCH](https://wiki.freeswitch.org/wiki/Embedding_FreeSWITCH)
-and is written in WPF/.NET 4.0. It supports external/internal contact
+and is written in WPF/.NET 4.5. It supports external/internal contact
 books and full headset features through a plugin system. FSClient is
 meant to be a full featured SIP client including standard enterprise
 class client functionality. It can run installed or run standalone, with
-the only requirement being .NET 4.0 support.
+the only requirement being .NET 4.5 support.
 
 ### Screenshot
 
@@ -185,7 +185,7 @@ Installation
 
 -   .NET 4.5.2 (installer will install this if not found)
 -   Windows Vista or Later
-
+-   Note: You can use the older FSClient 1.2 release if you need Windows XP/.net 4.0.
 To install FSClient use the installer found under releases <https://github.com/mitchcapper/FSClient/releases>.
 You can copy the installation folder to a USB drive for a portable version, just
 make sure .NET 4.5.2 is installed where you want to use it. Note config is
