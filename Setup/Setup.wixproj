@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+  	<EnableProjectHarvesting>True</EnableProjectHarvesting>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.5</ProductVersion>
@@ -66,14 +67,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperFile Include=".NETFramework,Version=v4.5.2">
-      <ProductName>.NET Framework 4.5.2</ProductName>
-    </BootstrapperFile>
-    <BootstrapperFile Include="Microsoft.Windows.Installer.4.5">
-      <ProductName>Windows Installer 4.5</ProductName>
-    </BootstrapperFile>
-  </ItemGroup>
-  <ItemGroup>
     <WixExtension Include="WixUtilExtension">
       <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
@@ -99,6 +92,6 @@
 	</Target>
 	-->
   <Target Name="AfterBuild">
-    <GenerateBootstrapper ApplicationFile="$(TargetFileName)" ApplicationName="FSClient" BootstrapperItems="@(BootstrapperFile)" ComponentsLocation="HomeSite" CopyComponents="True" OutputPath="$(OutputPath)" Path="C:\Program Files (X86)\Microsoft SDKs\Windows\v7.0A\Bootstrapper\" />
+    <GenerateBootstrapper ApplicationFile="$(TargetFileName)" ApplicationName="FSClient" BootstrapperItems="@(BootstrapperFile)" ComponentsLocation="HomeSite" CopyComponents="True" OutputPath="$(OutputPath)" Path="C:\Program Files (x86)\Microsoft Visual Studio 14.0\SDK\Bootstrapper\" />
   </Target>
 </Project>
