@@ -4,28 +4,40 @@
         Title="InputBox" Height="170" Width="350" ResizeMode="NoResize">
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition/>
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="30" Name="rowInput"/>
-			<RowDefinition Height="35" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<Label Name="lblDesc" Grid.Row="0"/>
 		<StackPanel  Grid.Row="1" Margin="10,5,10,0">
-			<StackPanel Orientation="Horizontal">
-				<Label Content="" FontWeight="Bold" Name="lblInput1" /><TextBox Name="txtInput" Text="Test" VerticalAlignment="Center" Width="190" />
-			</StackPanel>
-			<StackPanel Orientation="Horizontal" Margin="0,5">
-				<Label FontWeight="Bold"  Name="lblInput2" />
-				<TextBox Name="txtInput2" Text="best" VerticalAlignment="Center" Width="190" />
-			</StackPanel>
+			
+			<Grid Margin="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Label Content="" FontWeight="Bold" x:Name="lblInput1"  VerticalAlignment="Center"  />
+				<TextBox x:Name="txtInput" Text="Test" VerticalAlignment="Center" Grid.Column="1"  />
+			</Grid>
+			<Line Margin="0,5"/>
+			<Grid Margin="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+
+				<Label FontWeight="Bold"  x:Name="lblInput2"  VerticalAlignment="Center"  />
+				<TextBox x:Name="txtInput2" Text="best" VerticalAlignment="Center"  Grid.Column="1" />
+			</Grid>
 		</StackPanel>
-		<Grid Grid.Row="2">
+		<Grid Grid.Row="2" VerticalAlignment="Center" Height="40">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition />
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
 			<Button Content="Ok" Width="75" Grid.Column="0" HorizontalAlignment="Left" Name="btnOk"  Margin="5" Click="btnOk_Click" IsDefault="True" />
 			<Button Content="Cancel" Width="75" HorizontalAlignment="Right" Margin="5" Grid.Column="1" Name="btnCancel" Click="btnCancel_Click" IsCancel="True" />
-			
+
 
 		</Grid>
 	</Grid>

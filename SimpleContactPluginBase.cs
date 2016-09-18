@@ -345,7 +345,7 @@ namespace FSClient {
 
 
 			} catch (Exception e) {
-				MessageBox.Show("Initialization exception for plugin of: " + e.Message);
+				MessageBox.Show("Initialization exception for plugin " + this.GetType() + " of: " + e.Message);
 			}
 		}
 		protected void refresh_search_box() {
