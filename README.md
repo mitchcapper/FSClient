@@ -275,7 +275,7 @@ Troubleshooting
 -	If FSClient crashes on startup or you get an XML error most likely you do not have an active speaker and microphone, this is required (note having a jack but not being plugged into it will not work, as FreeSWITCH (portaudio) will not see it as an active device)
 -	If FSClient crashes randomly when in use after extended periods of time, 99% of the time this is due to an audio device malfunctioning.  We have seen USB speakers that have stopped working, when a call comes in and FreeSWITCH (portaudio) tries to ring the device it cannot properly open the speaker and then crashes.   The USB speaker itself doesn't work unless unplugged and plugged back in.  So if this is happening make sure all your audio devices are working correctly at the time.
 -	FSClient uses freeswitch at the core, and that means you have the full logging and debugging features of FreeSWITCH.  In options you can configure the event socket settings, but by default it listens with the default password (ClueCon) and port of 8022.   Attach fs_cli to FSClient and set the loglevel to debug.  This can often help diagnose connection errors.  Tools like fs_logger.pl (https://github.com/mitchcapper/FSMisc) will also work.  You can also edit the freeswitch.xml its a very simple FS config.
-
+-	If a module or mod_managed itself will not load it could be due to a new DLL introduced as required and not automatically copied over.  Use "dumpbin /dependents freeswitch.dll" to inspect what dlls should be copied into place.
 
 Configuration
 -------------

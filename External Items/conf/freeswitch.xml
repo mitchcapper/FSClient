@@ -71,7 +71,7 @@
 				<param name="keep-fec-enabled" value="1"/>
 				<param name="use-jb-lookahead" value="true"/>
 				<param name="maxaveragebitrate" value="24000"/>
-				<param name="maxplaybackrate" value="24000"/>
+				<param name="maxplaybackrate" value="48000"/>
 			</settings>
 		</configuration>
 
