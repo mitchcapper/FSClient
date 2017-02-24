@@ -294,6 +294,7 @@ if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Wi
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_sofia.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_tone_stream.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_silk.dll .\mod
+if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_opus.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_bv.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_isac.dll .\mod
 if exist "%25FREESWITCH_SRC_LOCATION%25" copy "%25FREESWITCH_SRC_LOCATION%25\"Win32\$(ConfigurationName)\mod\mod_conference.dll .\mod

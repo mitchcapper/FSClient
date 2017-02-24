@@ -1,132 +1,145 @@
 <?xml version="1.0"?>
 <document type="freeswitch/xml">
-        <X-PRE-PROCESS cmd="set" data="hold_music=local_stream://moh"/>
-        <X-PRE-PROCESS cmd="set" data="console_loglevel=info"/>
-        <X-PRE-PROCESS cmd="set" data="us-ring=v=0;%(2000,4000,440.0,480.0)"/>
-        <X-PRE-PROCESS cmd="set" data="media_mix_inbound_outbound_codecs=true"/>
+	<X-PRE-PROCESS cmd="set" data="hold_music=local_stream://moh"/>
+	<X-PRE-PROCESS cmd="set" data="console_loglevel=info"/>
+	<X-PRE-PROCESS cmd="set" data="us-ring=v=0;%(2000,4000,440.0,480.0)"/>
+	<X-PRE-PROCESS cmd="set" data="media_mix_inbound_outbound_codecs=true"/>
 
-        <section name="configuration" description="Various Configuration">
-                <configuration name="console.conf" description="Console Logger">
-                        <mappings>
-                                <map name="all" value="console,debug,info,notice,warning,err,crit,alert"/>
-                        </mappings>
-                        <settings>
-                                <param name="colorize" value="true"/>
-                                <param name="loglevel" value="$${console_loglevel}"/>
-                        </settings>
-                </configuration>
-                <configuration name="local_stream.conf" description="stream files from local dir">
-                        <directory name="moh/48000" path="$${base_dir}/sounds/music/48000">
-                                <param name="rate" value="48000"/>
-                                <param name="shuffle" value="true"/>
-                                <param name="channels" value="1"/>
-                                <param name="interval" value="10"/>
-                                <param name="timer-name" value="soft"/>
-                        </directory>
-                </configuration>
+	<section name="configuration" description="Various Configuration">
+		<configuration name="console.conf" description="Console Logger">
+			<mappings>
+				<map name="all" value="console,debug,info,notice,warning,err,crit,alert"/>
+			</mappings>
+			<settings>
+				<param name="colorize" value="true"/>
+				<param name="loglevel" value="$${console_loglevel}"/>
+			</settings>
+		</configuration>
+		<configuration name="local_stream.conf" description="stream files from local dir">
+			<directory name="moh/48000" path="$${base_dir}/sounds/music/48000">
+				<param name="rate" value="48000"/>
+				<param name="shuffle" value="true"/>
+				<param name="channels" value="1"/>
+				<param name="interval" value="10"/>
+				<param name="timer-name" value="soft"/>
+			</directory>
+		</configuration>
 
-                <configuration name="logfile.conf" description="File Logging">
-                        <settings>
-                                <param name="rotate-on-hup" value="true"/>
-                        </settings>
-                        <profiles>
-                                <profile name="default">
-                                        <mappings>
-                                                <map name="all" value="debug,info,notice,warning,err,crit,alert"/>
-                                        </mappings>
-                                </profile>
-                        </profiles>
-                </configuration>
-                <configuration name="modules.conf" description="Modules">
-                        <modules>
-                                <load module="mod_console"/>
-                                <load module="mod_logfile"/>
-                                <load module="mod_sofia"/>
-                                <load module="mod_loopback"/>
-                                <load module="mod_commands"/>
-                                <load module="mod_dptools"/>
-                                <load module="mod_dialplan_xml"/>
-								<load module="mod_spandsp"/>
-                                <load module="mod_ilbc"/>
-								<load module="mod_isac"/>
-								<load module="mod_siren"/>
-								<load module="mod_bv"/>
-                                <load module="mod_siren"/>
-								<load module="mod_silk"/>
-                                <load module="mod_sndfile"/>
-                                <load module="mod_tone_stream"/>
-                                <load module="mod_local_stream"/>
-                                <load module="mod_portaudio"/>
-                                <load module="mod_event_socket"/>
-								<load module="mod_conference"/>
-                        </modules>
-                </configuration>
+		<configuration name="logfile.conf" description="File Logging">
+			<settings>
+				<param name="rotate-on-hup" value="true"/>
+			</settings>
+			<profiles>
+				<profile name="default">
+					<mappings>
+						<map name="all" value="debug,info,notice,warning,err,crit,alert"/>
+					</mappings>
+				</profile>
+			</profiles>
+		</configuration>
+		<configuration name="modules.conf" description="Modules">
+			<modules>
+				<load module="mod_console"/>
+				<load module="mod_logfile"/>
+				<load module="mod_sofia"/>
+				<load module="mod_loopback"/>
+				<load module="mod_commands"/>
+				<load module="mod_dptools"/>
+				<load module="mod_dialplan_xml"/>
+				<load module="mod_spandsp"/>
+				<load module="mod_ilbc"/>
+				<load module="mod_isac"/>
+				<load module="mod_siren"/>
+				<load module="mod_bv"/>
+				<load module="mod_siren"/>
+				<load module="mod_silk"/>
+				<load module="mod_opus"/>
+				<load module="mod_sndfile"/>
+				<load module="mod_tone_stream"/>
+				<load module="mod_local_stream"/>
+				<load module="mod_portaudio"/>
+				<load module="mod_event_socket"/>
+				<load module="mod_conference"/>
+			</modules>
+		</configuration>
+		<configuration name="opus.conf">
+			<settings>
+				<param name="use-vbr" value="1"/>
+				<param name="complexity" value="10"/>
+				<param name="asymmetric-sample-rates" value="1"/>
+				<param name="bitrate-negotiation" value="1"/>
+				<param name="keep-fec-enabled" value="1"/>
+				<param name="use-jb-lookahead" value="true"/>
+				<param name="maxaveragebitrate" value="24000"/>
+				<param name="maxplaybackrate" value="24000"/>
+			</settings>
+		</configuration>
 
-                <configuration name="portaudio.conf" description="Soundcard Endpoint">
-                  <settings>
-					<param name="dual-streams" value="true" />
-					<param name="live-stream-switch" value="true" />
-					<param name="no-auto-resume-call" value="true" />
-					<param name="no-ring-during-call" value="true" />			
-                    <param name="ring-file" value="tone_stream://%(2000,4000,440.0,480.0);loops=20"/>
-                    <param name="ring-interval" value="5"/>
-                    <param name="hold-file" value="$${hold_music}"/>
-                    <param name="dialplan" value="XML"/>
-                    <param name="sample-rate" value="24000"/>
-                    <param name="codec-ms" value="20"/>
-                  </settings>
-                </configuration>
-                <configuration name="switch.conf" description="Core Configuration">
-                        <cli-keybindings>
-                                <key name="1" value="help"/>
-                                <key name="2" value="status"/>
-                                <key name="3" value="pa answer"/>
-                                <key name="4" value="pa hangup"/>
-                                <key name="5" value="sofia status"/>
-                                <key name="6" value="reloadxml"/>
-                                <key name="7" value="console loglevel 0"/>
-                                <key name="8" value="console loglevel 7"/>
-                                <key name="9" value="sofia status profile softphone"/>
-                                <key name="10" value="fsctl pause"/>
-                                <key name="11" value="fsctl resume"/>
-                                <key name="12" value="version"/>
-                        </cli-keybindings>
-                        <settings>
-								<param name="colorize" value="true"/>
-                                <param name="max-sessions" value="100"/>
-                                <param name="sessions-per-second" value="30"/>
-                                <param name="loglevel" value="debug"/>
-                                <param name="rtp-start-port" value="16384"/>
-                                <param name="rtp-end-port" value="16484"/>
-                        </settings>
-                </configuration>
-        </section>
-		
-        <section name="dialplan" description="Regex/XML Dialplan">
-                <context name="default">
-						<extension name="fsc_conference">
-							<condition field="destination_number" expression="fsc_conference$">
-								<action application="answer"/>
-								<action application="conference" data="fsc_conference@default+flags{}"/>
-							</condition>
-						</extension>
-                        <extension name="number">
-                                <condition field="destination_number" expression="^(.*)$">
-                                        <action application="bridge" data="$1"/>
-                                </condition>
-                        </extension>
-                </context>
-                <context name="public">
-                        <extension name="public_extensions">
-                                <condition field="destination_number" expression="^auto_answer$">
-                                        <action application="set" data="ringback=${us-ring}"/>
-                                        <action application="pre_answer"/>
-										<action application="bridge" data="portaudio/auto_answer"/>
-                                        <anti-action application="set" data="ringback=${us-ring}"/>
-                                        <anti-action application="pre_answer"/>
-                                        <anti-action application="bridge" data="portaudio"/>
-                                </condition>
-                        </extension>
-                </context>
-        </section>
+		<configuration name="portaudio.conf" description="Soundcard Endpoint">
+			<settings>
+				<param name="dual-streams" value="true" />
+				<param name="live-stream-switch" value="true" />
+				<param name="no-auto-resume-call" value="true" />
+				<param name="no-ring-during-call" value="true" />
+				<param name="ring-file" value="tone_stream://%(2000,4000,440.0,480.0);loops=20"/>
+				<param name="ring-interval" value="5"/>
+				<param name="hold-file" value="$${hold_music}"/>
+				<param name="dialplan" value="XML"/>
+				<param name="sample-rate" value="24000"/>
+				<param name="codec-ms" value="20"/>
+			</settings>
+		</configuration>
+		<configuration name="switch.conf" description="Core Configuration">
+			<cli-keybindings>
+				<key name="1" value="help"/>
+				<key name="2" value="status"/>
+				<key name="3" value="pa answer"/>
+				<key name="4" value="pa hangup"/>
+				<key name="5" value="sofia status"/>
+				<key name="6" value="reloadxml"/>
+				<key name="7" value="console loglevel 0"/>
+				<key name="8" value="console loglevel 7"/>
+				<key name="9" value="sofia status profile softphone"/>
+				<key name="10" value="fsctl pause"/>
+				<key name="11" value="fsctl resume"/>
+				<key name="12" value="version"/>
+			</cli-keybindings>
+			<settings>
+				<param name="colorize" value="true"/>
+				<param name="max-sessions" value="100"/>
+				<param name="sessions-per-second" value="30"/>
+				<param name="loglevel" value="debug"/>
+				<param name="rtp-start-port" value="16384"/>
+				<param name="rtp-end-port" value="16484"/>
+			</settings>
+		</configuration>
+	</section>
+
+	<section name="dialplan" description="Regex/XML Dialplan">
+		<context name="default">
+			<extension name="fsc_conference">
+				<condition field="destination_number" expression="fsc_conference$">
+					<action application="answer"/>
+					<action application="conference" data="fsc_conference@default+flags{}"/>
+				</condition>
+			</extension>
+			<extension name="number">
+				<condition field="destination_number" expression="^(.*)$">
+					<action application="bridge" data="$1"/>
+				</condition>
+			</extension>
+		</context>
+		<context name="public">
+			<extension name="public_extensions">
+				<condition field="destination_number" expression="^auto_answer$">
+					<action application="set" data="ringback=${us-ring}"/>
+					<action application="pre_answer"/>
+					<action application="bridge" data="portaudio/auto_answer"/>
+					<anti-action application="set" data="ringback=${us-ring}"/>
+					<anti-action application="pre_answer"/>
+					<anti-action application="bridge" data="portaudio"/>
+				</condition>
+			</extension>
+		</context>
+	</section>
 </document>

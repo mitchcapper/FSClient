@@ -70,7 +70,7 @@ the only requirement being .NET 4.5 support.
 -   Advanced headset integration (caller ID, buttons, external displays
     see Plugins)
 -   Call stats/history with option DTMF history
--   Support for all freeswitch codecs CELT, G711(ULAW/ALAW), GSM,
+-   Support for all freeswitch codecs OPUS, CELT, G711(ULAW/ALAW), GSM,
     G722.1, SILK, Speex, BroadVoice, iLBC (minus G729 which is not yet
     supported in Windows)
 -   DND (Do Not Disturb) Call Ignoring
