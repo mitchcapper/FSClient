@@ -48,7 +48,7 @@ namespace FSClient {
 											/*Security*/
 											new Field(Field.FIELD_TYPE.Bool,"TLS","tls","tls","false","Security"),
 											new Field(Field.FIELD_TYPE.Bool,"TLS Only","tls-only","tls-only","false","Security"),
-											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Certs", value="all"},new Field.FieldOption{display_value="Certs & Hostnames", value="all_subjects"}),
+											new Field(Field.FIELD_TYPE.Combo,"TLS Verify Policy","tls-verify-policy","tls-verify-policy","subjects_out|in","Security",new Field.FieldOption{display_value="None", value=""},new Field.FieldOption{display_value="Certs", value="all"},new Field.FieldOption{display_value="Certs & Hostnames", value="subjects_out|in"}),
 											new Field(Field.FIELD_TYPE.Combo,"TLS Version","tls-version","tls-version","tlsv1","Security","tlsv1","sslv23"),
 											new Field(Field.FIELD_TYPE.String,"TLS Bind Params","tls-bind-params","tls-bind-params","transport=tls","Security"),
 											new Field(Field.FIELD_TYPE.Int,"TLS SIP Port","tls-sip-port","tls-sip-port","12347","Security"),
