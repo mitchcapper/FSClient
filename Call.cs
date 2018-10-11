@@ -551,6 +551,7 @@ namespace FSClient {
 
 
 		private static Broker broker;
+		public static string[] CALL_NUMBER_PREFIX_STRIPS;
 		private int our_audio_level;
 		public void SetOurAudioLevel(int level){
 			if (level > 4 || level < -4)
@@ -604,6 +605,14 @@ namespace FSClient {
 			else {
 				other_party_name = evt.get_header("Caller-Caller-ID-Name");
 				other_party_number = evt.get_header("Caller-Caller-ID-Number");
+			}
+			if(CALL_NUMBER_PREFIX_STRIPS != null) {
+				foreach (var strip in CALL_NUMBER_PREFIX_STRIPS) {
+					if (other_party_number.StartsWith(strip)) {
+						other_party_number = other_party_number.Substring(strip.Length);
+						break;
+					}
+				}
 			}
 			if (String.IsNullOrEmpty(other_party_name))
 				other_party_name = other_party_number;

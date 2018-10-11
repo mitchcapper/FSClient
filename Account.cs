@@ -210,6 +210,7 @@ namespace FSClient {
 		public void CreateCall(String number) {
 			if (!enabled)
 				return;
+			Broker.get_instance().BringToFront(false);
 			String var_str = "origination_caller_id_name='" + caller_id_name + "',origination_caller_id_number='" + caller_id_number + "'";
 			if (secure_media)
 				var_str += ",sip_secure_media=true";

@@ -48,8 +48,7 @@ namespace FSClient {
 					Properties.Settings.Default.SettingsUpgrade = false;
 					Properties.Settings.Default.Save();
 				}
-			}
-			catch {
+			} catch {
 				Properties.Settings.Default.SettingsUpgrade = false;
 				Properties.Settings.Default.Save();
 
@@ -64,19 +63,19 @@ namespace FSClient {
 			contact_plugin_manager.LoadPlugins();
 		}
 		private ContextMenu _XFERContextMenu;
-		public ContextMenu XFERContextMenu(){
-			if (_XFERContextMenu == null){
+		public ContextMenu XFERContextMenu() {
+			if (_XFERContextMenu == null) {
 				_XFERContextMenu = new ContextMenu();
 				_XFERContextMenu.Opened += XFERContextMenuOpened;
 			}
 			return _XFERContextMenu;
 		}
 
-		public delegate void XFERMenuOpeningDel(Call active_call,ContextMenu menu);
+		public delegate void XFERMenuOpeningDel(Call active_call, ContextMenu menu);
 
 		public XFERMenuOpeningDel XFERMenuOpenedHandler;
 
-		private void XFERContextMenuOpened(object sender, RoutedEventArgs e){
+		private void XFERContextMenuOpened(object sender, RoutedEventArgs e) {
 			ContextMenu menu = sender as ContextMenu;
 			Call call = menu.DataContext as Call;
 			menu.Items.Clear();
@@ -93,25 +92,23 @@ namespace FSClient {
 					MessageBox.Show("conf/freeswitch.xml is not found, without it we must quit.", "Missing Base Configuration File", MessageBoxButton.OK, MessageBoxImage.Error);
 					Environment.Exit(-1);
 				}
-				try{
+				try {
 					XmlTextReader r = new XmlTextReader(new StreamReader("conf/freeswitch.xml"));
 					try {
 						while (r.Read()) {
 						}
-					}
-					finally {
+					} finally {
 						r.Close();
-					} 
+					}
 
-				}catch(Exception e){
+				} catch (Exception e) {
 					MessageBox.Show("Bailing out as conf/freeswitch.xml is not a valid xml document error: " + e.Message);
 					Environment.Exit(-1);
 				}
 				if (System.IO.File.Exists("log/freeswitch.log")) {
 					try {
 						System.IO.File.WriteAllText("log/freeswitch.log", "");
-					}
-					catch (System.IO.IOException e) {
+					} catch (System.IO.IOException e) {
 						MessageBox.Show(
 							"Unable to truncate freeswitch.log (most likely due to FSCLient already running) due to: " + e.Message,
 							"Truncation Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -149,8 +146,7 @@ namespace FSClient {
 
 				if (Properties.Settings.Default.Conference != null)
 					conference = Properties.Settings.Default.Conference.GetConference();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				MessageBoxResult res = MessageBox.Show(
 					"Unable to properly load our settings if you continue existing settings may be lost, do you want to continue?(No to exit)\n" +
 					e.Message, "Error Loading Settings", MessageBoxButton.YesNo);
@@ -169,7 +165,7 @@ namespace FSClient {
 		}
 		private void init_freeswitch() {
 			try {//it would be better if this was in the init function but it seems some dll load errors won't be caught if it is.
-#if ! NO_FS
+#if !NO_FS
 				fs_core_init();
 #else
 				fs_inited = false;
@@ -178,8 +174,7 @@ namespace FSClient {
 					FreeswitchLoaded(this, null);
 				fully_loaded = true;
 				Debug.WriteLine("Startup time: " + (DateTime.Now - start_time).TotalSeconds);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				while (e.InnerException != null)
 					e = e.InnerException;
 				MessageBox.Show("Unable to properly init freeswitch core due to:\n" + e.Message + "\n" + e.StackTrace, "Error Starting Freeswitch Core", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -187,7 +182,7 @@ namespace FSClient {
 				Environment.Exit(-1);
 
 			}
-#if ! NO_FS
+#if !NO_FS
 			DelayedFunction.DelayedCall("SofiaProfileCheck", sofia.sofia_profile_check, 100);
 
 			//Lets try to reload devices after FSClient has spun up just to make sure everything is inited.
@@ -288,9 +283,9 @@ namespace FSClient {
 			}
 		}
 
-		private void quiet_reload_audio_devices(){
+		private void quiet_reload_audio_devices() {
 			if (active_calls == 0)
-				reload_audio_devices(true,true);
+				reload_audio_devices(true, true);
 		}
 
 		public void reload_audio_devices(bool and_settings, bool no_save) {
@@ -329,9 +324,9 @@ namespace FSClient {
 				return;
 			}
 			DialString(call_acct, str);
-			
+
 		}
-		public void DialString(Account account, String str){
+		public void DialString(Account account, String str) {
 			account.CreateCall(str);
 		}
 		public void TalkPressed() {
@@ -387,8 +382,7 @@ namespace FSClient {
 				Properties.Settings.Default.EventSocket = new SettingsEventSocket(event_socket);
 				Properties.Settings.Default.Conference = new SettingsConference(conference);
 				Properties.Settings.Default.Save();
-			}
-			catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
+			} catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
 				MessageBox.Show("Error saving settings out: " + e.Message + "\n" + e.StackTrace);
 			}
 		}
@@ -453,18 +447,21 @@ namespace FSClient {
 
 
 		}
+		public void BringToFront(bool no_keyboard_focus) {
+			if (IncomingTopMost) {
+				MainWindow.get_instance().BringToFront();
+			} else if (IncomingKeyboardFocus && !no_keyboard_focus)
+				Utils.SetForegroundWindow(MainWindow.get_instance());
+
+		}
 		private void CallStateChangedHandler(object sender, Call.CallPropertyEventArgs args) {
 			if (args.call.state == Call.CALL_STATE.Ringing && !args.call.is_outgoing) {
-				if (IncomingTopMost) {
-					MainWindow.get_instance().BringToFront();
-				}
+				BringToFront(IncomingBalloons && !DND);
 				if (IncomingBalloons && !DND) {
 					IncomingCallNotification.ShowCallNotification(args.call);
 					if (Call.active_call != args.call && Call.active_call != null)
 						HandleCallWaiting(null, args.call);
 				}
-				else if (IncomingKeyboardFocus)
-					Utils.SetForegroundWindow(MainWindow.get_instance());
 			}
 			if (DND && args.call != null && args.call.is_outgoing == false && args.call.state == Call.CALL_STATE.Ringing)
 				args.call.hangup("Call ignored due to DND");
@@ -519,8 +516,7 @@ namespace FSClient {
 						}
 					}
 				}
-			}
-			catch (Exception){}
+			} catch (Exception) { }
 
 		}
 		public bool UseNumberOnlyInput {
@@ -660,8 +656,7 @@ namespace FSClient {
 							call.hangup("Call ignored due to DND");
 					}
 					PortAudio.ClearRingDev();
-				}
-				else if (RingDev != null)
+				} else if (RingDev != null)
 					RingDev.SetRingDev();
 				if (DNDChanged != null)
 					DNDChanged(this, value);
@@ -789,13 +784,13 @@ namespace FSClient {
 		private bool is_inited;
 		private bool fs_inited;
 		private static IDisposable event_bind;
-		
+
 		private void fs_core_init() {
 			fs_inited = true;
 			String err = "";
 			freeswitch.switch_core_set_globals();
 			uint flags = UPNPNAT ? (uint)(switch_core_flag_enum_t.SCF_USE_AUTO_NAT) : 0;
-			if (! String.IsNullOrWhiteSpace(Environment.CommandLine) && Environment.CommandLine.Contains("--sql"))
+			if (!String.IsNullOrWhiteSpace(Environment.CommandLine) && Environment.CommandLine.Contains("--sql"))
 				flags |= (uint)switch_core_flag_enum_t.SCF_USE_SQL;
 			freeswitch.switch_core_init(flags, switch_bool_t.SWITCH_FALSE, out err);
 			search_bind = FreeSWITCH.SwitchXmlSearchBinding.Bind(xml_search, switch_xml_section_enum_t.SWITCH_XML_SECTION_CONFIG);
