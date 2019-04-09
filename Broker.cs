@@ -245,19 +245,24 @@ namespace FSClient {
 				Properties.Settings.Default.RingDev = RingDev.name;
 			Properties.Settings.Default.HeadsetDevice = ActiveHeadset();
 		}
-		private static PortAudio.AudioDevice AudioNameToDevice(IEnumerable<PortAudio.AudioDevice> devices, string name) {
+		private static PortAudio.AudioDevice AudioNameToDevice(IEnumerable<PortAudio.AudioDevice> devices, string name, bool is_in_dev) {
 			if (devices == null)
 				return null;
-			return devices.FirstOrDefault(device => device.name == name);
+
+			var dev = devices.FirstOrDefault(device => device.name == name);
+
+			if (dev == null && name.Contains("Jabra"))
+				dev = devices.FirstOrDefault(device => device.name.Contains("Jabra") && ((is_in_dev && device.inputs > 0) || (!is_in_dev && device.outputs > 0)));
+			return dev;
 		}
 		public void SetRingDev(String dev_name) {
-			RingDev = AudioNameToDevice(audio_devices, dev_name);
+			RingDev = AudioNameToDevice(audio_devices, dev_name, false);
 			if (RingDev != null && !DND)
 				RingDev.SetRingDev();
 		}
 		public void SetSpeakerDevs(String indev_name, String outdev_name) {
-			SpeakerInDev = AudioNameToDevice(audio_devices, indev_name);
-			SpeakerOutDev = AudioNameToDevice(audio_devices, outdev_name);
+			SpeakerInDev = AudioNameToDevice(audio_devices, indev_name, true);
+			SpeakerOutDev = AudioNameToDevice(audio_devices, outdev_name, false);
 			if (SpeakerInDev == null || SpeakerOutDev == null)
 				return;
 			if (SpeakerphoneActive)
@@ -270,13 +275,13 @@ namespace FSClient {
 				PortAudio.SetInAndOutDev(HeadsetInDev, HeadsetOutDev);
 		}
 		public void SetSpeakerOutDev(String name) {
-			SpeakerOutDev = AudioNameToDevice(audio_devices, name);
+			SpeakerOutDev = AudioNameToDevice(audio_devices, name, false);
 			if (SpeakerphoneActive && SpeakerOutDev != null)
 				SpeakerOutDev.SetOutDev();
 		}
 		public void SetHeadsetDevs(String indev_name, String outdev_name) {
-			HeadsetInDev = AudioNameToDevice(audio_devices, indev_name);
-			HeadsetOutDev = AudioNameToDevice(audio_devices, outdev_name);
+			HeadsetInDev = AudioNameToDevice(audio_devices, indev_name, true);
+			HeadsetOutDev = AudioNameToDevice(audio_devices, outdev_name, false);
 			if (HeadsetInDev != null && HeadsetOutDev != null) {
 				if (!SpeakerphoneActive)
 					activateCurrentDevs();

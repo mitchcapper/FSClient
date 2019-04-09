@@ -104,15 +104,18 @@ namespace FSClient {
 		}
 		private string active_device_name;
 		private string last_active_device_name;
-		public void SetActiveDevice(String name) {
+		public void SetActiveDevice(String name, bool is_fallback_try=false) {
 			active_device_name = name;
 			bool found_already = false;
 			List<PluginError> errors = null;
-
+			var backup_try = "";
 			lock (devices_lock) {
 				foreach (DeviceData device in devices) {
 					try {
-						if (device.device.GetName() == name && !found_already) {
+						var device_name = device.device.GetName();
+						if (device_name.Contains("Jabra"))
+							backup_try = device_name;
+						if (device_name == name && !found_already) {
 							found_already = true;
 							if (!device.active) {
 								device.active = device.in_use = true;
@@ -134,6 +137,8 @@ namespace FSClient {
 			if (errors != null)
 				foreach (PluginError err in errors)
 					HandleError(err);
+			if (!found_already && !is_fallback_try && backup_try != "")
+				SetActiveDevice(backup_try, true);
 		}
 		private void Ring(bool enable) {
 			CreateEvent(IDeviceHost.PHONE_EVENT_TYPE.Ring, enable);
