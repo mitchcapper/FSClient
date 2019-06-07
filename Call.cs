@@ -551,7 +551,13 @@ namespace FSClient {
 
 
 		private static Broker broker;
-		public static string[] CALL_NUMBER_PREFIX_STRIPS;
+		public class StripInfo {
+			public int min_length;
+			public int max_length;
+			public string starts_with;
+			public string regex;
+		}
+		public static StripInfo[] CALL_NUMBER_PREFIX_STRIPS;
 		private int our_audio_level;
 		public void SetOurAudioLevel(int level){
 			if (level > 4 || level < -4)
@@ -608,8 +614,13 @@ namespace FSClient {
 			}
 			if(CALL_NUMBER_PREFIX_STRIPS != null) {
 				foreach (var strip in CALL_NUMBER_PREFIX_STRIPS) {
-					if (other_party_number.StartsWith(strip)) {
-						other_party_number = other_party_number.Substring(strip.Length);
+					if (strip.min_length != 0 && other_party_number.Length < strip.min_length)
+						continue;
+					if (strip.max_length != 0 && other_party_number.Length > strip.max_length)
+						continue;
+
+					if (! String.IsNullOrWhiteSpace(strip.starts_with) && other_party_number.StartsWith(strip.starts_with)) {
+						other_party_number = other_party_number.Substring(strip.starts_with.Length);
 						break;
 					}
 				}
