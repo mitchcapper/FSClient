@@ -57,7 +57,7 @@ the only requirement being .NET 4.5 support.
 
 ### Screenshot
 
-![FS Client Screenshot](https://wiki.freeswitch.org/images/d/d6/Fsclientscreen.png "FS Client Screenshot")
+![FS Client Screenshot](https://raw.githubusercontent.com/mitchcapper/FSClient/master/screenshots/Fsclient_screen.png "FS Client Screenshot")
 
 ### Features
 
@@ -83,7 +83,7 @@ the only requirement being .NET 4.5 support.
 -   Direct SIP: dialing to a remote server
 
 ### Themes
-![FS Client Theme Options](https://wiki.freeswitch.org/images/c/c8/FSClient_themes.png "FS Client Theme Options")
+![FS Client Theme Options](https://raw.githubusercontent.com/mitchcapper/FSClient/master/screenshots/FSClient_themes.png "FS Client Theme Options")
 
 
 ### Layout
@@ -181,6 +181,12 @@ conference button.
 
 Version History
 -------
+History tracking only goes back to version 1.4.8, not earlier.
+
+- 1.4.8 - 2019-06-18
+Added transfer menu for calls (in contact plugins that support the transfer menu).  Added option for contact plugins to provide a default string (ie @yourdomain.com) to transfer numbers if no "@" is found in the transfer url.  These changes to the contact plugin system are breaking, and require some functions to be renamed.  You can just rename the old functions to the new names but it is best to return the MenuItems directly now rather than adding them to the context menu itself.
+Number stripping options for plugins to be able to strip numbers off the call log.
+Better handling for Jabra headsets as sometimes they change names and lose their reference.
 
 
 Installation
