@@ -71,7 +71,7 @@ namespace FSClient {
 			return _XFERContextMenu;
 		}
 
-		public delegate void XFERMenuOpeningDel(Call active_call, ContextMenu menu);
+		public delegate void XFERMenuOpeningDel(Call active_call, ContextMenu menu, List<MenuItem> items_to_add);
 
 		public XFERMenuOpeningDel XFERMenuOpenedHandler;
 
@@ -79,10 +79,18 @@ namespace FSClient {
 			ContextMenu menu = sender as ContextMenu;
 			Call call = menu.DataContext as Call;
 			menu.Items.Clear();
-			if (XFERMenuOpenedHandler != null)
-				XFERMenuOpenedHandler(call == null ? Call.active_call : call, menu);
+			var to_add = GetXFERItemsToAdd(call, menu);
+			foreach (var itm in to_add)
+				menu.Items.Add(itm);
 		}
-
+		public string GetXFERDefaultAppend() {
+			return contact_plugin_manager.GetDefaultXFERAppend();
+		}
+		public IEnumerable<MenuItem> GetXFERItemsToAdd(Call call, ContextMenu menu) {
+			var to_add = new List<MenuItem>();
+			XFERMenuOpenedHandler?.Invoke(call == null ? Call.active_call : call, menu, to_add);
+			return to_add;
+		}
 		private void init_us() {
 			if (is_inited)
 				return;

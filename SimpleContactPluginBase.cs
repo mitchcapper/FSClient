@@ -72,10 +72,10 @@ namespace FSClient {
 		protected abstract Task UpdateXFERDatabaseAsync(string number, string xfer_name);
 
 
-		protected virtual void ModifyRightClickMenu(Call call, ContextMenu menu) {
+		protected virtual void ModifyRightClickMenu(Call call, ContextMenu orig_menu, List<MenuItem> items) {
 			return;
 		}
-		protected virtual void ModifyXFERRightClickMenu(Call call, ContextMenu menu) {
+		protected virtual void ModifyXFERMenu(Call call, ContextMenu orig_menu, List<MenuItem> items) {
 			return;
 		}
 		protected virtual string NormalizeNumber(string number) {
@@ -118,27 +118,30 @@ namespace FSClient {
 		protected Dictionary<string, string> number_to_alias = new Dictionary<string, string>();
 		protected Dictionary<string, string> number_to_xfer = new Dictionary<string, string>();
 
-		public override void CallRightClickMenu(Call call, ContextMenu menu) {
+		public override IEnumerable<MenuItem> CallRightClickMenu(Call call, ContextMenu orig_menu) {
+			var ret = new List<MenuItem>();
 			MenuItem item = new MenuItem();
 			item.Click += item_Click;
 			item.Header = "Edit Contact";
-			menu.Items.Add(item);
-			ModifyRightClickMenu(call, menu);
+			ret.Add(item);
+			ModifyRightClickMenu(call, orig_menu, ret);
+			return ret;
 		}
-		public override void XFERRightClickMenu(Call call, ContextMenu menu) {
+		public override IEnumerable<MenuItem> XFERMenu(Call call, ContextMenu orig_menu) {
 			MenuItem item;
+			var ret = new List<MenuItem>();
 			bool on_call = call != null;
 			foreach (KeyValuePair<string, string> kvp in number_to_xfer) {
 				item = new MenuItem();
 				String num = kvp.Key;
 				if (on_call) {
 					item.Click += (s, e) => {
-						menu.IsOpen = false;
+						orig_menu.IsOpen = false;
 						call.Transfer(num);
 					};
 				}
 				item.Header = kvp.Value + " (" + num + ")";
-				menu.Items.Add(item);
+				ret.Add(item);
 
 
 				MenuItem sub_item = new MenuItem();
@@ -160,9 +163,10 @@ namespace FSClient {
 				item = new MenuItem();
 				item.Click += add_xfer_click;
 				item.Header = "Add Transfer Alias";
-				menu.Items.Add(item);
+				ret.Add(item);
 			}
-			ModifyXFERRightClickMenu(call, menu);
+			ModifyXFERMenu(call, orig_menu, ret);
+			return ret;
 		}
 
 		private async void add_xfer_click(object sender, RoutedEventArgs e) {

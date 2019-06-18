@@ -17,6 +17,7 @@ Table of Contents
        * [Accounts](#accounts)
        * [Contact Search Box](#contact-search-box)
        * [Conference Support (N-Way calling)](#conference-support-n-way-calling)
+   * [Version History](#version-history)
    * [Installation](#installation)
      * [Requirements](#requirements)
    * [Accessibility](#accessibility)
@@ -177,6 +178,10 @@ controls too, returning them to a call with just you. If you leave the
 conference (ie to answer another call or by putting it on hold) it
 continues to run in the background, to rejoin simply double click the
 conference button.
+
+Version History
+-------
+
 
 Installation
 ------------
@@ -389,7 +394,7 @@ by hovering over the warning icon on the plugin options page.
 
 ### Contact Plugins
 
-#### SimpleXMLContactPLugin
+#### SimpleXMLContactPlugin
 
 This is basically an internal contact book plugin. It is very simple
 allows you to associate a name with a number. The database is stored in

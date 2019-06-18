@@ -249,7 +249,13 @@ namespace FSClient {
 					menu.Items.Add(CreateMenuItem("Stop Recording Call", StopRecordCall));
 				else if (broker.recordings_folder != null)
 					menu.Items.Add(CreateMenuItem("Record Call", RecordCall));
-				menu.Items.Add(CreateMenuItem("Transfer", TransferPrompt));
+				item = new MenuItem() { Header = "Transfer" };
+				menu.Items.Add(item);
+				item.Items.Add(CreateMenuItem("Enter Number", TransferPrompt));
+				var to_add_xfers = broker.GetXFERItemsToAdd(this,menu);
+				foreach (var xfer_item in to_add_xfers)
+					item.Items.Add(xfer_item);
+
 				menu.Items.Add(CreateMenuItem("Conference", ConferenceAdd));
 				item = new MenuItem() { Header = "Their Volume" };
 				for (int x = -4; x <= 4; x++) {
@@ -667,6 +673,8 @@ namespace FSClient {
 			}
 			if (String.IsNullOrEmpty(note))
 				note = "Call transferred to: " + number;
+			if (!number.Contains("@"))
+				number += broker.GetXFERDefaultAppend();
 			Utils.bgapi_exec("uuid_deflect", leg_b_uuid + " " + number);
 		}
 		public bool CanSendToVoicemail() {
