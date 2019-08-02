@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -76,6 +77,20 @@ namespace FSClient {
 				chkNAT.IsChecked = broker.UPNPNAT;
 				txtRecordingPath.Text = broker.recordings_folder;
 				chkDirectSip.IsChecked = broker.DirectSipDial;
+				chkAlwaysOnTopDuringCall.IsChecked = broker.AlwaysOnTopDuringCall;
+				chkGlobalAlt.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Alt);
+				chkGlobalShift.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Shift);
+				chkGlobalCntrl.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Ctrl);
+				chkGlobalWin.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Win);
+				var key_char = broker.global_hotkey.key.ToString();
+				if (broker.global_hotkey.key == System.Windows.Input.Key.None)
+					key_char = "";
+				key_char = key_char.Replace("NumPad", "").Replace("Oem","");
+				if (key_char.Length == 2)
+					key_char = key_char.Replace("D", "");
+				if (key_char.Length > 1)
+					key_char = "";
+				txtHotKey.Text = key_char;
 				comboGUIStartup.SelectedItem = (from g in GuiOptions where g.key == broker.GUIStartup select g).FirstOrDefault();
 				if (comboGUIStartup.SelectedIndex == -1)
 					comboGUIStartup.SelectedIndex = 0;
@@ -108,11 +123,29 @@ namespace FSClient {
 			broker.ClearDTMFS = chkClearDTMFS.IsChecked == true;
 			broker.UPNPNAT = chkNAT.IsChecked == true;
 			broker.DirectSipDial = chkDirectSip.IsChecked == true;
+			broker.AlwaysOnTopDuringCall = chkAlwaysOnTopDuringCall.IsChecked == true;
 			broker.UseNumberOnlyInput = chkUseNumbers.IsChecked == true;
 			broker.recordings_folder = txtRecordingPath.Text;
 			broker.CheckForUpdates = chkUpdatesOnStart.IsChecked == true ?  "OnStart" : "Never";
 			broker.GUIStartup = (comboGUIStartup.SelectedItem as ComboOption).key;
 			broker.theme = (comboTheme.SelectedItem as ComboOption).key;
+			System.Windows.Input.Key hot_key = System.Windows.Input.Key.None;
+			var hot_key_modifier = UnManaged.KeyModifier.None;
+			if (chkGlobalAlt.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Alt;
+			if (chkGlobalCntrl.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Ctrl;
+			if (chkGlobalShift.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Shift;
+			if (chkGlobalWin.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Win;
+			if (!String.IsNullOrWhiteSpace(txtHotKey.Text)) {
+				var key = txtHotKey.Text.ToUpper();
+				if (key[0] >= 0 && key[0] <= 9)
+					key = "D" + key;
+				Enum.TryParse<System.Windows.Input.Key>(key,out hot_key);
+			}
+			broker.SetHotKey(new Broker.HotKeySetting {modifiers = hot_key_modifier,key=hot_key });
 			broker.SetActiveHeadset(comboHeadsetDevice.SelectedItem as string);
 			broker.SaveSettings();
 

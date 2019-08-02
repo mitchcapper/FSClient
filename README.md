@@ -182,6 +182,9 @@ conference button.
 Version History
 -------
 History tracking only goes back to version 1.4.8, not earlier.
+### 1.4.9 - 2019-08-02
+> Added global hot key option (ie control+shift+p) to bring FSClient window to the foreground from anywhere in windows (set in options).
+> Allow setting Always On Top During Call to keep FSClient on top of other windows during an active call
 ### 1.4.8 - 2019-06-18
 > Added transfer menu for calls (in contact plugins that support the transfer menu).  Added option for contact plugins to provide a default string (ie @yourdomain.com) to transfer numbers if no "@" is found in the transfer url.  These changes to the contact plugin system are breaking, and require some functions to be renamed.  You can just rename the old functions to the new names but it is best to return the MenuItems directly now rather than adding them to the context menu itself.
 > Number stripping options for plugins to be able to strip numbers off the call log.
@@ -227,7 +230,7 @@ answer button or hitting enter to accept the call.
 Keyboard Shortcuts
 ------------------
 
--   Mute - Control + M
+-   Toggle Mute - Control + M (Control + Shift + M always will ONLY mute not unmute)
 -   End Call - Control + E or Escape
 -   Focus On Call List / Last Selected Call - Control + L
 -   Focus on a specific call - Control + 1-&gt;9
@@ -240,6 +243,7 @@ Keyboard Shortcuts
 -   Single Click - Space
 -   Double Click - Enter
 -   Right Click - Shift + F10
+-   You can get a global hot key in options to bring FSClient to the front as well
 
 Compiling from Source
 ---------------------
@@ -319,6 +323,8 @@ Configuration
 -   Theme - Choose from the variety of themes for the dialer
 -   Recording Path - Where call recordings should be stored (to record a
     call you must right click on it and click record)
+-   Global Focus Hotkey - allows setting a global hot key (like control+shift+p)
+    to bring FSClient to the foreground and have keyboard focus
 -   Only Allow Numeric Input When Dialing - When enabled you can only
     dial numbers, \# and \*'s. This will automatically convert any
     letters typed to the proper key press per a normal keypad. If you
@@ -328,6 +334,8 @@ Configuration
     to another SIP endpoint without going through a sip server. To do so
     use the sip: format for dialing (requires Only Allow Numeric Input
     to be off).
+-   Window Always On Top During Call - Keep the main call window topmost
+    during a call, can still be minimized
 -   UPNP Nat Check - This enables FS to do its UPNP check on startup in
     most cases its not needed (costs 5-10 seconds extra startup time) is
     the equiv of -nonat to freeswitch

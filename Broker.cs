@@ -9,10 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Xml;
 
 using FreeSWITCH.Native;
 using FSClient.Controls;
+
+using UnManaged;
 using Timer = System.Timers.Timer;
 
 namespace FSClient {
@@ -136,6 +139,15 @@ namespace FSClient {
 				UseNumberOnlyInput = Properties.Settings.Default.UseNumberOnlyInput;
 				CheckForUpdates = Properties.Settings.Default.CheckForUpdates;
 				GUIStartup = Properties.Settings.Default.GuiStartup;
+				AlwaysOnTopDuringCall = Properties.Settings.Default.AlwaysOnTopDuringCall;
+				var hotkey_str = Properties.Settings.Default.GlobalHotKey;
+				if (!String.IsNullOrWhiteSpace(hotkey_str)) {
+					try {
+						var new_hotkey = Newtonsoft.Json.JsonConvert.DeserializeObject<HotKeySetting>(hotkey_str);
+						if (new_hotkey != null)
+							SetHotKey(new_hotkey);
+					} catch (Exception) { }
+				}
 
 				if (Properties.Settings.Default.Sofia != null)
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
@@ -386,6 +398,8 @@ namespace FSClient {
 				Properties.Settings.Default.ClearDTMFS = ClearDTMFS;
 				Properties.Settings.Default.UPNPNAT = UPNPNAT;
 				Properties.Settings.Default.DirectSipDial = DirectSipDial;
+				Properties.Settings.Default.AlwaysOnTopDuringCall = AlwaysOnTopDuringCall;
+				Properties.Settings.Default.GlobalHotKey = SerializeObject(global_hotkey, false);
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
 				Properties.Settings.Default.RecordingPath = recordings_folder;
 				Properties.Settings.Default.Theme = theme;
@@ -398,6 +412,13 @@ namespace FSClient {
 			} catch (Exception e) {//if there is an error doing saving lets skip saving any settings to avoid overriding something else
 				MessageBox.Show("Error saving settings out: " + e.Message + "\n" + e.StackTrace);
 			}
+		}
+		public static string SerializeObject(Object obj, bool indent = true) {
+			var settings = new Newtonsoft.Json.JsonSerializerSettings() {
+				ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+				Converters = new[] { new Newtonsoft.Json.Converters.StringEnumConverter() }
+			};
+			return Newtonsoft.Json.JsonConvert.SerializeObject(obj, indent ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None, settings);
 		}
 		private void UpdateStatus() {
 			int cur_active_calls = Call.live_call_count();
@@ -461,9 +482,17 @@ namespace FSClient {
 
 		}
 		public void BringToFront(bool no_keyboard_focus) {
-			if (IncomingTopMost) {
+			var opts = BRING_TO_FRONT_OPTS.OnlyIfTopMostSetting;
+			if (!no_keyboard_focus)
+				opts |= BRING_TO_FRONT_OPTS.KeyboardFocusIfSettingEnabled;
+			BringToFront(opts);
+		}
+		[Flags]
+		public enum BRING_TO_FRONT_OPTS { OnlyIfTopMostSetting, AlwaysKeyboardFocus, KeyboardFocusIfSettingEnabled }
+		public void BringToFront(BRING_TO_FRONT_OPTS opts) {
+			if (! opts.HasFlag(BRING_TO_FRONT_OPTS.OnlyIfTopMostSetting) || IncomingTopMost)
 				MainWindow.get_instance().BringToFront();
-			} else if (IncomingKeyboardFocus && !no_keyboard_focus)
+			if (opts.HasFlag(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus) || (opts.HasFlag(BRING_TO_FRONT_OPTS.KeyboardFocusIfSettingEnabled) && IncomingKeyboardFocus) )
 				Utils.SetForegroundWindow(MainWindow.get_instance());
 
 		}
@@ -532,6 +561,38 @@ namespace FSClient {
 			} catch (Exception) { }
 
 		}
+		
+		internal class HotKeySetting {
+			public Key key { get; set; }
+			public KeyModifier modifiers { get; set; }
+		}
+		public HotKeySetting global_hotkey { get; private set; } = new HotKeySetting { key = Key.None };
+		public void SetHotKey(HotKeySetting setting) {
+			try {
+				if (setting.key == global_hotkey.key && setting.modifiers == global_hotkey.modifiers)
+					return;
+				global_hotkey = setting;
+				if (setting.key == Key.None) {
+					hot_key?.Unregister();
+					return;
+				}
+
+				if (hot_key == null)
+					hot_key = new GlobalHotKey(setting.key, setting.modifiers, GlobalHotKeyPressed);
+				else
+					hot_key.UpdateHotKey(setting.key, setting.modifiers);
+			}catch(Exception ex) {
+				MessageBox.Show("Unable to set global hotkey due to: " + ex.Message);
+			}
+		}
+
+		private void GlobalHotKeyPressed(GlobalHotKey obj) {
+			BringToFront(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus);
+		}
+
+		private GlobalHotKey hot_key;
+		
+		
 		public bool UseNumberOnlyInput {
 			get { return _UseNumberOnlyInput; }
 			set {
@@ -573,6 +634,18 @@ namespace FSClient {
 			}
 		}
 		private bool _DirectSipDial;
+
+
+		public bool AlwaysOnTopDuringCall {
+			get => _AlwaysOnTopDuringCall;
+
+			set  {
+				if (value == _AlwaysOnTopDuringCall)
+					return;
+				_AlwaysOnTopDuringCall = value;
+			}
+		}
+		private bool _AlwaysOnTopDuringCall;
 
 
 		public bool UPNPNAT {

@@ -77,5 +77,11 @@
     <Setting Name="Conference" Type="FSClient.SettingsConference" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="AlwaysOnTopDuringCall" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GlobalHotKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

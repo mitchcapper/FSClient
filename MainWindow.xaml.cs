@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using System.Windows;
@@ -24,15 +25,20 @@ namespace FSClient {
 			Loaded += MainWindow_Loaded;
 		}
 
+		
+
 		private void ActiveCallChanged(object sender, Call.ActiveCallChangedArgs e) {
 			Dispatcher.BeginInvoke((Action)(() => {
 				CurrentCallInfo.DataContext = Call.active_call;
 				status.dial_str = Call.active_call != null ? Call.active_call.dtmfs : "";
 				if (Call.active_call == null) {
+					Topmost = false;
 					CurrentCallInfo.Visibility = Visibility.Hidden;
 					CurrentStatusInfo.Visibility = Visibility.Visible;
 				}
 				else {
+					if (broker.AlwaysOnTopDuringCall)
+						Topmost = true;
 					CurrentStatusInfo.Visibility = Visibility.Hidden;
 					CurrentCallInfo.Visibility = Visibility.Visible;
 				}
@@ -316,12 +322,17 @@ namespace FSClient {
 			orig_cntrl.LostKeyboardFocus += KeyboardControlLostKeyboardFocus;
 			tooltip_auto_close.Start();
 		}
-		private bool HandleShortcutKey(KeyEventArgs e) {
+		private bool HandleShortcutKey(KeyEventArgs e, bool shift_pressed) {
 			bool handled = true;
 			UIElement focus_element = null;
+			if (shift_pressed && e.Key != Key.M)
+				return false;
 			switch (e.Key) {
 				case Key.M:
-					btnMute_Click(null, null);
+					if (shift_pressed)
+						broker.Muted = true;
+					else
+						btnMute_Click(null, null);
 					break;
 				case Key.E:
 					btnHangup_Click(null, null);
@@ -415,9 +426,12 @@ namespace FSClient {
 		void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e) {
 			if (!broker.fully_loaded)
 				return;
-			bool cntrl_pressed = (System.Windows.Forms.Control.ModifierKeys & System.Windows.Forms.Keys.Control) == System.Windows.Forms.Keys.Control;
-			if (cntrl_pressed) {
-				if (HandleShortcutKey(e)){
+			var mod_keys = System.Windows.Forms.Control.ModifierKeys;
+			var cntrl_pressed = mod_keys == System.Windows.Forms.Keys.Control;
+			var cntrl_shift_pressed = mod_keys == (System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift);
+
+			if (cntrl_pressed || cntrl_shift_pressed) {
+				if (HandleShortcutKey(e, cntrl_shift_pressed)){
 					return;
 				}
 
@@ -573,6 +587,8 @@ namespace FSClient {
 			WindowState = WindowState.Normal;
 			Topmost = true;
 			Topmost = false;
+			if (Call.active_call != null && broker.AlwaysOnTopDuringCall)
+				Topmost = true;
 		}
 		private void btnCall_Click(object sender, RoutedEventArgs e) {
 			TalkPressed();

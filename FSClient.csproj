@@ -70,6 +70,9 @@
     <Reference Include="FreeSWITCH.Managed">
       <HintPath>External Items\$(Configuration)\FreeSWITCH.Managed.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -122,6 +125,7 @@
     <Compile Include="GenericEditor.xaml.cs">
       <DependentUpon>GenericEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HotKey.cs" />
     <Compile Include="IContactPlugin.cs" />
     <Compile Include="IncomingCallNotification.xaml.cs">
       <DependentUpon>IncomingCallNotification.xaml</DependentUpon>
