@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Controls;
+using static FSClient.Broker;
 using WF=System.Windows.Forms;
 
 namespace FSClient {
@@ -78,19 +79,11 @@ namespace FSClient {
 				txtRecordingPath.Text = broker.recordings_folder;
 				chkDirectSip.IsChecked = broker.DirectSipDial;
 				chkAlwaysOnTopDuringCall.IsChecked = broker.AlwaysOnTopDuringCall;
-				chkGlobalAlt.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Alt);
-				chkGlobalShift.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Shift);
-				chkGlobalCntrl.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Ctrl);
-				chkGlobalWin.IsChecked = broker.global_hotkey.modifiers.HasFlag(UnManaged.KeyModifier.Win);
-				var key_char = broker.global_hotkey.key.ToString();
-				if (broker.global_hotkey.key == System.Windows.Input.Key.None)
-					key_char = "";
-				key_char = key_char.Replace("NumPad", "").Replace("Oem","");
-				if (key_char.Length == 2)
-					key_char = key_char.Replace("D", "");
-				if (key_char.Length > 1)
-					key_char = "";
-				txtHotKey.Text = key_char;
+				SetHotKeyFormFromSetting(GLOBAL_HOT_KEY_TYPE.Focus, chkGlobalAlt, chkGlobalCntrl, chkGlobalShift, chkGlobalWin, txtHotKey);
+				SetHotKeyFormFromSetting(GLOBAL_HOT_KEY_TYPE.End, chkGlobalEndAlt, chkGlobalEndCntrl, chkGlobalEndShift, chkGlobalEndWin, txtHotKeyEnd);
+				SetHotKeyFormFromSetting(GLOBAL_HOT_KEY_TYPE.Answer, chkGlobalAnsAlt, chkGlobalAnsCntrl, chkGlobalAnsShift, chkGlobalAnsWin, txtHotKeyAns);
+				SetHotKeyFormFromSetting(GLOBAL_HOT_KEY_TYPE.Mute, chkGlobalMuteAlt, chkGlobalMuteCntrl, chkGlobalMuteShift, chkGlobalMuteWin, txtHotKeyMute);
+
 				comboGUIStartup.SelectedItem = (from g in GuiOptions where g.key == broker.GUIStartup select g).FirstOrDefault();
 				if (comboGUIStartup.SelectedIndex == -1)
 					comboGUIStartup.SelectedIndex = 0;
@@ -101,6 +94,22 @@ namespace FSClient {
 				if (comboHeadsetDevice.SelectedIndex == -1)
 					comboHeadsetDevice.SelectedIndex = 0;
 			}
+		}
+		private void SetHotKeyFormFromSetting(GLOBAL_HOT_KEY_TYPE type, CheckBox alt_box, CheckBox cntrl_box, CheckBox shift_box, CheckBox win_box, TextBox txt_box) {
+			var setting = broker.GetHotKeySetting(type);
+			alt_box.IsChecked = setting.modifiers.HasFlag(UnManaged.KeyModifier.Alt);
+			shift_box.IsChecked = setting.modifiers.HasFlag(UnManaged.KeyModifier.Shift);
+			cntrl_box.IsChecked = setting.modifiers.HasFlag(UnManaged.KeyModifier.Ctrl);
+			win_box.IsChecked = setting.modifiers.HasFlag(UnManaged.KeyModifier.Win);
+			var key_char = setting.key.ToString();
+			if (setting.key == System.Windows.Input.Key.None)
+				key_char = "";
+			key_char = key_char.Replace("NumPad", "").Replace("Oem", "");
+			if (key_char.Length == 2)
+				key_char = key_char.Replace("D", "");
+			if (key_char.Length > 1)
+				key_char = "";
+			txt_box.Text = key_char;
 		}
 		private void SaveSettings() {
 			PortAudio.AudioDevice indev = comboHeadsetInput.SelectedItem as PortAudio.AudioDevice;
@@ -129,26 +138,33 @@ namespace FSClient {
 			broker.CheckForUpdates = chkUpdatesOnStart.IsChecked == true ?  "OnStart" : "Never";
 			broker.GUIStartup = (comboGUIStartup.SelectedItem as ComboOption).key;
 			broker.theme = (comboTheme.SelectedItem as ComboOption).key;
-			System.Windows.Input.Key hot_key = System.Windows.Input.Key.None;
-			var hot_key_modifier = UnManaged.KeyModifier.None;
-			if (chkGlobalAlt.IsChecked == true)
-				hot_key_modifier |= UnManaged.KeyModifier.Alt;
-			if (chkGlobalCntrl.IsChecked == true)
-				hot_key_modifier |= UnManaged.KeyModifier.Ctrl;
-			if (chkGlobalShift.IsChecked == true)
-				hot_key_modifier |= UnManaged.KeyModifier.Shift;
-			if (chkGlobalWin.IsChecked == true)
-				hot_key_modifier |= UnManaged.KeyModifier.Win;
-			if (!String.IsNullOrWhiteSpace(txtHotKey.Text)) {
-				var key = txtHotKey.Text.ToUpper();
-				if (key[0] >= 0 && key[0] <= 9)
-					key = "D" + key;
-				Enum.TryParse<System.Windows.Input.Key>(key,out hot_key);
-			}
-			broker.SetHotKey(new Broker.HotKeySetting {modifiers = hot_key_modifier,key=hot_key });
+			SetHotKeyFromWindow(GLOBAL_HOT_KEY_TYPE.Focus, chkGlobalAlt, chkGlobalCntrl, chkGlobalShift, chkGlobalWin, txtHotKey);
+			SetHotKeyFromWindow(GLOBAL_HOT_KEY_TYPE.End, chkGlobalEndAlt, chkGlobalEndCntrl, chkGlobalEndShift, chkGlobalEndWin, txtHotKeyEnd);
+			SetHotKeyFromWindow(GLOBAL_HOT_KEY_TYPE.Answer, chkGlobalAnsAlt, chkGlobalAnsCntrl, chkGlobalAnsShift, chkGlobalAnsWin, txtHotKeyAns);
+			SetHotKeyFromWindow(GLOBAL_HOT_KEY_TYPE.Mute, chkGlobalMuteAlt, chkGlobalMuteCntrl, chkGlobalMuteShift, chkGlobalMuteWin, txtHotKeyMute);
+
 			broker.SetActiveHeadset(comboHeadsetDevice.SelectedItem as string);
 			broker.SaveSettings();
 
+		}
+		private void SetHotKeyFromWindow(GLOBAL_HOT_KEY_TYPE type, CheckBox alt_box, CheckBox cntrl_box, CheckBox shift_box, CheckBox win_box, TextBox txt_box) {
+			System.Windows.Input.Key hot_key = System.Windows.Input.Key.None;
+			var hot_key_modifier = UnManaged.KeyModifier.None;
+			if (alt_box.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Alt;
+			if (cntrl_box.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Ctrl;
+			if (shift_box.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Shift;
+			if (win_box.IsChecked == true)
+				hot_key_modifier |= UnManaged.KeyModifier.Win;
+			if (!String.IsNullOrWhiteSpace(txt_box.Text)) {
+				var key = txt_box.Text.ToUpper();
+				if (key[0] >= 0 && key[0] <= 9)
+					key = "D" + key;
+				Enum.TryParse<System.Windows.Input.Key>(key, out hot_key);
+			}
+			broker.SetHotKey(type, new Broker.HotKeySetting { modifiers = hot_key_modifier, key = hot_key });
 		}
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 
@@ -187,7 +203,7 @@ namespace FSClient {
 		private void btnPathBrowse_Click(object sender, RoutedEventArgs e) {
 			WF.FolderBrowserDialog dlg = new WF.FolderBrowserDialog();
 			dlg.SelectedPath = txtRecordingPath.Text;
-			DialogResult res = dlg.ShowDialog();
+			WF.DialogResult res = dlg.ShowDialog();
 			if (res != System.Windows.Forms.DialogResult.OK)
 				return;
 			txtRecordingPath.Text = dlg.SelectedPath;

@@ -1,4 +1,4 @@
-﻿<Window x:Class="FSClient.Options" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Options" Width="620" Height="530"
+﻿<Window x:Class="FSClient.Options" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Options" Width="620" Height="610"
 		Closing="Window_Closing" Icon="phone.ico" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStyle="ThreeDBorderWindow">
 	<Window.Resources>
 		<Style x:Key="OptionHeaderStyle" TargetType="{x:Type TextBlock}">
@@ -25,6 +25,9 @@
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
@@ -72,13 +75,37 @@
 				<Button Name="btnPathBrowse" Height="25" AutomationProperties.Name="Browse for folder to store recordings in" Click="btnPathBrowse_Click" Content="Browse" TabIndex="18" />
 			</StackPanel>
 			<TextBlock Grid.Row="11" Style="{DynamicResource OptionHeaderStyle}" Text="Global Focus Hotkey:" />
-			<StackPanel Grid.Row="11" Grid.Column="1" Orientation="Horizontal"  Margin="10,0,0,0">
-				<CheckBox Name="chkGlobalCntrl" Content="Cntrl" VerticalAlignment="Center" TabIndex="19" />
-				<CheckBox Name="chkGlobalShift" Content="Shift" VerticalAlignment="Center" Margin="5,0,0,0" TabIndex="20" />
-				<CheckBox Name="chkGlobalAlt" Content="Alt" VerticalAlignment="Center"  Margin="5,0,0,0" TabIndex="21" />
-				<CheckBox Name="chkGlobalWin" Content="Win" VerticalAlignment="Center"  Margin="5,0,0,0" TabIndex="22"/>
-				<TextBox Name="txtHotKey" Width="23" Height="23" MaxLength="1"  Margin="5,0,0,0" TabIndex="23" />
+			<StackPanel Grid.Row="11" Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal">
+				<CheckBox Name="chkGlobalCntrl" VerticalAlignment="Center" Content="Cntrl" TabIndex="19" />
+				<CheckBox Name="chkGlobalShift" Margin="5,0,0,0" VerticalAlignment="Center" Content="Shift" TabIndex="20" />
+				<CheckBox Name="chkGlobalAlt" Margin="5,0,0,0" VerticalAlignment="Center" Content="Alt" TabIndex="21" />
+				<CheckBox Name="chkGlobalWin" Margin="5,0,0,0" VerticalAlignment="Center" Content="Win" TabIndex="22" />
+				<TextBox Name="txtHotKey" Width="23" Height="23" Margin="5,0,0,0" MaxLength="1" TabIndex="23" />
 
+			</StackPanel>
+			<TextBlock Grid.Row="12" Style="{DynamicResource OptionHeaderStyle}" Text="Global Answer Hotkey:" />
+			<StackPanel Grid.Row="12" Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal">
+				<CheckBox Name="chkGlobalAnsCntrl" VerticalAlignment="Center" Content="Cntrl" />
+				<CheckBox Name="chkGlobalAnsShift" Margin="5,0,0,0" VerticalAlignment="Center" Content="Shift" />
+				<CheckBox Name="chkGlobalAnsAlt" Margin="5,0,0,0" VerticalAlignment="Center" Content="Alt" />
+				<CheckBox Name="chkGlobalAnsWin" Margin="5,0,0,0" VerticalAlignment="Center" Content="Win" />
+				<TextBox Name="txtHotKeyAns" Width="23" Height="23" Margin="5,0,0,0" MaxLength="1" />
+			</StackPanel>
+			<TextBlock Grid.Row="13" Style="{DynamicResource OptionHeaderStyle}" Text="Global End Hotkey:" />
+			<StackPanel Grid.Row="13" Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal">
+				<CheckBox Name="chkGlobalEndCntrl" VerticalAlignment="Center" Content="Cntrl" />
+				<CheckBox Name="chkGlobalEndShift" Margin="5,0,0,0" VerticalAlignment="Center" Content="Shift" />
+				<CheckBox Name="chkGlobalEndAlt" Margin="5,0,0,0" VerticalAlignment="Center" Content="Alt" />
+				<CheckBox Name="chkGlobalEndWin" Margin="5,0,0,0" VerticalAlignment="Center" Content="Win" />
+				<TextBox Name="txtHotKeyEnd" Width="23" Height="23" Margin="5,0,0,0" MaxLength="1" />
+			</StackPanel>
+			<TextBlock Grid.Row="14" Style="{DynamicResource OptionHeaderStyle}" Text="Global Mute Hotkey:" />
+			<StackPanel Grid.Row="14" Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal">
+				<CheckBox Name="chkGlobalMuteCntrl" VerticalAlignment="Center" Content="Cntrl" />
+				<CheckBox Name="chkGlobalMuteShift" Margin="5,0,0,0" VerticalAlignment="Center" Content="Shift" />
+				<CheckBox Name="chkGlobalMuteAlt" Margin="5,0,0,0" VerticalAlignment="Center" Content="Alt" />
+				<CheckBox Name="chkGlobalMuteWin" Margin="5,0,0,0" VerticalAlignment="Center" Content="Win" />
+				<TextBox Name="txtHotKeyMute" Width="23" Height="23" Margin="5,0,0,0" MaxLength="1" />
 			</StackPanel>
 		</Grid>
 		<StackPanel Grid.Row="1" Grid.Column="1">

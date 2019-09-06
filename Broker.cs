@@ -140,14 +140,11 @@ namespace FSClient {
 				CheckForUpdates = Properties.Settings.Default.CheckForUpdates;
 				GUIStartup = Properties.Settings.Default.GuiStartup;
 				AlwaysOnTopDuringCall = Properties.Settings.Default.AlwaysOnTopDuringCall;
-				var hotkey_str = Properties.Settings.Default.GlobalHotKey;
-				if (!String.IsNullOrWhiteSpace(hotkey_str)) {
-					try {
-						var new_hotkey = Newtonsoft.Json.JsonConvert.DeserializeObject<HotKeySetting>(hotkey_str);
-						if (new_hotkey != null)
-							SetHotKey(new_hotkey);
-					} catch (Exception) { }
-				}
+				SetHotKeyFromSetting(GLOBAL_HOT_KEY_TYPE.Focus, Properties.Settings.Default.GlobalHotKey);
+				SetHotKeyFromSetting(GLOBAL_HOT_KEY_TYPE.Answer, Properties.Settings.Default.GlobalAnsHotKey);
+				SetHotKeyFromSetting(GLOBAL_HOT_KEY_TYPE.End, Properties.Settings.Default.GlobalEndHotKey);
+				SetHotKeyFromSetting(GLOBAL_HOT_KEY_TYPE.Mute, Properties.Settings.Default.GlobalMuteHotKey);
+
 
 				if (Properties.Settings.Default.Sofia != null)
 					sofia = Properties.Settings.Default.Sofia.GetSofia();
@@ -182,6 +179,15 @@ namespace FSClient {
 			t = new Thread(VersionCheck);
 			t.IsBackground = true;
 			t.Start();
+		}
+		private void SetHotKeyFromSetting(GLOBAL_HOT_KEY_TYPE type, String hotkey_setting_str) {
+			if (!String.IsNullOrWhiteSpace(hotkey_setting_str)) {
+				try {
+					var new_hotkey = Newtonsoft.Json.JsonConvert.DeserializeObject<HotKeySetting>(hotkey_setting_str);
+					if (new_hotkey != null)
+						SetHotKey(type, new_hotkey);
+				} catch (Exception) { }
+			}
 		}
 		private void init_freeswitch() {
 			try {//it would be better if this was in the init function but it seems some dll load errors won't be caught if it is.
@@ -399,7 +405,10 @@ namespace FSClient {
 				Properties.Settings.Default.UPNPNAT = UPNPNAT;
 				Properties.Settings.Default.DirectSipDial = DirectSipDial;
 				Properties.Settings.Default.AlwaysOnTopDuringCall = AlwaysOnTopDuringCall;
-				Properties.Settings.Default.GlobalHotKey = SerializeObject(global_hotkey, false);
+				Properties.Settings.Default.GlobalHotKey = SerializeObject(GetHotKeySetting(GLOBAL_HOT_KEY_TYPE.Focus), false);
+				Properties.Settings.Default.GlobalEndHotKey = SerializeObject(GetHotKeySetting(GLOBAL_HOT_KEY_TYPE.End), false);
+				Properties.Settings.Default.GlobalAnsHotKey = SerializeObject(GetHotKeySetting(GLOBAL_HOT_KEY_TYPE.Answer), false);
+				Properties.Settings.Default.GlobalMuteHotKey = SerializeObject(GetHotKeySetting(GLOBAL_HOT_KEY_TYPE.Mute), false);
 				Properties.Settings.Default.UseNumberOnlyInput = UseNumberOnlyInput;
 				Properties.Settings.Default.RecordingPath = recordings_folder;
 				Properties.Settings.Default.Theme = theme;
@@ -490,9 +499,9 @@ namespace FSClient {
 		[Flags]
 		public enum BRING_TO_FRONT_OPTS { OnlyIfTopMostSetting, AlwaysKeyboardFocus, KeyboardFocusIfSettingEnabled }
 		public void BringToFront(BRING_TO_FRONT_OPTS opts) {
-			if (! opts.HasFlag(BRING_TO_FRONT_OPTS.OnlyIfTopMostSetting) || IncomingTopMost)
+			if (!opts.HasFlag(BRING_TO_FRONT_OPTS.OnlyIfTopMostSetting) || IncomingTopMost)
 				MainWindow.get_instance().BringToFront();
-			if (opts.HasFlag(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus) || (opts.HasFlag(BRING_TO_FRONT_OPTS.KeyboardFocusIfSettingEnabled) && IncomingKeyboardFocus) )
+			if (opts.HasFlag(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus) || (opts.HasFlag(BRING_TO_FRONT_OPTS.KeyboardFocusIfSettingEnabled) && IncomingKeyboardFocus))
 				Utils.SetForegroundWindow(MainWindow.get_instance());
 
 		}
@@ -561,38 +570,73 @@ namespace FSClient {
 			} catch (Exception) { }
 
 		}
-		
+
 		internal class HotKeySetting {
 			public Key key { get; set; }
 			public KeyModifier modifiers { get; set; }
 		}
-		public HotKeySetting global_hotkey { get; private set; } = new HotKeySetting { key = Key.None };
-		public void SetHotKey(HotKeySetting setting) {
+		public enum GLOBAL_HOT_KEY_TYPE { Invalid, Focus, Answer, End, Mute }
+		private class HotKeyItem {
+			public HotKeySetting setting;
+			public GlobalHotKey hot_key;
+		}
+		public HotKeySetting GetHotKeySetting(GLOBAL_HOT_KEY_TYPE type) => GetHotKeyItem(type).setting;
+
+		private HotKeyItem GetHotKeyItem(GLOBAL_HOT_KEY_TYPE type) {
+			if (!hot_keys.TryGetValue(type, out var cur))
+				hot_keys[type] = cur = new HotKeyItem { setting = new HotKeySetting { key = Key.None } };
+			return cur;
+		}
+		private Dictionary<GLOBAL_HOT_KEY_TYPE, HotKeyItem> hot_keys = new Dictionary<GLOBAL_HOT_KEY_TYPE, HotKeyItem>();
+		public void SetHotKey(GLOBAL_HOT_KEY_TYPE type, HotKeySetting new_setting) {
+			var cur_item = GetHotKeyItem(type);
+
+
 			try {
-				if (setting.key == global_hotkey.key && setting.modifiers == global_hotkey.modifiers)
+				if (new_setting.key == cur_item.setting.key && new_setting.modifiers == cur_item.setting.modifiers)
 					return;
-				global_hotkey = setting;
-				if (setting.key == Key.None) {
-					hot_key?.Unregister();
+				cur_item.setting = new_setting;
+				if (new_setting.key == Key.None) {
+					cur_item.hot_key?.Unregister();
 					return;
 				}
 
-				if (hot_key == null)
-					hot_key = new GlobalHotKey(setting.key, setting.modifiers, GlobalHotKeyPressed);
+				if (cur_item.hot_key == null)
+					cur_item.hot_key = new GlobalHotKey(new_setting.key, new_setting.modifiers, GlobalHotKeyPressed);
 				else
-					hot_key.UpdateHotKey(setting.key, setting.modifiers);
-			}catch(Exception ex) {
+					cur_item.hot_key.UpdateHotKey(new_setting.key, new_setting.modifiers);
+			} catch (Exception ex) {
 				MessageBox.Show("Unable to set global hotkey due to: " + ex.Message);
 			}
 		}
 
 		private void GlobalHotKeyPressed(GlobalHotKey obj) {
-			BringToFront(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus);
+			var item = hot_keys.FirstOrDefault(a => a.Value.hot_key == obj);
+			if (item.Key == GLOBAL_HOT_KEY_TYPE.Invalid)
+				return;
+			switch (item.Key) {
+				case GLOBAL_HOT_KEY_TYPE.Mute:
+						Muted = !Muted;
+					break;
+				case GLOBAL_HOT_KEY_TYPE.Focus:
+					BringToFront(BRING_TO_FRONT_OPTS.AlwaysKeyboardFocus);
+					break;
+				case GLOBAL_HOT_KEY_TYPE.Answer:
+					if (Call.active_call.state == Call.CALL_STATE.Ringing && Call.active_call.is_outgoing == false)
+						Call.active_call?.answer();
+					break;
+				case GLOBAL_HOT_KEY_TYPE.End:
+					Call.active_call?.hangup();
+					break;
+
+			}
+
+
 		}
 
-		private GlobalHotKey hot_key;
-		
-		
+
+
+
 		public bool UseNumberOnlyInput {
 			get { return _UseNumberOnlyInput; }
 			set {
@@ -639,7 +683,7 @@ namespace FSClient {
 		public bool AlwaysOnTopDuringCall {
 			get => _AlwaysOnTopDuringCall;
 
-			set  {
+			set {
 				if (value == _AlwaysOnTopDuringCall)
 					return;
 				_AlwaysOnTopDuringCall = value;

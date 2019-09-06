@@ -340,5 +340,41 @@ namespace FSClient.Properties {
                 this["GlobalHotKey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GlobalAnsHotKey {
+            get {
+                return ((string)(this["GlobalAnsHotKey"]));
+            }
+            set {
+                this["GlobalAnsHotKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GlobalEndHotKey {
+            get {
+                return ((string)(this["GlobalEndHotKey"]));
+            }
+            set {
+                this["GlobalEndHotKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GlobalMuteHotKey {
+            get {
+                return ((string)(this["GlobalMuteHotKey"]));
+            }
+            set {
+                this["GlobalMuteHotKey"] = value;
+            }
+        }
     }
 }
