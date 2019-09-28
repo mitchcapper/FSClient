@@ -22,6 +22,12 @@ namespace UnManaged {
 		public const int WmHotKey = 0x0312;
 
 		private bool _disposed = false;
+		public static Key ParseStringToKey(string key) {
+			if (key[0] >= 0 && key[0] <= 9)
+				key = "D" + key;
+			Enum.TryParse<System.Windows.Input.Key>(key, out var hot_key);
+			return hot_key;
+		}
 
 		public Key Key { get; private set; }
 		public KeyModifier KeyModifiers { get; private set; }
@@ -37,6 +43,7 @@ namespace UnManaged {
 				Register();
 			
 		}
+		public GlobalHotKey() { }
 		private static object lock_obj = new object();
 		public void UpdateHotKey(Key k, KeyModifier keyModifiers, bool register = true) {
 			Key = k;
