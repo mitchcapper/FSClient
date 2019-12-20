@@ -182,7 +182,7 @@ namespace FSClient {
 			await UpdateXFERDatabaseAsync(number, alias);
 		}
 
-		protected async void del_xfer_click(object sender, RoutedEventArgs e) {
+		protected virtual async void del_xfer_click(object sender, RoutedEventArgs e) {
 			MenuItem item = sender as MenuItem;
 			if (item == null)
 				return;
@@ -190,7 +190,7 @@ namespace FSClient {
 			await DeleteXFERAsync(kvp.Key);
 		}
 
-		protected async void edit_xfer_click(object sender, RoutedEventArgs e) {
+		protected virtual async void edit_xfer_click(object sender, RoutedEventArgs e) {
 			MenuItem item = sender as MenuItem;
 			if (item == null)
 				return;
@@ -288,7 +288,7 @@ namespace FSClient {
 			var res = InputBox.GetInput("Editing Contact", "Edit alias for number: " + number, default_value);
 			return Task.FromResult(res);
 		}
-		protected async void item_Click(object sender, RoutedEventArgs e) {
+		protected virtual async void item_Click(object sender, RoutedEventArgs e) {
 			try {
 				MenuItem item = sender as MenuItem;
 				if (item == null)
@@ -352,7 +352,7 @@ namespace FSClient {
 				MessageBox.Show("Initialization exception for plugin " + this.GetType() + " of: " + e.Message);
 			}
 		}
-		protected void refresh_search_box() {
+		protected virtual void refresh_search_box() {
 			if (search_box == null)
 				return;
 			search_box.ItemsSource = (from c in number_to_alias orderby c.Value, c.Key select new SearchAutoCompleteEntry(c.Key, c.Value)).ToArray();
@@ -400,7 +400,7 @@ namespace FSClient {
 		}
 
 
-		protected void call_current_contact() {
+		protected virtual void call_current_contact() {
 			SearchAutoCompleteEntry entry = search_box.SelectedItem as SearchAutoCompleteEntry;
 			if (entry != null)
 				Broker.get_instance().DialString(entry.number);
