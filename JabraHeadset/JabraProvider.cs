@@ -29,8 +29,7 @@ namespace JabraHeadsetPlugin {
 				device.Lock();
 				device.SetRinger(false, "");
 				device.SetHookState(false);
-			}
-			else if (!active && device.Locked)
+			} else if (!active && device.Locked)
 				device.Unlock();
 		}
 		private string last_caller_id;
@@ -79,17 +78,30 @@ namespace JabraHeadsetPlugin {
 		 * */
 		private bool hook_enabled;
 		private bool muted = false;
-
+		private string last_event_hash;
+		private DateTime last_event;
 		private void OnButtonEvent(JA.IDevice device, JA.ButtonEvent button, bool value) {
 			try {
+				var now = DateTime.Now;
+				Debug.WriteLine($"Jabra::OnButtonEvent {now}.{now.Millisecond} {button} {value} is muted: {device.MicrophoneMuted}");//this gets called twice, at least for bluetooth devices for each event, second event does have right mute state microphone muted, with the
+				var diff = DateTime.UtcNow - last_event;
+				last_event = DateTime.UtcNow;
+				if (diff.TotalMilliseconds < 300) {
+					var hash = "" + device.DeviceHandle + button + value;
+					if (hash == last_event_hash) {
+						Debug.WriteLine("Ignoring dupe event within 300 ms of last");
+						return;
+					}
+					last_event_hash = hash;
+				}
+
 				switch (button) {
 					case JA.ButtonEvent.HookSwitch:
 						if (value) {
 							if (!hook_enabled)
 								StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Talk));
 							hook_enabled = true;
-						}
-						else {
+						} else {
 							if (hook_enabled) {
 								StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.Hangup));
 								device.SetHookState(false);
@@ -98,7 +110,7 @@ namespace JabraHeadsetPlugin {
 						}
 						break;
 					case JA.ButtonEvent.MicMute:
-						if (!ignore_next_mute)
+						if (!ignore_next_mute)//only done on startup event
 							StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.ToggleMute));
 						ignore_next_mute = false;
 						break;
@@ -115,8 +127,7 @@ namespace JabraHeadsetPlugin {
 						break;
 
 				}
-			}
-			catch (Exception){}
+			} catch (Exception) { }
 		}
 		private bool ignore_next_mute;
 		private void OnStateEvent(JA.IDevice device, JA.State state, bool value) {
@@ -131,8 +142,7 @@ namespace JabraHeadsetPlugin {
 
 							}, 2500);
 						}
-					}
-					else
+					} else
 						StatusChanged(this, new StatusEventArgs(HEADSET_EVENT_TYPE.RadioClosed));
 					break;
 			}
@@ -144,12 +154,11 @@ namespace JabraHeadsetPlugin {
 
 	public class JabraProvider : IHeadsetPlugin {
 		private void AddNewDevice(JA.IDevice ja_device) {
-			try{
-			JabraHeadset device = new JabraHeadset(ja_device);
-			devices.Add(device);
-			DeviceAdded(this, new DeviceEventArgs(device));
-		}
-			catch (System.IO.FileNotFoundException) {
+			try {
+				JabraHeadset device = new JabraHeadset(ja_device);
+				devices.Add(device);
+				DeviceAdded(this, new DeviceEventArgs(device));
+			} catch (System.IO.FileNotFoundException) {
 				Utils.PluginLog("Jabra Provider", "Unable to add new device");
 			}
 		}
@@ -186,11 +195,9 @@ namespace JabraHeadsetPlugin {
 			try {
 				JA.DeviceServiceConnector.Connect(new Guid("b91c9121-0a17-4b26-a09d-d5980eb532db"), "FSClient", new Version("1.0.0.0"), true, OnShutdown, OnDeviceAttached, OnDeviceDetached);
 				JA.DeviceServiceConnector.SetSoftphoneAvailable(true);
-			}
-			catch (System.IO.FileNotFoundException) {
+			} catch (System.IO.FileNotFoundException) {
 				Utils.PluginLog("Jabra Provider", "Unable to startup Jabra Suite, most likely due to not installed, headset support skipped");
-			}
-			catch (Exception) {
+			} catch (Exception) {
 				if (shutdown_timer != null) {
 					shutdown_timer.Stop();
 					shutdown_timer.Start();
@@ -202,8 +209,7 @@ namespace JabraHeadsetPlugin {
 		public override void Terminate() {
 			try {
 				JA.DeviceServiceConnector.SetSoftphoneAvailable(false);
-			}
-			catch { }
+			} catch { }
 			JA.DeviceServiceConnector.Disconnect();
 		}
 
