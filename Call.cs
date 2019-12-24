@@ -252,6 +252,8 @@ namespace FSClient {
 				item = new MenuItem() { Header = "Transfer" };
 				menu.Items.Add(item);
 				item.Items.Add(CreateMenuItem("Enter Number", TransferPrompt));
+				if (CanSendToVoicemail())
+					item.Items.Add(CreateMenuItem("Send to Voicemail", SendToVoicemail));
 				var to_add_xfers = broker.GetXFERItemsToAdd(this,menu);
 				foreach (var xfer_item in to_add_xfers)
 					item.Items.Add(xfer_item);
