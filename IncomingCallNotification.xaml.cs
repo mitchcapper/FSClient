@@ -49,16 +49,19 @@ namespace FSClient {
 			double left_offset = 0;
 			double window_height = 0;
 			bool is_first = true;
+			var mainForm = MainWindow.get_instance();
 			foreach (IncomingCallNotification window in windows) {
 				if (is_first) {
 					is_first = false;
-					System.Drawing.Rectangle workingArea = new System.Drawing.Rectangle((int)window.Left, (int)window.Top, (int)window.ActualWidth, (int)window.ActualHeight);
+					System.Drawing.Rectangle workingArea = new System.Drawing.Rectangle(DpiUtil.ScaleIntX( mainForm.Left), DpiUtil.ScaleIntY(mainForm.Top), DpiUtil.ScaleIntX(mainForm.ActualWidth), DpiUtil.ScaleIntY(mainForm.ActualHeight));
+					
 					workingArea = Screen.GetWorkingArea(workingArea);
-					left_offset = workingArea.Right - window.ActualWidth;
-					top_offset = workingArea.Bottom - window.ActualHeight;
+					left_offset = DpiUtil.DeScaleIntX( workingArea.Right) - window.ActualWidth;
+					top_offset = DpiUtil.DeScaleIntY(workingArea.Bottom) - window.ActualHeight;
 					window_height = window.ActualHeight;
 				}
 				window.Top = top_offset;
+				
 				window.Left = left_offset;
 				top_offset -= window_height;
 			}

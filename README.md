@@ -182,6 +182,11 @@ conference button.
 Version History
 -------
 History tracking only goes back to version 1.4.8, not earlier.
+### 1.4.11 - 2019-12-25
+> More Jabra headset troubleshooting for newer headsets (ie Evolve 75) with hardware state mute options.
+> Base plugin has more functions virtual to allow overriding them in children
+> Fixed Call Notification Bubble to show up on correct monitor for multi-monitor and at right position with alternate DPI's
+> Send to voicemail in transfer right click menu for calls.
 ### 1.4.10 - 2019-09-06
 > Added global hot keys for mute, answer, and end call as well.
 ### 1.4.9 - 2019-08-02

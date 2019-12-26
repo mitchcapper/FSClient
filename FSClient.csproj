@@ -119,6 +119,7 @@
     </Compile>
     <Compile Include="Converters.cs" />
     <Compile Include="DelayedFunction.cs" />
+    <Compile Include="DpiUtil.cs" />
     <Compile Include="EventSocket.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="FSEvent.cs" />
