@@ -5,7 +5,7 @@
 	x:Class="FSClient.IncomingCallNotification"
 	x:Name="Window"
 	Title="FSClient: Incoming Call"
-	Width="196" Height="110" BorderThickness="2" Foreground="White" Background="Black" ResizeMode="NoResize" ShowInTaskbar="True" Icon="phone.ico" Topmost="True" Loaded="Window_Loaded">
+	Width="196" Height="110" BorderThickness="2" Foreground="White" Background="Black" ResizeMode="NoResize" ShowInTaskbar="False" Icon="phone.ico" Topmost="True" Loaded="Window_Loaded">
 	<Window.BorderBrush>
 		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 			<GradientStop Color="Black" Offset="0"/>
