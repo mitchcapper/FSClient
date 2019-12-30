@@ -234,7 +234,7 @@ namespace FSClient {
 					continue;
 				Utils.add_xml_param(profile, value.field.xml_name, value.value);
 			}
-			File.WriteAllText(@"c:\temp\conf.xml",config_node.OuterXml);
+			//File.WriteAllText(@"c:\temp\conf.xml",config_node.OuterXml);
 		}
 		public void reload_config() {
 			Utils.bgapi_exec("reload", "mod_conference");
